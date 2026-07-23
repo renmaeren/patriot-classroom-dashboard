@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
@@ -16,6 +17,7 @@
       --cream: #f7f2e8;
       --white: #ffffff;
       --gold: #d3a84f;
+      --green: #2f7d4a;
       --shadow: rgba(0, 0, 0, 0.18);
     }
 
@@ -30,8 +32,8 @@
       color: var(--navy);
       background:
         linear-gradient(
-          rgba(17, 40, 74, 0.88),
-          rgba(17, 40, 74, 0.88)
+          rgba(17, 40, 74, 0.9),
+          rgba(17, 40, 74, 0.9)
         ),
         repeating-linear-gradient(
           45deg,
@@ -55,7 +57,7 @@
 
     .school-name {
       margin: 0;
-      font-size: clamp(1.5rem, 3vw, 3rem);
+      font-size: clamp(1.6rem, 3vw, 3rem);
       letter-spacing: 1px;
     }
 
@@ -66,7 +68,7 @@
     }
 
     .clock-area {
-      min-width: 240px;
+      min-width: 260px;
       text-align: right;
     }
 
@@ -82,7 +84,7 @@
 
     main {
       display: grid;
-      grid-template-columns: 1.4fr 1fr;
+      grid-template-columns: 1.3fr 1fr;
       gap: 24px;
       width: min(1400px, 94%);
       margin: 28px auto;
@@ -112,12 +114,46 @@
     .welcome-card h1 {
       margin: 0;
       font-size: clamp(2.2rem, 5vw, 5rem);
-      color: var(--navy);
     }
 
     .welcome-card p {
       margin-bottom: 0;
       font-size: 1.4rem;
+    }
+
+    .schedule-card {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 18px;
+      text-align: center;
+    }
+
+    .schedule-box {
+      padding: 20px;
+      background: var(--white);
+      border-radius: 14px;
+      border: 2px solid #d9d9d9;
+    }
+
+    .schedule-label {
+      margin-bottom: 8px;
+      color: var(--red);
+      font-size: 0.95rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    #period-name,
+    #period-end,
+    #period-countdown {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      font-weight: bold;
+    }
+
+    #period-countdown {
+      color: var(--green);
     }
 
     .agenda-list {
@@ -135,7 +171,6 @@
       margin: 30px 0;
       font-size: clamp(4rem, 9vw, 8rem);
       font-weight: bold;
-      color: var(--navy);
     }
 
     .timer-controls {
@@ -164,23 +199,6 @@
       background: var(--navy);
     }
 
-    .period-status {
-      grid-column: 1 / -1;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 20px;
-    }
-
-    #period-name {
-      font-size: 2rem;
-      font-weight: bold;
-    }
-
-    #period-message {
-      font-size: 1.3rem;
-    }
-
     footer {
       padding: 18px;
       color: var(--white);
@@ -188,8 +206,7 @@
     }
 
     @media (max-width: 850px) {
-      header,
-      .period-status {
+      header {
         flex-direction: column;
         text-align: center;
       }
@@ -203,8 +220,12 @@
       }
 
       .welcome-card,
-      .period-status {
+      .schedule-card {
         grid-column: 1;
+      }
+
+      .schedule-card {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -214,7 +235,10 @@
   <header>
     <div>
       <h1 class="school-name">Patriot Classroom Dashboard</h1>
-      <p class="subtitle">Allen County-Scottsville High School</p>
+
+      <p class="subtitle">
+        Allen County-Scottsville High School
+      </p>
     </div>
 
     <div class="clock-area">
@@ -226,7 +250,42 @@
   <main>
     <section class="card welcome-card">
       <h1>Welcome, Patriots!</h1>
-      <p>Be ready. Be responsible. Be your best.</p>
+
+      <p>
+        Be ready. Be responsible. Be your best.
+      </p>
+    </section>
+
+    <section class="card schedule-card">
+      <div class="schedule-box">
+        <div class="schedule-label">
+          Current Period
+        </div>
+
+        <div id="period-name">
+          Checking schedule...
+        </div>
+      </div>
+
+      <div class="schedule-box">
+        <div class="schedule-label">
+          Period Ends
+        </div>
+
+        <div id="period-end">
+          --:--
+        </div>
+      </div>
+
+      <div class="schedule-box">
+        <div class="schedule-label">
+          Time Remaining
+        </div>
+
+        <div id="period-countdown">
+          --:--
+        </div>
+      </div>
     </section>
 
     <section class="card">
@@ -243,25 +302,36 @@
     <section class="card timer-card">
       <h2>Classroom Timer</h2>
 
-      <div id="timer-display">05:00</div>
+      <div id="timer-display">
+        05:00
+      </div>
 
       <div class="timer-controls">
-        <button onclick="setTimer(5)">5 Minutes</button>
-        <button onclick="setTimer(10)">10 Minutes</button>
-        <button onclick="startTimer()">Start</button>
-        <button class="secondary" onclick="pauseTimer()">Pause</button>
-        <button class="secondary" onclick="resetTimer()">Reset</button>
-      </div>
-    </section>
+        <button onclick="setTimer(5)">
+          5 Minutes
+        </button>
 
-    <section class="card period-status">
-      <div>
-        <strong>Current Schedule</strong>
-        <div id="period-name">Dashboard Preview</div>
-      </div>
+        <button onclick="setTimer(10)">
+          10 Minutes
+        </button>
 
-      <div id="period-message">
-        Automatic class transitions will be added next.
+        <button onclick="startTimer()">
+          Start
+        </button>
+
+        <button
+          class="secondary"
+          onclick="pauseTimer()"
+        >
+          Pause
+        </button>
+
+        <button
+          class="secondary"
+          onclick="resetTimer()"
+        >
+          Reset
+        </button>
       </div>
     </section>
   </main>
@@ -271,6 +341,59 @@
   </footer>
 
   <script>
+    /*
+      CHANGE THESE TIMES LATER TO MATCH
+      YOUR SCHOOL'S REAL BELL SCHEDULE.
+    */
+
+    const bellSchedule = [
+      {
+        name: "1st Period",
+        start: "08:00",
+        end: "08:45"
+      },
+      {
+        name: "2nd Period",
+        start: "08:49",
+        end: "09:34"
+      },
+      {
+        name: "3rd Period",
+        start: "09:38",
+        end: "10:23"
+      },
+      {
+        name: "4th Period",
+        start: "10:27",
+        end: "11:12"
+      },
+      {
+        name: "Lunch",
+        start: "11:12",
+        end: "11:42"
+      },
+      {
+        name: "5th Period",
+        start: "11:46",
+        end: "12:31"
+      },
+      {
+        name: "6th Period",
+        start: "12:35",
+        end: "13:20"
+      },
+      {
+        name: "7th Period",
+        start: "13:24",
+        end: "14:09"
+      },
+      {
+        name: "8th Period",
+        start: "14:13",
+        end: "14:58"
+      }
+    ];
+
     let selectedSeconds = 300;
     let remainingSeconds = selectedSeconds;
     let timerInterval = null;
@@ -294,11 +417,105 @@
         });
     }
 
-    function displayTimer() {
-      const minutes = Math.floor(remainingSeconds / 60);
-      const seconds = remainingSeconds % 60;
+    function timeToDate(timeText) {
+      const [hours, minutes] =
+        timeText.split(":").map(Number);
 
-      document.getElementById("timer-display").textContent =
+      const time = new Date();
+
+      time.setHours(hours, minutes, 0, 0);
+
+      return time;
+    }
+
+    function formatSchoolTime(timeText) {
+      return timeToDate(timeText).toLocaleTimeString(
+        [],
+        {
+          hour: "numeric",
+          minute: "2-digit"
+        }
+      );
+    }
+
+    function updateBellSchedule() {
+      const now = new Date();
+
+      const activePeriod = bellSchedule.find(period => {
+        const startTime = timeToDate(period.start);
+        const endTime = timeToDate(period.end);
+
+        return now >= startTime && now < endTime;
+      });
+
+      const periodName =
+        document.getElementById("period-name");
+
+      const periodEnd =
+        document.getElementById("period-end");
+
+      const periodCountdown =
+        document.getElementById("period-countdown");
+
+      if (!activePeriod) {
+        periodName.textContent =
+          "Outside Scheduled Class Time";
+
+        periodEnd.textContent = "--:--";
+        periodCountdown.textContent = "--:--";
+
+        return;
+      }
+
+      const endTime = timeToDate(activePeriod.end);
+
+      const totalSeconds =
+        Math.max(
+          0,
+          Math.floor((endTime - now) / 1000)
+        );
+
+      const hours =
+        Math.floor(totalSeconds / 3600);
+
+      const minutes =
+        Math.floor((totalSeconds % 3600) / 60);
+
+      const seconds =
+        totalSeconds % 60;
+
+      let countdownText = "";
+
+      if (hours > 0) {
+        countdownText +=
+          String(hours).padStart(2, "0") + ":";
+      }
+
+      countdownText +=
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0");
+
+      periodName.textContent =
+        activePeriod.name;
+
+      periodEnd.textContent =
+        formatSchoolTime(activePeriod.end);
+
+      periodCountdown.textContent =
+        countdownText;
+    }
+
+    function displayTimer() {
+      const minutes =
+        Math.floor(remainingSeconds / 60);
+
+      const seconds =
+        remainingSeconds % 60;
+
+      document.getElementById(
+        "timer-display"
+      ).textContent =
         String(minutes).padStart(2, "0") +
         ":" +
         String(seconds).padStart(2, "0");
@@ -306,22 +523,29 @@
 
     function setTimer(minutes) {
       pauseTimer();
+
       selectedSeconds = minutes * 60;
       remainingSeconds = selectedSeconds;
+
       displayTimer();
     }
 
     function startTimer() {
-      if (timerInterval || remainingSeconds <= 0) {
+      if (
+        timerInterval ||
+        remainingSeconds <= 0
+      ) {
         return;
       }
 
       timerInterval = setInterval(() => {
         remainingSeconds -= 1;
+
         displayTimer();
 
         if (remainingSeconds <= 0) {
           pauseTimer();
+
           alert("Time is up!");
         }
       }, 1000);
@@ -334,13 +558,18 @@
 
     function resetTimer() {
       pauseTimer();
+
       remainingSeconds = selectedSeconds;
+
       displayTimer();
     }
 
     updateClock();
+    updateBellSchedule();
     displayTimer();
+
     setInterval(updateClock, 1000);
+    setInterval(updateBellSchedule, 1000);
   </script>
 </body>
 </html>
