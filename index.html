@@ -19,7 +19,6 @@
       --gold: #d3a84f;
       --green: #2f7d4a;
       --gray: #d8d8d8;
-      --light-gray: #f3f3f3;
       --dark-overlay: rgba(0, 0, 0, 0.58);
       --shadow: rgba(0, 0, 0, 0.18);
     }
@@ -145,7 +144,10 @@
 
     main {
       display: grid;
-      grid-template-columns: minmax(245px, 0.9fr) minmax(400px, 2fr) minmax(245px, 0.9fr);
+      grid-template-columns:
+        minmax(245px, 0.9fr)
+        minmax(400px, 2fr)
+        minmax(245px, 0.9fr);
       gap: 16px;
       width: min(1600px, 97%);
       margin: 16px auto;
@@ -294,8 +296,7 @@
       gap: 8px;
     }
 
-    .timer-controls button,
-    .standard-button {
+    .timer-controls button {
       padding: 10px 12px;
       color: var(--white);
       font-weight: bold;
@@ -304,8 +305,7 @@
       border-radius: 8px;
     }
 
-    .timer-controls button.secondary,
-    .standard-button.secondary {
+    .timer-controls button.secondary {
       background: var(--navy);
     }
 
@@ -617,7 +617,7 @@
         </div>
 
         <p id="profile-description" class="profile-description empty-text">
-          Select a Profile of a Patriot component during lesson setup.
+          Select a component during lesson setup.
         </p>
       </section>
     </div>
@@ -648,8 +648,8 @@
           <strong>Your lesson will appear here.</strong>
 
           <span>
-            Paste a Google Slides, Canva, YouTube, PDF, or website link
-            in Today’s Lesson Setup.
+            Paste a Google Slides, Canva, YouTube, PDF,
+            or website link during lesson setup.
           </span>
         </div>
       </div>
@@ -725,8 +725,8 @@
 
       <p class="instructions">
         Type or paste today’s information, then click
-        <strong>Save &amp; Launch</strong>. Each agenda item should
-        be typed on a separate line.
+        <strong>Save &amp; Launch</strong>. Type each agenda
+        item on a separate line.
       </p>
 
       <div class="form-group">
@@ -758,14 +758,26 @@
 
       <div class="form-group">
         <label for="profile-input">
-          Profile of a Patriot
+          Profile of a Patriot Component
         </label>
 
-        <select id="profile-input">
-          <option value="none">
-            Choose a component
-          </option>
-        </select>
+        <select
+          id="profile-input"
+          onchange="updateProfileStatementChoices()"
+        ></select>
+      </div>
+
+      <div class="form-group">
+        <label for="profile-statement-input">
+          Optional Focus Statement
+        </label>
+
+        <span class="form-help">
+          Choose one specific skill, or leave this set to
+          “Use the general component.”
+        </span>
+
+        <select id="profile-statement-input"></select>
       </div>
 
       <div class="form-group">
@@ -787,8 +799,8 @@
         </label>
 
         <span class="form-help">
-          Paste a published or shareable Google Slides, Canva,
-          YouTube, PDF, or website link.
+          Paste a published or shareable Google Slides,
+          Canva, YouTube, PDF, or website link.
         </span>
 
         <input
@@ -917,81 +929,27 @@
       room: "611"
     };
 
-    const defaultProfileOptions = [
-      {
-        id: "none",
-        title: "Choose a component",
-        description: ""
-      },
-      {
-        id: "responsibility",
-        title: "Responsibility",
-        description:
-          "I arrive prepared, complete my work, and take ownership of my choices."
-      },
-      {
-        id: "respect",
-        title: "Respect",
-        description:
-          "I treat others, myself, and my learning environment with consideration."
-      },
-      {
-        id: "integrity",
-        title: "Integrity",
-        description:
-          "I make honest choices and do what is right."
-      },
-      {
-        id: "perseverance",
-        title: "Perseverance",
-        description:
-          "I continue working through challenges and learn from mistakes."
-      },
-      {
-        id: "collaboration",
-        title: "Collaboration",
-        description:
-          "I listen, contribute, and work productively with others."
-      },
-      {
-        id: "communication",
-        title: "Communication",
-        description:
-          "I express my ideas clearly and listen carefully to others."
-      },
-      {
-        id: "critical-thinking",
-        title: "Critical Thinking",
-        description:
-          "I evaluate information, solve problems, and support my conclusions."
-      },
-      {
-        id: "creativity",
-        title: "Creativity",
-        description:
-          "I explore ideas and develop original solutions."
-      },
-      {
-        id: "citizenship",
-        title: "Citizenship",
-        description:
-          "I contribute positively to my school and community."
-      }
-    ];
-
-    const availableProfileOptions =
-      typeof profileOfAPatriotOptions !== "undefined"
-        ? profileOfAPatriotOptions
-        : defaultProfileOptions;
-
     const emptyLesson = {
       bellringer: "",
       ican: "",
       success: "",
       profileId: "none",
+      profileStatement: "",
       agenda: "",
       lessonLink: ""
     };
+
+    const availableProfileOptions =
+      typeof profileOfAPatriotOptions !== "undefined"
+        ? profileOfAPatriotOptions
+        : [
+            {
+              id: "none",
+              title: "Choose a Profile Component",
+              shortDescription: "",
+              statements: []
+            }
+          ];
 
     let selectedSeconds = 300;
     let remainingSeconds = selectedSeconds;
@@ -1001,7 +959,7 @@
       const savedValue = localStorage.getItem(key);
 
       if (!savedValue) {
-        return fallback;
+        return { ...fallback };
       }
 
       try {
@@ -1010,8 +968,12 @@
           ...JSON.parse(savedValue)
         };
       } catch (error) {
-        console.error("Saved information could not be read.", error);
-        return fallback;
+        console.error(
+          "Saved information could not be read.",
+          error
+        );
+
+        return { ...fallback };
       }
     }
 
@@ -1055,8 +1017,13 @@
       ).value = settings.room;
     }
 
-    function setTextDisplay(elementId, value, emptyMessage) {
-      const element = document.getElementById(elementId);
+    function setTextDisplay(
+      elementId,
+      value,
+      emptyMessage
+    ) {
+      const element =
+        document.getElementById(elementId);
 
       if (value && value.trim()) {
         element.textContent = value.trim();
@@ -1094,17 +1061,24 @@
         "Add today’s success criteria."
       );
 
-      const selectedProfile = findProfile(lesson.profileId);
+      const selectedProfile =
+        findProfile(lesson.profileId);
 
       document.getElementById(
         "profile-title"
       ).textContent =
-        selectedProfile.title || "Choose a component";
+        selectedProfile.title ||
+        "Choose a component";
+
+      const profileText =
+        lesson.profileStatement ||
+        selectedProfile.shortDescription ||
+        "";
 
       setTextDisplay(
         "profile-description",
-        selectedProfile.description,
-        "Select a Profile of a Patriot component during lesson setup."
+        profileText,
+        "Select a component during lesson setup."
       );
 
       applyAgenda(lesson.agenda);
@@ -1118,23 +1092,28 @@
 
       agendaList.innerHTML = "";
 
-      const agendaItems = agendaText
+      const agendaItems = (agendaText || "")
         .split("\n")
         .map(item => item.trim())
         .filter(Boolean);
 
       if (agendaItems.length === 0) {
-        const emptyItem = document.createElement("li");
+        const emptyItem =
+          document.createElement("li");
 
-        emptyItem.textContent = "Add today’s agenda.";
+        emptyItem.textContent =
+          "Add today’s agenda.";
+
         emptyItem.className = "empty-text";
-
         agendaList.appendChild(emptyItem);
+
         return;
       }
 
       agendaItems.forEach(itemText => {
-        const item = document.createElement("li");
+        const item =
+          document.createElement("li");
+
         item.textContent = itemText;
         agendaList.appendChild(item);
       });
@@ -1144,16 +1123,22 @@
       try {
         const parsedUrl = new URL(url);
 
-        if (parsedUrl.hostname.includes("youtu.be")) {
-          const videoId = parsedUrl.pathname.replace("/", "");
+        if (
+          parsedUrl.hostname.includes("youtu.be")
+        ) {
+          const videoId =
+            parsedUrl.pathname.replace("/", "");
 
           return videoId
             ? `https://www.youtube.com/embed/${videoId}`
             : url;
         }
 
-        if (parsedUrl.hostname.includes("youtube.com")) {
-          const videoId = parsedUrl.searchParams.get("v");
+        if (
+          parsedUrl.hostname.includes("youtube.com")
+        ) {
+          const videoId =
+            parsedUrl.searchParams.get("v");
 
           return videoId
             ? `https://www.youtube.com/embed/${videoId}`
@@ -1168,7 +1153,9 @@
 
     function convertGoogleSlidesLink(url) {
       if (
-        url.includes("docs.google.com/presentation") &&
+        url.includes(
+          "docs.google.com/presentation"
+        ) &&
         url.includes("/edit")
       ) {
         return url
@@ -1182,31 +1169,42 @@
     function prepareEmbedLink(url) {
       let preparedUrl = url.trim();
 
-      preparedUrl = convertYouTubeLink(preparedUrl);
-      preparedUrl = convertGoogleSlidesLink(preparedUrl);
+      preparedUrl =
+        convertYouTubeLink(preparedUrl);
+
+      preparedUrl =
+        convertGoogleSlidesLink(preparedUrl);
 
       return preparedUrl;
     }
 
     function applyLessonLink(url) {
-      const frame = document.getElementById("lesson-frame");
+      const frame =
+        document.getElementById("lesson-frame");
+
       const placeholder =
-        document.getElementById("lesson-placeholder");
+        document.getElementById(
+          "lesson-placeholder"
+        );
+
       const openLink =
-        document.getElementById("open-lesson-link");
+        document.getElementById(
+          "open-lesson-link"
+        );
 
       if (!url || !url.trim()) {
         frame.style.display = "none";
         frame.removeAttribute("src");
+
         placeholder.style.display = "flex";
         openLink.style.display = "none";
+
         return;
       }
 
-      const preparedUrl = prepareEmbedLink(url);
-
-      frame.src = preparedUrl;
+      frame.src = prepareEmbedLink(url);
       frame.style.display = "block";
+
       placeholder.style.display = "none";
 
       openLink.href = url;
@@ -1220,13 +1218,62 @@
       dropdown.innerHTML = "";
 
       availableProfileOptions.forEach(option => {
-        const choice = document.createElement("option");
+        const choice =
+          document.createElement("option");
 
         choice.value = option.id;
         choice.textContent = option.title;
 
         dropdown.appendChild(choice);
       });
+    }
+
+    function updateProfileStatementChoices(
+      selectedStatement = ""
+    ) {
+      const profileId =
+        document.getElementById(
+          "profile-input"
+        ).value;
+
+      const selectedProfile =
+        findProfile(profileId);
+
+      const statementDropdown =
+        document.getElementById(
+          "profile-statement-input"
+        );
+
+      statementDropdown.innerHTML = "";
+
+      const generalChoice =
+        document.createElement("option");
+
+      generalChoice.value = "";
+      generalChoice.textContent =
+        "Use the general component";
+
+      statementDropdown.appendChild(
+        generalChoice
+      );
+
+      const statements =
+        selectedProfile.statements || [];
+
+      statements.forEach(statement => {
+        const choice =
+          document.createElement("option");
+
+        choice.value = statement;
+        choice.textContent = statement;
+
+        statementDropdown.appendChild(choice);
+      });
+
+      statementDropdown.value =
+        statements.includes(selectedStatement)
+          ? selectedStatement
+          : "";
     }
 
     function fillLessonForm(lesson) {
@@ -1245,6 +1292,10 @@
       document.getElementById(
         "profile-input"
       ).value = lesson.profileId || "none";
+
+      updateProfileStatementChoices(
+        lesson.profileStatement || ""
+      );
 
       document.getElementById(
         "agenda-input"
@@ -1295,6 +1346,11 @@
             "profile-input"
           ).value,
 
+        profileStatement:
+          document.getElementById(
+            "profile-statement-input"
+          ).value,
+
         agenda:
           document.getElementById(
             "agenda-input"
@@ -1326,7 +1382,7 @@
 
     function clearLessonForm() {
       const confirmed = window.confirm(
-        "Clear the lesson setup boxes? Your currently saved lesson will remain until you click Save & Launch."
+        "Clear the lesson setup boxes? Your saved lesson will remain until you click Save & Launch."
       );
 
       if (!confirmed) {
@@ -1337,7 +1393,9 @@
     }
 
     function openTeacherSettings() {
-      applyTeacherSettings(getTeacherSettings());
+      applyTeacherSettings(
+        getTeacherSettings()
+      );
 
       document.getElementById(
         "teacher-overlay"
@@ -1390,11 +1448,19 @@
     }
 
     function resetTeacherSettings() {
-      localStorage.removeItem("patriotTeacherSettings");
-      applyTeacherSettings(defaultTeacherSettings);
+      localStorage.removeItem(
+        "patriotTeacherSettings"
+      );
+
+      applyTeacherSettings(
+        defaultTeacherSettings
+      );
     }
 
-    function closePanelFromOverlay(event, overlayId) {
+    function closePanelFromOverlay(
+      event,
+      overlayId
+    ) {
       if (event.target.id !== overlayId) {
         return;
       }
@@ -1411,14 +1477,18 @@
     function updateClock() {
       const now = new Date();
 
-      document.getElementById("clock").textContent =
+      document.getElementById(
+        "clock"
+      ).textContent =
         now.toLocaleTimeString([], {
           hour: "numeric",
           minute: "2-digit",
           second: "2-digit"
         });
 
-      document.getElementById("date").textContent =
+      document.getElementById(
+        "date"
+      ).textContent =
         now.toLocaleDateString([], {
           weekday: "long",
           month: "long",
@@ -1432,13 +1502,21 @@
         timeText.split(":").map(Number);
 
       const time = new Date();
-      time.setHours(hours, minutes, 0, 0);
+
+      time.setHours(
+        hours,
+        minutes,
+        0,
+        0
+      );
 
       return time;
     }
 
     function formatSchoolTime(timeText) {
-      return timeToDate(timeText).toLocaleTimeString([], {
+      return timeToDate(
+        timeText
+      ).toLocaleTimeString([], {
         hour: "numeric",
         minute: "2-digit"
       });
@@ -1447,43 +1525,68 @@
     function updateBellSchedule() {
       const now = new Date();
 
-      const activePeriod = bellSchedule.find(period => {
-        const startTime = timeToDate(period.start);
-        const endTime = timeToDate(period.end);
+      const activePeriod =
+        bellSchedule.find(period => {
+          const startTime =
+            timeToDate(period.start);
 
-        return now >= startTime && now < endTime;
-      });
+          const endTime =
+            timeToDate(period.end);
+
+          return (
+            now >= startTime &&
+            now < endTime
+          );
+        });
 
       const periodName =
-        document.getElementById("period-name");
+        document.getElementById(
+          "period-name"
+        );
+
       const periodEnd =
-        document.getElementById("period-end");
+        document.getElementById(
+          "period-end"
+        );
+
       const periodCountdown =
-        document.getElementById("period-countdown");
+        document.getElementById(
+          "period-countdown"
+        );
 
       if (!activePeriod) {
         periodName.textContent =
           "Outside Scheduled Class Time";
+
         periodEnd.textContent = "--:--";
         periodCountdown.textContent = "--:--";
+
         return;
       }
 
-      const endTime = timeToDate(activePeriod.end);
+      const endTime =
+        timeToDate(activePeriod.end);
 
       const totalSeconds = Math.max(
         0,
-        Math.floor((endTime - now) / 1000)
+        Math.floor(
+          (endTime - now) / 1000
+        )
       );
 
       const minutes =
         Math.floor(totalSeconds / 60);
+
       const seconds =
         totalSeconds % 60;
 
-      periodName.textContent = activePeriod.name;
+      periodName.textContent =
+        activePeriod.name;
+
       periodEnd.textContent =
-        formatSchoolTime(activePeriod.end);
+        formatSchoolTime(
+          activePeriod.end
+        );
 
       periodCountdown.textContent =
         String(minutes).padStart(2, "0") +
@@ -1493,7 +1596,9 @@
 
     function displayTimer() {
       const minutes =
-        Math.floor(remainingSeconds / 60);
+        Math.floor(
+          remainingSeconds / 60
+        );
 
       const seconds =
         remainingSeconds % 60;
@@ -1508,8 +1613,13 @@
 
     function setTimer(minutes) {
       pauseTimer();
-      selectedSeconds = minutes * 60;
-      remainingSeconds = selectedSeconds;
+
+      selectedSeconds =
+        minutes * 60;
+
+      remainingSeconds =
+        selectedSeconds;
+
       displayTimer();
     }
 
@@ -1539,15 +1649,18 @@
         return;
       }
 
-      timerInterval = setInterval(() => {
-        remainingSeconds -= 1;
-        displayTimer();
+      timerInterval =
+        setInterval(() => {
+          remainingSeconds -= 1;
+          displayTimer();
 
-        if (remainingSeconds <= 0) {
-          pauseTimer();
-          alert("Time is up!");
-        }
-      }, 1000);
+          if (
+            remainingSeconds <= 0
+          ) {
+            pauseTimer();
+            alert("Time is up!");
+          }
+        }, 1000);
     }
 
     function pauseTimer() {
@@ -1557,19 +1670,32 @@
 
     function resetTimer() {
       pauseTimer();
-      remainingSeconds = selectedSeconds;
+
+      remainingSeconds =
+        selectedSeconds;
+
       displayTimer();
     }
 
     populateProfileDropdown();
-    applyTeacherSettings(getTeacherSettings());
+    updateProfileStatementChoices();
+
+    applyTeacherSettings(
+      getTeacherSettings()
+    );
+
     applyLesson(getSavedLesson());
+
     updateClock();
     updateBellSchedule();
     displayTimer();
 
     setInterval(updateClock, 1000);
-    setInterval(updateBellSchedule, 1000);
+
+    setInterval(
+      updateBellSchedule,
+      1000
+    );
   </script>
 </body>
 </html>
