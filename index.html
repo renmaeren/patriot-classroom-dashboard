@@ -8,7 +8,7 @@
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Patriot Classroom Dashboard</title>
+  <title>Patriot Classroom Launch</title>
 
   <style>
     :root {
@@ -18,8 +18,9 @@
       --white: #ffffff;
       --gold: #d3a84f;
       --green: #2f7d4a;
-      --gray: #d9d9d9;
-      --dark-overlay: rgba(0, 0, 0, 0.55);
+      --gray: #d8d8d8;
+      --light-gray: #f3f3f3;
+      --dark-overlay: rgba(0, 0, 0, 0.58);
       --shadow: rgba(0, 0, 0, 0.18);
     }
 
@@ -32,165 +33,249 @@
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--navy);
-      background:
-        linear-gradient(
-          rgba(17, 40, 74, 0.9),
-          rgba(17, 40, 74, 0.9)
-        ),
-        repeating-linear-gradient(
-          45deg,
-          #ffffff,
-          #ffffff 20px,
-          #eeeeee 20px,
-          #eeeeee 40px
-        );
+      background: #e7ebf0;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
     }
 
     header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 20px;
-      padding: 20px 36px;
+      gap: 24px;
+      padding: 18px 30px;
       color: var(--white);
       background: var(--navy);
-      border-bottom: 8px solid var(--red);
+      border-bottom: 7px solid var(--red);
     }
 
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 18px;
+    .header-main {
+      flex: 1;
     }
 
     .school-name {
       margin: 0;
-      font-size: clamp(1.6rem, 3vw, 3rem);
-      letter-spacing: 1px;
-    }
-
-    .subtitle {
-      margin: 6px 0 0;
-      font-size: 1rem;
-      opacity: 0.9;
+      font-size: clamp(1.55rem, 2.8vw, 2.8rem);
     }
 
     .teacher-details {
       margin-top: 7px;
+      color: var(--gold);
       font-size: 1rem;
       font-weight: bold;
-      color: var(--gold);
     }
 
     .clock-area {
-      min-width: 260px;
+      min-width: 220px;
       text-align: right;
     }
 
     #clock {
-      font-size: clamp(2rem, 4vw, 4rem);
+      font-size: clamp(2rem, 3.5vw, 3.4rem);
       font-weight: bold;
     }
 
     #date {
-      margin-top: 4px;
-      font-size: 1rem;
+      margin-top: 3px;
+      font-size: 0.95rem;
     }
 
-    .settings-button {
-      padding: 12px 18px;
+    .header-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .header-button {
+      min-width: 190px;
+      padding: 11px 14px;
       color: var(--navy);
-      font-size: 1rem;
       font-weight: bold;
       background: var(--white);
       border: 0;
-      border-radius: 10px;
-      cursor: pointer;
+      border-radius: 9px;
     }
 
-    .settings-button:hover {
-      background: var(--cream);
+    .header-button.primary {
+      color: var(--white);
+      background: var(--red);
     }
 
-    main {
+    .header-button:hover {
+      filter: brightness(1.06);
+    }
+
+    .schedule-strip {
       display: grid;
-      grid-template-columns: 1.3fr 1fr;
-      gap: 24px;
-      width: min(1400px, 94%);
-      margin: 28px auto;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      color: var(--white);
+      background: #263e61;
     }
 
-    .card {
-      padding: 28px;
-      background: var(--cream);
-      border: 4px solid var(--white);
-      border-radius: 20px;
-      box-shadow: 0 10px 28px var(--shadow);
-    }
-
-    .card h2 {
-      margin-top: 0;
-      padding-bottom: 10px;
-      color: var(--red);
-      font-size: 2rem;
-      border-bottom: 3px solid var(--gold);
-    }
-
-    .welcome-card {
-      grid-column: 1 / -1;
+    .schedule-item {
+      padding: 11px 16px;
       text-align: center;
-    }
-
-    .welcome-card h1 {
-      margin: 0;
-      font-size: clamp(2.2rem, 5vw, 5rem);
-    }
-
-    .welcome-card p {
-      margin-bottom: 0;
-      font-size: 1.4rem;
-    }
-
-    .schedule-card {
-      grid-column: 1 / -1;
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 18px;
-      text-align: center;
-    }
-
-    .schedule-box {
-      padding: 20px;
-      background: var(--white);
-      border: 2px solid var(--gray);
-      border-radius: 14px;
+      background: var(--navy);
     }
 
     .schedule-label {
-      margin-bottom: 8px;
-      color: var(--red);
-      font-size: 0.95rem;
+      display: block;
+      margin-bottom: 3px;
+      color: var(--gold);
+      font-size: 0.72rem;
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 1px;
     }
 
-    #period-name,
-    #period-end,
-    #period-countdown {
-      font-size: clamp(1.5rem, 3vw, 2.5rem);
+    .schedule-value {
+      font-size: clamp(1rem, 1.6vw, 1.35rem);
       font-weight: bold;
     }
 
-    #period-countdown {
-      color: var(--green);
+    main {
+      display: grid;
+      grid-template-columns: minmax(245px, 0.9fr) minmax(400px, 2fr) minmax(245px, 0.9fr);
+      gap: 16px;
+      width: min(1600px, 97%);
+      margin: 16px auto;
     }
 
-    .agenda-list {
+    .column {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card {
+      padding: 18px;
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 5px 16px var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 12px;
+      padding-bottom: 8px;
+      color: var(--red);
+      font-size: 1.25rem;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .lesson-text {
+      min-height: 58px;
       margin: 0;
-      padding-left: 28px;
+      color: #24354d;
+      font-size: 1.06rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+    }
+
+    .empty-text {
+      color: #777777;
+      font-style: italic;
+    }
+
+    .profile-title {
+      margin-bottom: 7px;
+      color: var(--navy);
+      font-size: 1.18rem;
+      font-weight: bold;
+    }
+
+    .profile-description {
+      margin: 0;
+      line-height: 1.45;
+    }
+
+    .lesson-window-card {
+      display: flex;
+      flex-direction: column;
+      min-height: 650px;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .lesson-window-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      padding: 14px 18px;
+      color: var(--white);
+      background: var(--navy);
+    }
+
+    .lesson-window-header h2 {
+      margin: 0;
+      color: var(--white);
+      font-size: 1.25rem;
+      border: 0;
+    }
+
+    .open-link {
+      display: none;
+      padding: 8px 12px;
+      color: var(--navy);
+      font-size: 0.88rem;
+      font-weight: bold;
+      text-decoration: none;
+      background: var(--white);
+      border-radius: 7px;
+    }
+
+    .lesson-window {
+      position: relative;
+      flex: 1;
+      min-height: 590px;
+      background:
+        linear-gradient(
+          rgba(255, 255, 255, 0.93),
+          rgba(255, 255, 255, 0.93)
+        ),
+        repeating-linear-gradient(
+          45deg,
+          #f0f0f0,
+          #f0f0f0 18px,
+          #e6e6e6 18px,
+          #e6e6e6 36px
+        );
+    }
+
+    #lesson-frame {
+      display: none;
+      width: 100%;
+      height: 100%;
+      min-height: 590px;
+      border: 0;
+    }
+
+    .lesson-placeholder {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 30px;
+      color: #657184;
+      text-align: center;
+    }
+
+    .lesson-placeholder strong {
+      margin-bottom: 8px;
+      color: var(--navy);
       font-size: 1.5rem;
-      line-height: 1.9;
     }
 
     .timer-card {
@@ -198,164 +283,239 @@
     }
 
     #timer-display {
-      margin: 30px 0;
-      font-size: clamp(4rem, 9vw, 8rem);
+      margin: 15px 0;
+      font-size: clamp(3rem, 6vw, 5rem);
       font-weight: bold;
     }
 
     .timer-controls {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 12px;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
     }
 
-    button {
-      padding: 13px 20px;
+    .timer-controls button,
+    .standard-button {
+      padding: 10px 12px;
       color: var(--white);
-      font-size: 1rem;
       font-weight: bold;
       background: var(--red);
       border: 0;
-      border-radius: 10px;
-      cursor: pointer;
+      border-radius: 8px;
     }
 
-    button:hover {
-      filter: brightness(1.1);
-    }
-
-    button.secondary {
+    .timer-controls button.secondary,
+    .standard-button.secondary {
       background: var(--navy);
     }
 
-    footer {
-      padding: 18px;
-      color: var(--white);
-      text-align: center;
+    .agenda-list {
+      margin: 0;
+      padding-left: 26px;
+      line-height: 1.7;
     }
 
-    .settings-overlay {
+    .agenda-list li {
+      margin-bottom: 5px;
+    }
+
+    footer {
+      padding: 14px;
+      color: var(--white);
+      text-align: center;
+      background: var(--navy);
+    }
+
+    .overlay {
       position: fixed;
       inset: 0;
-      z-index: 999;
+      z-index: 1000;
       display: none;
       background: var(--dark-overlay);
     }
 
-    .settings-overlay.open {
+    .overlay.open {
       display: block;
     }
 
-    .settings-panel {
+    .panel {
       position: absolute;
       top: 0;
       right: 0;
-      width: min(430px, 100%);
+      width: min(520px, 100%);
       height: 100%;
-      padding: 28px;
+      padding: 25px;
       overflow-y: auto;
       color: var(--navy);
       background: var(--cream);
       box-shadow: -10px 0 30px rgba(0, 0, 0, 0.3);
     }
 
-    .settings-header {
+    .panel-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 18px;
-      margin-bottom: 28px;
-      padding-bottom: 15px;
+      gap: 15px;
+      margin-bottom: 22px;
+      padding-bottom: 13px;
       border-bottom: 3px solid var(--gold);
     }
 
-    .settings-header h2 {
+    .panel-header h2 {
       margin: 0;
       color: var(--red);
-      font-size: 2rem;
     }
 
     .close-button {
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       padding: 0;
-      font-size: 1.6rem;
+      color: var(--white);
+      font-size: 1.5rem;
       background: var(--navy);
+      border: 0;
       border-radius: 50%;
     }
 
+    .instructions {
+      margin: 0 0 22px;
+      padding: 13px;
+      line-height: 1.45;
+      background: var(--white);
+      border-left: 5px solid var(--gold);
+      border-radius: 7px;
+    }
+
     .form-group {
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     .form-group label {
       display: block;
       margin-bottom: 7px;
-      font-size: 1rem;
       font-weight: bold;
     }
 
-    .form-group input {
+    .form-help {
+      display: block;
+      margin: -2px 0 7px;
+      color: #666666;
+      font-size: 0.84rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       color: var(--navy);
-      font-size: 1rem;
       background: var(--white);
       border: 2px solid var(--gray);
       border-radius: 8px;
     }
 
-    .settings-actions {
-      display: flex;
-      gap: 12px;
-      margin-top: 28px;
+    .form-group textarea {
+      min-height: 92px;
+      resize: vertical;
     }
 
-    .settings-actions button {
-      flex: 1;
+    #agenda-input {
+      min-height: 140px;
+    }
+
+    .panel-actions {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 25px;
+    }
+
+    .save-launch-button {
+      grid-column: 1 / -1;
+      padding: 15px;
+      color: var(--white);
+      font-size: 1.08rem;
+      font-weight: bold;
+      background: var(--green);
+      border: 0;
+      border-radius: 9px;
+    }
+
+    .panel-action {
+      padding: 11px;
+      color: var(--white);
+      font-weight: bold;
+      background: var(--navy);
+      border: 0;
+      border-radius: 8px;
+    }
+
+    .panel-action.danger {
+      background: var(--red);
     }
 
     .save-message {
       display: none;
-      margin-top: 18px;
-      padding: 12px;
+      margin-top: 15px;
+      padding: 11px;
       color: var(--white);
       text-align: center;
       font-weight: bold;
       background: var(--green);
-      border-radius: 8px;
+      border-radius: 7px;
     }
 
     .save-message.show {
       display: block;
     }
 
-    @media (max-width: 850px) {
+    @media (max-width: 1050px) {
+      main {
+        grid-template-columns: 1fr 1.5fr;
+      }
+
+      .right-column {
+        grid-column: 1 / -1;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 760px) {
       header {
         flex-direction: column;
         text-align: center;
-      }
-
-      .header-left {
-        flex-direction: column;
       }
 
       .clock-area {
         text-align: center;
       }
 
-      main {
+      .header-buttons {
+        width: 100%;
+      }
+
+      .header-button {
+        width: 100%;
+      }
+
+      .schedule-strip,
+      main,
+      .right-column {
         grid-template-columns: 1fr;
       }
 
-      .welcome-card,
-      .schedule-card {
-        grid-column: 1;
+      .right-column {
+        display: flex;
       }
 
-      .schedule-card {
-        grid-template-columns: 1fr;
+      .lesson-window-card {
+        min-height: 500px;
+      }
+
+      .lesson-window,
+      #lesson-frame {
+        min-height: 440px;
       }
     }
   </style>
@@ -363,158 +523,337 @@
 
 <body>
   <header>
-    <div class="header-left">
-      <div>
-        <h1 class="school-name">
-          Patriot Classroom Dashboard
-        </h1>
+    <div class="header-main">
+      <h1 class="school-name">
+        Patriot Classroom Launch
+      </h1>
 
-        <p class="subtitle">
-          Allen County-Scottsville High School
-        </p>
-
-        <div class="teacher-details">
-          <span id="display-teacher">Mrs. Renick</span>
-          ·
-          <span id="display-course">English 11</span>
-          ·
-          Room
-          <span id="display-room">611</span>
-        </div>
+      <div class="teacher-details">
+        <span id="display-teacher">Mrs. Renick</span>
+        ·
+        <span id="display-course">English 11</span>
+        ·
+        Room
+        <span id="display-room">611</span>
       </div>
-
-      <button
-        class="settings-button"
-        onclick="openSettings()"
-      >
-        ⚙ Edit Dashboard
-      </button>
     </div>
 
     <div class="clock-area">
       <div id="clock">--:--:--</div>
       <div id="date">Loading date...</div>
     </div>
+
+    <div class="header-buttons">
+      <button
+        class="header-button primary"
+        onclick="openLessonSetup()"
+      >
+        ✏️ Set Up Today’s Lesson
+      </button>
+
+      <button
+        class="header-button"
+        onclick="openTeacherSettings()"
+      >
+        ⚙️ Teacher Information
+      </button>
+    </div>
   </header>
 
+  <section class="schedule-strip">
+    <div class="schedule-item">
+      <span class="schedule-label">Current Period</span>
+      <span id="period-name" class="schedule-value">
+        Checking schedule...
+      </span>
+    </div>
+
+    <div class="schedule-item">
+      <span class="schedule-label">Period Ends</span>
+      <span id="period-end" class="schedule-value">
+        --:--
+      </span>
+    </div>
+
+    <div class="schedule-item">
+      <span class="schedule-label">Time Remaining</span>
+      <span id="period-countdown" class="schedule-value">
+        --:--
+      </span>
+    </div>
+  </section>
+
   <main>
-    <section class="card welcome-card">
-      <h1>
-        Welcome to
-        <span id="welcome-course">English 11</span>!
-      </h1>
+    <div class="column left-column">
+      <section class="card">
+        <h2>📌 Bell Ringer</h2>
 
-      <p>
-        Be ready. Be responsible. Be your best.
-      </p>
-    </section>
+        <p id="bellringer-display" class="lesson-text empty-text">
+          Add today’s bell ringer.
+        </p>
+      </section>
 
-    <section class="card schedule-card">
-      <div class="schedule-box">
-        <div class="schedule-label">
-          Current Period
+      <section class="card">
+        <h2>🎯 I Can</h2>
+
+        <p id="ican-display" class="lesson-text empty-text">
+          Add today’s learning target.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>✅ Success Criteria</h2>
+
+        <p id="success-display" class="lesson-text empty-text">
+          Add today’s success criteria.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>⭐ Profile of a Patriot</h2>
+
+        <div id="profile-title" class="profile-title">
+          Choose a component
         </div>
 
-        <div id="period-name">
-          Checking schedule...
-        </div>
-      </div>
+        <p id="profile-description" class="profile-description empty-text">
+          Select a Profile of a Patriot component during lesson setup.
+        </p>
+      </section>
+    </div>
 
-      <div class="schedule-box">
-        <div class="schedule-label">
-          Period Ends
-        </div>
+    <section class="card lesson-window-card">
+      <div class="lesson-window-header">
+        <h2>Today’s Lesson</h2>
 
-        <div id="period-end">
-          --:--
-        </div>
-      </div>
-
-      <div class="schedule-box">
-        <div class="schedule-label">
-          Time Remaining
-        </div>
-
-        <div id="period-countdown">
-          --:--
-        </div>
-      </div>
-    </section>
-
-    <section class="card">
-      <h2>Today's Agenda</h2>
-
-      <ol class="agenda-list">
-        <li>Bell ringer</li>
-        <li>Today's lesson</li>
-        <li>Independent practice</li>
-        <li>Exit ticket</li>
-      </ol>
-    </section>
-
-    <section class="card timer-card">
-      <h2>Classroom Timer</h2>
-
-      <div id="timer-display">
-        05:00
-      </div>
-
-      <div class="timer-controls">
-        <button onclick="setTimer(5)">
-          5 Minutes
-        </button>
-
-        <button onclick="setTimer(10)">
-          10 Minutes
-        </button>
-
-        <button onclick="startTimer()">
-          Start
-        </button>
-
-        <button
-          class="secondary"
-          onclick="pauseTimer()"
+        <a
+          id="open-lesson-link"
+          class="open-link"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Pause
-        </button>
+          Open in New Tab
+        </a>
+      </div>
 
-        <button
-          class="secondary"
-          onclick="resetTimer()"
-        >
-          Reset
-        </button>
+      <div class="lesson-window">
+        <iframe
+          id="lesson-frame"
+          title="Embedded lesson content"
+          allowfullscreen
+        ></iframe>
+
+        <div id="lesson-placeholder" class="lesson-placeholder">
+          <strong>Your lesson will appear here.</strong>
+
+          <span>
+            Paste a Google Slides, Canva, YouTube, PDF, or website link
+            in Today’s Lesson Setup.
+          </span>
+        </div>
       </div>
     </section>
+
+    <div class="column right-column">
+      <section class="card timer-card">
+        <h2>⏱ Classroom Timer</h2>
+
+        <div id="timer-display">05:00</div>
+
+        <div class="timer-controls">
+          <button onclick="setTimer(5)">5 Minutes</button>
+          <button onclick="setTimer(10)">10 Minutes</button>
+          <button onclick="startTimer()">Start</button>
+
+          <button
+            class="secondary"
+            onclick="pauseTimer()"
+          >
+            Pause
+          </button>
+
+          <button
+            class="secondary"
+            onclick="resetTimer()"
+          >
+            Reset
+          </button>
+
+          <button
+            class="secondary"
+            onclick="setCustomTimer()"
+          >
+            Custom
+          </button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>📝 Today’s Agenda</h2>
+
+        <ol id="agenda-display" class="agenda-list">
+          <li class="empty-text">
+            Add today’s agenda.
+          </li>
+        </ol>
+      </section>
+    </div>
   </main>
 
   <footer>
-    Patriot Classroom Dashboard
+    Allen County-Scottsville High School
   </footer>
 
   <div
-    id="settings-overlay"
-    class="settings-overlay"
-    onclick="closeSettingsFromOverlay(event)"
+    id="lesson-overlay"
+    class="overlay"
+    onclick="closePanelFromOverlay(event, 'lesson-overlay')"
   >
-    <aside class="settings-panel">
-      <div class="settings-header">
-        <h2>Dashboard Settings</h2>
+    <aside class="panel">
+      <div class="panel-header">
+        <h2>Set Up Today’s Lesson</h2>
 
         <button
           class="close-button"
-          onclick="closeSettings()"
-          aria-label="Close settings"
+          onclick="closeLessonSetup()"
+          aria-label="Close lesson setup"
         >
           ×
         </button>
       </div>
 
+      <p class="instructions">
+        Type or paste today’s information, then click
+        <strong>Save &amp; Launch</strong>. Each agenda item should
+        be typed on a separate line.
+      </p>
+
       <div class="form-group">
-        <label for="teacher-input">
-          Teacher Name
+        <label for="bellringer-input">Bell Ringer</label>
+
+        <textarea
+          id="bellringer-input"
+          placeholder="What should students do when they enter?"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="ican-input">I Can Statement</label>
+
+        <textarea
+          id="ican-input"
+          placeholder="I can..."
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="success-input">Success Criteria</label>
+
+        <textarea
+          id="success-input"
+          placeholder="Students will..."
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="profile-input">
+          Profile of a Patriot
         </label>
+
+        <select id="profile-input">
+          <option value="none">
+            Choose a component
+          </option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="agenda-input">Today’s Agenda</label>
+
+        <span class="form-help">
+          Type one agenda item on each line.
+        </span>
+
+        <textarea
+          id="agenda-input"
+          placeholder="Bell Ringer&#10;Mini Lesson&#10;Guided Practice&#10;Independent Work&#10;Exit Ticket"
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="lesson-link-input">
+          Lesson Link
+        </label>
+
+        <span class="form-help">
+          Paste a published or shareable Google Slides, Canva,
+          YouTube, PDF, or website link.
+        </span>
+
+        <input
+          id="lesson-link-input"
+          type="url"
+          placeholder="https://..."
+        >
+      </div>
+
+      <div class="panel-actions">
+        <button
+          class="save-launch-button"
+          onclick="saveAndLaunchLesson()"
+        >
+          Save &amp; Launch
+        </button>
+
+        <button
+          class="panel-action"
+          onclick="loadPreviousLesson()"
+        >
+          Load Saved Lesson
+        </button>
+
+        <button
+          class="panel-action danger"
+          onclick="clearLessonForm()"
+        >
+          Clear for New Lesson
+        </button>
+      </div>
+
+      <div
+        id="lesson-save-message"
+        class="save-message"
+      >
+        Lesson saved!
+      </div>
+    </aside>
+  </div>
+
+  <div
+    id="teacher-overlay"
+    class="overlay"
+    onclick="closePanelFromOverlay(event, 'teacher-overlay')"
+  >
+    <aside class="panel">
+      <div class="panel-header">
+        <h2>Teacher Information</h2>
+
+        <button
+          class="close-button"
+          onclick="closeTeacherSettings()"
+          aria-label="Close teacher information"
+        >
+          ×
+        </button>
+      </div>
+
+      <p class="instructions">
+        These details normally only need to be entered once.
+      </p>
+
+      <div class="form-group">
+        <label for="teacher-input">Teacher Name</label>
 
         <input
           id="teacher-input"
@@ -524,9 +863,7 @@
       </div>
 
       <div class="form-group">
-        <label for="course-input">
-          Course or Class
-        </label>
+        <label for="course-input">Course or Class</label>
 
         <input
           id="course-input"
@@ -536,9 +873,7 @@
       </div>
 
       <div class="form-group">
-        <label for="room-input">
-          Room
-        </label>
+        <label for="room-input">Room</label>
 
         <input
           id="room-input"
@@ -547,62 +882,154 @@
         >
       </div>
 
-      <div class="settings-actions">
-        <button onclick="saveSettings()">
-          Save
+      <div class="panel-actions">
+        <button
+          class="save-launch-button"
+          onclick="saveTeacherSettings()"
+        >
+          Save Teacher Information
         </button>
 
         <button
-          class="secondary"
-          onclick="resetSettings()"
+          class="panel-action danger"
+          onclick="resetTeacherSettings()"
         >
           Reset
         </button>
       </div>
 
-      <div id="save-message" class="save-message">
-        Settings saved!
+      <div
+        id="teacher-save-message"
+        class="save-message"
+      >
+        Teacher information saved!
       </div>
     </aside>
   </div>
 
   <script src="data/schedules.js"></script>
+  <script src="data/profile-options.js"></script>
 
   <script>
-    const defaultSettings = {
+    const defaultTeacherSettings = {
       teacher: "Mrs. Renick",
       course: "English 11",
       room: "611"
+    };
+
+    const defaultProfileOptions = [
+      {
+        id: "none",
+        title: "Choose a component",
+        description: ""
+      },
+      {
+        id: "responsibility",
+        title: "Responsibility",
+        description:
+          "I arrive prepared, complete my work, and take ownership of my choices."
+      },
+      {
+        id: "respect",
+        title: "Respect",
+        description:
+          "I treat others, myself, and my learning environment with consideration."
+      },
+      {
+        id: "integrity",
+        title: "Integrity",
+        description:
+          "I make honest choices and do what is right."
+      },
+      {
+        id: "perseverance",
+        title: "Perseverance",
+        description:
+          "I continue working through challenges and learn from mistakes."
+      },
+      {
+        id: "collaboration",
+        title: "Collaboration",
+        description:
+          "I listen, contribute, and work productively with others."
+      },
+      {
+        id: "communication",
+        title: "Communication",
+        description:
+          "I express my ideas clearly and listen carefully to others."
+      },
+      {
+        id: "critical-thinking",
+        title: "Critical Thinking",
+        description:
+          "I evaluate information, solve problems, and support my conclusions."
+      },
+      {
+        id: "creativity",
+        title: "Creativity",
+        description:
+          "I explore ideas and develop original solutions."
+      },
+      {
+        id: "citizenship",
+        title: "Citizenship",
+        description:
+          "I contribute positively to my school and community."
+      }
+    ];
+
+    const availableProfileOptions =
+      typeof profileOfAPatriotOptions !== "undefined"
+        ? profileOfAPatriotOptions
+        : defaultProfileOptions;
+
+    const emptyLesson = {
+      bellringer: "",
+      ican: "",
+      success: "",
+      profileId: "none",
+      agenda: "",
+      lessonLink: ""
     };
 
     let selectedSeconds = 300;
     let remainingSeconds = selectedSeconds;
     let timerInterval = null;
 
-    function getSavedSettings() {
-      const savedSettings =
-        localStorage.getItem("patriotDashboardSettings");
+    function safelyReadStorage(key, fallback) {
+      const savedValue = localStorage.getItem(key);
 
-      if (!savedSettings) {
-        return defaultSettings;
+      if (!savedValue) {
+        return fallback;
       }
 
       try {
         return {
-          ...defaultSettings,
-          ...JSON.parse(savedSettings)
+          ...fallback,
+          ...JSON.parse(savedValue)
         };
       } catch (error) {
-        console.error(
-          "The saved dashboard settings could not be read.",
-          error
-        );
-
-        return defaultSettings;
+        console.error("Saved information could not be read.", error);
+        return fallback;
       }
     }
 
-    function applySettings(settings) {
+    function getTeacherSettings() {
+      return safelyReadStorage(
+        "patriotTeacherSettings",
+        defaultTeacherSettings
+      );
+    }
+
+    function getSavedLesson() {
+      return safelyReadStorage(
+        "patriotDailyLesson",
+        emptyLesson
+      );
+    }
+
+    function applyTeacherSettings(settings) {
       document.getElementById(
         "display-teacher"
       ).textContent = settings.teacher;
@@ -614,10 +1041,6 @@
       document.getElementById(
         "display-room"
       ).textContent = settings.room;
-
-      document.getElementById(
-        "welcome-course"
-      ).textContent = settings.course;
 
       document.getElementById(
         "teacher-input"
@@ -632,88 +1055,357 @@
       ).value = settings.room;
     }
 
-    function openSettings() {
-      const settings = getSavedSettings();
+    function setTextDisplay(elementId, value, emptyMessage) {
+      const element = document.getElementById(elementId);
 
-      applySettings(settings);
-
-      document.getElementById(
-        "settings-overlay"
-      ).classList.add("open");
-    }
-
-    function closeSettings() {
-      document.getElementById(
-        "settings-overlay"
-      ).classList.remove("open");
-
-      document.getElementById(
-        "save-message"
-      ).classList.remove("show");
-    }
-
-    function closeSettingsFromOverlay(event) {
-      if (event.target.id === "settings-overlay") {
-        closeSettings();
+      if (value && value.trim()) {
+        element.textContent = value.trim();
+        element.classList.remove("empty-text");
+      } else {
+        element.textContent = emptyMessage;
+        element.classList.add("empty-text");
       }
     }
 
-    function saveSettings() {
+    function findProfile(profileId) {
+      return (
+        availableProfileOptions.find(
+          option => option.id === profileId
+        ) || availableProfileOptions[0]
+      );
+    }
+
+    function applyLesson(lesson) {
+      setTextDisplay(
+        "bellringer-display",
+        lesson.bellringer,
+        "Add today’s bell ringer."
+      );
+
+      setTextDisplay(
+        "ican-display",
+        lesson.ican,
+        "Add today’s learning target."
+      );
+
+      setTextDisplay(
+        "success-display",
+        lesson.success,
+        "Add today’s success criteria."
+      );
+
+      const selectedProfile = findProfile(lesson.profileId);
+
+      document.getElementById(
+        "profile-title"
+      ).textContent =
+        selectedProfile.title || "Choose a component";
+
+      setTextDisplay(
+        "profile-description",
+        selectedProfile.description,
+        "Select a Profile of a Patriot component during lesson setup."
+      );
+
+      applyAgenda(lesson.agenda);
+      applyLessonLink(lesson.lessonLink);
+      fillLessonForm(lesson);
+    }
+
+    function applyAgenda(agendaText) {
+      const agendaList =
+        document.getElementById("agenda-display");
+
+      agendaList.innerHTML = "";
+
+      const agendaItems = agendaText
+        .split("\n")
+        .map(item => item.trim())
+        .filter(Boolean);
+
+      if (agendaItems.length === 0) {
+        const emptyItem = document.createElement("li");
+
+        emptyItem.textContent = "Add today’s agenda.";
+        emptyItem.className = "empty-text";
+
+        agendaList.appendChild(emptyItem);
+        return;
+      }
+
+      agendaItems.forEach(itemText => {
+        const item = document.createElement("li");
+        item.textContent = itemText;
+        agendaList.appendChild(item);
+      });
+    }
+
+    function convertYouTubeLink(url) {
+      try {
+        const parsedUrl = new URL(url);
+
+        if (parsedUrl.hostname.includes("youtu.be")) {
+          const videoId = parsedUrl.pathname.replace("/", "");
+
+          return videoId
+            ? `https://www.youtube.com/embed/${videoId}`
+            : url;
+        }
+
+        if (parsedUrl.hostname.includes("youtube.com")) {
+          const videoId = parsedUrl.searchParams.get("v");
+
+          return videoId
+            ? `https://www.youtube.com/embed/${videoId}`
+            : url;
+        }
+      } catch (error) {
+        return url;
+      }
+
+      return url;
+    }
+
+    function convertGoogleSlidesLink(url) {
+      if (
+        url.includes("docs.google.com/presentation") &&
+        url.includes("/edit")
+      ) {
+        return url
+          .replace("/edit", "/embed")
+          .split("?")[0];
+      }
+
+      return url;
+    }
+
+    function prepareEmbedLink(url) {
+      let preparedUrl = url.trim();
+
+      preparedUrl = convertYouTubeLink(preparedUrl);
+      preparedUrl = convertGoogleSlidesLink(preparedUrl);
+
+      return preparedUrl;
+    }
+
+    function applyLessonLink(url) {
+      const frame = document.getElementById("lesson-frame");
+      const placeholder =
+        document.getElementById("lesson-placeholder");
+      const openLink =
+        document.getElementById("open-lesson-link");
+
+      if (!url || !url.trim()) {
+        frame.style.display = "none";
+        frame.removeAttribute("src");
+        placeholder.style.display = "flex";
+        openLink.style.display = "none";
+        return;
+      }
+
+      const preparedUrl = prepareEmbedLink(url);
+
+      frame.src = preparedUrl;
+      frame.style.display = "block";
+      placeholder.style.display = "none";
+
+      openLink.href = url;
+      openLink.style.display = "inline-block";
+    }
+
+    function populateProfileDropdown() {
+      const dropdown =
+        document.getElementById("profile-input");
+
+      dropdown.innerHTML = "";
+
+      availableProfileOptions.forEach(option => {
+        const choice = document.createElement("option");
+
+        choice.value = option.id;
+        choice.textContent = option.title;
+
+        dropdown.appendChild(choice);
+      });
+    }
+
+    function fillLessonForm(lesson) {
+      document.getElementById(
+        "bellringer-input"
+      ).value = lesson.bellringer || "";
+
+      document.getElementById(
+        "ican-input"
+      ).value = lesson.ican || "";
+
+      document.getElementById(
+        "success-input"
+      ).value = lesson.success || "";
+
+      document.getElementById(
+        "profile-input"
+      ).value = lesson.profileId || "none";
+
+      document.getElementById(
+        "agenda-input"
+      ).value = lesson.agenda || "";
+
+      document.getElementById(
+        "lesson-link-input"
+      ).value = lesson.lessonLink || "";
+    }
+
+    function openLessonSetup() {
+      fillLessonForm(getSavedLesson());
+
+      document.getElementById(
+        "lesson-overlay"
+      ).classList.add("open");
+    }
+
+    function closeLessonSetup() {
+      document.getElementById(
+        "lesson-overlay"
+      ).classList.remove("open");
+
+      document.getElementById(
+        "lesson-save-message"
+      ).classList.remove("show");
+    }
+
+    function saveAndLaunchLesson() {
+      const lesson = {
+        bellringer:
+          document.getElementById(
+            "bellringer-input"
+          ).value.trim(),
+
+        ican:
+          document.getElementById(
+            "ican-input"
+          ).value.trim(),
+
+        success:
+          document.getElementById(
+            "success-input"
+          ).value.trim(),
+
+        profileId:
+          document.getElementById(
+            "profile-input"
+          ).value,
+
+        agenda:
+          document.getElementById(
+            "agenda-input"
+          ).value.trim(),
+
+        lessonLink:
+          document.getElementById(
+            "lesson-link-input"
+          ).value.trim()
+      };
+
+      localStorage.setItem(
+        "patriotDailyLesson",
+        JSON.stringify(lesson)
+      );
+
+      applyLesson(lesson);
+
+      document.getElementById(
+        "lesson-save-message"
+      ).classList.add("show");
+
+      setTimeout(closeLessonSetup, 850);
+    }
+
+    function loadPreviousLesson() {
+      fillLessonForm(getSavedLesson());
+    }
+
+    function clearLessonForm() {
+      const confirmed = window.confirm(
+        "Clear the lesson setup boxes? Your currently saved lesson will remain until you click Save & Launch."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      fillLessonForm(emptyLesson);
+    }
+
+    function openTeacherSettings() {
+      applyTeacherSettings(getTeacherSettings());
+
+      document.getElementById(
+        "teacher-overlay"
+      ).classList.add("open");
+    }
+
+    function closeTeacherSettings() {
+      document.getElementById(
+        "teacher-overlay"
+      ).classList.remove("open");
+
+      document.getElementById(
+        "teacher-save-message"
+      ).classList.remove("show");
+    }
+
+    function saveTeacherSettings() {
       const settings = {
         teacher:
           document.getElementById(
             "teacher-input"
-          ).value.trim() || defaultSettings.teacher,
+          ).value.trim() ||
+          defaultTeacherSettings.teacher,
 
         course:
           document.getElementById(
             "course-input"
-          ).value.trim() || defaultSettings.course,
+          ).value.trim() ||
+          defaultTeacherSettings.course,
 
         room:
           document.getElementById(
             "room-input"
-          ).value.trim() || defaultSettings.room
+          ).value.trim() ||
+          defaultTeacherSettings.room
       };
 
       localStorage.setItem(
-        "patriotDashboardSettings",
+        "patriotTeacherSettings",
         JSON.stringify(settings)
       );
 
-      applySettings(settings);
+      applyTeacherSettings(settings);
 
       document.getElementById(
-        "save-message"
+        "teacher-save-message"
       ).classList.add("show");
 
-      setTimeout(() => {
-        closeSettings();
-      }, 900);
+      setTimeout(closeTeacherSettings, 850);
     }
 
-    function resetSettings() {
-      localStorage.removeItem(
-        "patriotDashboardSettings"
-      );
+    function resetTeacherSettings() {
+      localStorage.removeItem("patriotTeacherSettings");
+      applyTeacherSettings(defaultTeacherSettings);
+    }
 
-      applySettings(defaultSettings);
+    function closePanelFromOverlay(event, overlayId) {
+      if (event.target.id !== overlayId) {
+        return;
+      }
 
-      document.getElementById(
-        "save-message"
-      ).textContent = "Settings reset!";
+      if (overlayId === "lesson-overlay") {
+        closeLessonSetup();
+      }
 
-      document.getElementById(
-        "save-message"
-      ).classList.add("show");
-
-      setTimeout(() => {
-        document.getElementById(
-          "save-message"
-        ).textContent = "Settings saved!";
-
-        closeSettings();
-      }, 900);
+      if (overlayId === "teacher-overlay") {
+        closeTeacherSettings();
+      }
     }
 
     function updateClock() {
@@ -740,20 +1432,16 @@
         timeText.split(":").map(Number);
 
       const time = new Date();
-
       time.setHours(hours, minutes, 0, 0);
 
       return time;
     }
 
     function formatSchoolTime(timeText) {
-      return timeToDate(timeText).toLocaleTimeString(
-        [],
-        {
-          hour: "numeric",
-          minute: "2-digit"
-        }
-      );
+      return timeToDate(timeText).toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+      });
     }
 
     function updateBellSchedule() {
@@ -768,20 +1456,16 @@
 
       const periodName =
         document.getElementById("period-name");
-
       const periodEnd =
         document.getElementById("period-end");
-
       const periodCountdown =
         document.getElementById("period-countdown");
 
       if (!activePeriod) {
         periodName.textContent =
           "Outside Scheduled Class Time";
-
         periodEnd.textContent = "--:--";
         periodCountdown.textContent = "--:--";
-
         return;
       }
 
@@ -792,35 +1476,19 @@
         Math.floor((endTime - now) / 1000)
       );
 
-      const hours =
-        Math.floor(totalSeconds / 3600);
-
       const minutes =
-        Math.floor((totalSeconds % 3600) / 60);
-
+        Math.floor(totalSeconds / 60);
       const seconds =
         totalSeconds % 60;
 
-      let countdownText = "";
-
-      if (hours > 0) {
-        countdownText +=
-          String(hours).padStart(2, "0") + ":";
-      }
-
-      countdownText +=
-        String(minutes).padStart(2, "0") +
-        ":" +
-        String(seconds).padStart(2, "0");
-
-      periodName.textContent =
-        activePeriod.name;
-
+      periodName.textContent = activePeriod.name;
       periodEnd.textContent =
         formatSchoolTime(activePeriod.end);
 
       periodCountdown.textContent =
-        countdownText;
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0");
     }
 
     function displayTimer() {
@@ -840,11 +1508,27 @@
 
     function setTimer(minutes) {
       pauseTimer();
-
       selectedSeconds = minutes * 60;
       remainingSeconds = selectedSeconds;
-
       displayTimer();
+    }
+
+    function setCustomTimer() {
+      const minutes = Number(
+        window.prompt(
+          "How many minutes should the timer run?",
+          "15"
+        )
+      );
+
+      if (
+        !Number.isFinite(minutes) ||
+        minutes <= 0
+      ) {
+        return;
+      }
+
+      setTimer(Math.round(minutes));
     }
 
     function startTimer() {
@@ -857,7 +1541,6 @@
 
       timerInterval = setInterval(() => {
         remainingSeconds -= 1;
-
         displayTimer();
 
         if (remainingSeconds <= 0) {
@@ -874,13 +1557,13 @@
 
     function resetTimer() {
       pauseTimer();
-
       remainingSeconds = selectedSeconds;
-
       displayTimer();
     }
 
-    applySettings(getSavedSettings());
+    populateProfileDropdown();
+    applyTeacherSettings(getTeacherSettings());
+    applyLesson(getSavedLesson());
     updateClock();
     updateBellSchedule();
     displayTimer();
