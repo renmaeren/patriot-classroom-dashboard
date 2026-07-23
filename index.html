@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Patriot Classroom Dashboard</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #b3262e;
+      --cream: #f7f2e8;
+      --white: #ffffff;
+      --gold: #d3a84f;
+      --shadow: rgba(0, 0, 0, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background:
+        linear-gradient(
+          rgba(17, 40, 74, 0.88),
+          rgba(17, 40, 74, 0.88)
+        ),
+        repeating-linear-gradient(
+          45deg,
+          #ffffff,
+          #ffffff 20px,
+          #eeeeee 20px,
+          #eeeeee 40px
+        );
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      padding: 24px 36px;
+      color: var(--white);
+      background: var(--navy);
+      border-bottom: 8px solid var(--red);
+    }
+
+    .school-name {
+      margin: 0;
+      font-size: clamp(1.5rem, 3vw, 3rem);
+      letter-spacing: 1px;
+    }
+
+    .subtitle {
+      margin: 6px 0 0;
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .clock-area {
+      min-width: 240px;
+      text-align: right;
+    }
+
+    #clock {
+      font-size: clamp(2rem, 4vw, 4rem);
+      font-weight: bold;
+    }
+
+    #date {
+      margin-top: 4px;
+      font-size: 1rem;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 24px;
+      width: min(1400px, 94%);
+      margin: 28px auto;
+    }
+
+    .card {
+      padding: 28px;
+      background: var(--cream);
+      border: 4px solid var(--white);
+      border-radius: 20px;
+      box-shadow: 0 10px 28px var(--shadow);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      padding-bottom: 10px;
+      color: var(--red);
+      font-size: 2rem;
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .welcome-card {
+      grid-column: 1 / -1;
+      text-align: center;
+    }
+
+    .welcome-card h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 5vw, 5rem);
+      color: var(--navy);
+    }
+
+    .welcome-card p {
+      margin-bottom: 0;
+      font-size: 1.4rem;
+    }
+
+    .agenda-list {
+      margin: 0;
+      padding-left: 28px;
+      font-size: 1.5rem;
+      line-height: 1.9;
+    }
+
+    .timer-card {
+      text-align: center;
+    }
+
+    #timer-display {
+      margin: 30px 0;
+      font-size: clamp(4rem, 9vw, 8rem);
+      font-weight: bold;
+      color: var(--navy);
+    }
+
+    .timer-controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    button {
+      padding: 13px 20px;
+      color: var(--white);
+      font-size: 1rem;
+      font-weight: bold;
+      background: var(--red);
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      filter: brightness(1.1);
+    }
+
+    button.secondary {
+      background: var(--navy);
+    }
+
+    .period-status {
+      grid-column: 1 / -1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+    }
+
+    #period-name {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    #period-message {
+      font-size: 1.3rem;
+    }
+
+    footer {
+      padding: 18px;
+      color: var(--white);
+      text-align: center;
+    }
+
+    @media (max-width: 850px) {
+      header,
+      .period-status {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .clock-area {
+        text-align: center;
+      }
+
+      main {
+        grid-template-columns: 1fr;
+      }
+
+      .welcome-card,
+      .period-status {
+        grid-column: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div>
+      <h1 class="school-name">Patriot Classroom Dashboard</h1>
+      <p class="subtitle">Allen County-Scottsville High School</p>
+    </div>
+
+    <div class="clock-area">
+      <div id="clock">--:--:--</div>
+      <div id="date">Loading date...</div>
+    </div>
+  </header>
+
+  <main>
+    <section class="card welcome-card">
+      <h1>Welcome, Patriots!</h1>
+      <p>Be ready. Be responsible. Be your best.</p>
+    </section>
+
+    <section class="card">
+      <h2>Today's Agenda</h2>
+
+      <ol class="agenda-list">
+        <li>Bell ringer</li>
+        <li>Today's lesson</li>
+        <li>Independent practice</li>
+        <li>Exit ticket</li>
+      </ol>
+    </section>
+
+    <section class="card timer-card">
+      <h2>Classroom Timer</h2>
+
+      <div id="timer-display">05:00</div>
+
+      <div class="timer-controls">
+        <button onclick="setTimer(5)">5 Minutes</button>
+        <button onclick="setTimer(10)">10 Minutes</button>
+        <button onclick="startTimer()">Start</button>
+        <button class="secondary" onclick="pauseTimer()">Pause</button>
+        <button class="secondary" onclick="resetTimer()">Reset</button>
+      </div>
+    </section>
+
+    <section class="card period-status">
+      <div>
+        <strong>Current Schedule</strong>
+        <div id="period-name">Dashboard Preview</div>
+      </div>
+
+      <div id="period-message">
+        Automatic class transitions will be added next.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Patriot Classroom Dashboard
+  </footer>
+
+  <script>
+    let selectedSeconds = 300;
+    let remainingSeconds = selectedSeconds;
+    let timerInterval = null;
+
+    function updateClock() {
+      const now = new Date();
+
+      document.getElementById("clock").textContent =
+        now.toLocaleTimeString([], {
+          hour: "numeric",
+          minute: "2-digit",
+          second: "2-digit"
+        });
+
+      document.getElementById("date").textContent =
+        now.toLocaleDateString([], {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+        });
+    }
+
+    function displayTimer() {
+      const minutes = Math.floor(remainingSeconds / 60);
+      const seconds = remainingSeconds % 60;
+
+      document.getElementById("timer-display").textContent =
+        String(minutes).padStart(2, "0") +
+        ":" +
+        String(seconds).padStart(2, "0");
+    }
+
+    function setTimer(minutes) {
+      pauseTimer();
+      selectedSeconds = minutes * 60;
+      remainingSeconds = selectedSeconds;
+      displayTimer();
+    }
+
+    function startTimer() {
+      if (timerInterval || remainingSeconds <= 0) {
+        return;
+      }
+
+      timerInterval = setInterval(() => {
+        remainingSeconds -= 1;
+        displayTimer();
+
+        if (remainingSeconds <= 0) {
+          pauseTimer();
+          alert("Time is up!");
+        }
+      }, 1000);
+    }
+
+    function pauseTimer() {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    function resetTimer() {
+      pauseTimer();
+      remainingSeconds = selectedSeconds;
+      displayTimer();
+    }
+
+    updateClock();
+    displayTimer();
+    setInterval(updateClock, 1000);
+  </script>
+</body>
+</html>
