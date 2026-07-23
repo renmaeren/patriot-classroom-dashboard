@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Teacher Settings | Patriot Classroom</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #b3262e;
+      --cream: #f7f2e8;
+      --white: #ffffff;
+      --gold: #d3a84f;
+      --green: #2f7d4a;
+      --gray: #d7dce3;
+      --text: #24354d;
+      --shadow: rgba(0, 0, 0, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background: #e8edf3;
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    header {
+      padding: 24px 30px;
+      color: var(--white);
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .header-inner {
+      width: min(950px, 94%);
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    main {
+      width: min(950px, 94%);
+      margin: 26px auto;
+    }
+
+    .card {
+      margin-bottom: 22px;
+      padding: 25px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 7px 20px var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      color: var(--red);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .instructions {
+      margin: 0 0 20px;
+      padding: 14px;
+      line-height: 1.5;
+      background: var(--cream);
+      border-left: 5px solid var(--gold);
+      border-radius: 8px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px;
+      color: var(--text);
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+    }
+
+    .schedule-row {
+      display: grid;
+      grid-template-columns: 120px 1fr;
+      gap: 15px;
+      align-items: center;
+      margin-bottom: 13px;
+    }
+
+    .period-label {
+      font-weight: bold;
+      color: var(--navy);
+    }
+
+    .schedule-row input {
+      width: 100%;
+      padding: 12px;
+      color: var(--text);
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+    }
+
+    .quick-note {
+      margin: 15px 0 0;
+      color: #5e6672;
+      font-size: 0.9rem;
+    }
+
+    .actions {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+    }
+
+    button,
+    .home-link {
+      display: block;
+      padding: 14px 18px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      text-decoration: none;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .save-button {
+      background: var(--green);
+    }
+
+    .reset-button {
+      background: var(--red);
+    }
+
+    .home-link {
+      margin-top: 12px;
+      background: var(--navy);
+    }
+
+    button:hover,
+    .home-link:hover {
+      filter: brightness(1.08);
+    }
+
+    .save-message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      background: var(--green);
+      border-radius: 8px;
+    }
+
+    .save-message.show {
+      display: block;
+    }
+
+    @media (max-width: 700px) {
+      .form-grid,
+      .actions {
+        grid-template-columns: 1fr;
+      }
+
+      .schedule-row {
+        grid-template-columns: 95px 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>Teacher Settings</h1>
+
+      <p class="subtitle">
+        Complete this once. Patriot Classroom will remember it.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>About You</h2>
+
+      <p class="instructions">
+        Enter your basic information. These details will be attached
+        to saved lesson plans and normally will not need to be changed.
+      </p>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="teacher-name">
+            Teacher Name
+          </label>
+
+          <input
+            id="teacher-name"
+            type="text"
+            placeholder="Mrs. Renick"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="teacher-email">
+            School Email
+          </label>
+
+          <input
+            id="teacher-email"
+            type="email"
+            placeholder="name@allen.kyschools.us"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="teacher-room">
+            Room
+          </label>
+
+          <input
+            id="teacher-room"
+            type="text"
+            placeholder="611 or Library"
+          >
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Your Daily Schedule</h2>
+
+      <p class="instructions">
+        Type the course, planning period, study hall, or other assignment
+        for each period. Leave a period blank only when it does not apply.
+      </p>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-1">
+          1st Period
+        </label>
+
+        <input
+          id="period-1"
+          type="text"
+          placeholder="Example: English 10"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-2">
+          2nd Period
+        </label>
+
+        <input
+          id="period-2"
+          type="text"
+          placeholder="Example: English 11"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-3">
+          3rd Period
+        </label>
+
+        <input
+          id="period-3"
+          type="text"
+          placeholder="Example: Planning"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-4">
+          4th Period
+        </label>
+
+        <input
+          id="period-4"
+          type="text"
+          placeholder="Example: Algebra II"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="advisory">
+          Advisory
+        </label>
+
+        <input
+          id="advisory"
+          type="text"
+          placeholder="Example: Advisory"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-5">
+          5th Period
+        </label>
+
+        <input
+          id="period-5"
+          type="text"
+          placeholder="Example: Yearbook"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-6">
+          6th Period
+        </label>
+
+        <input
+          id="period-6"
+          type="text"
+          placeholder="Example: Biology"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-7">
+          7th Period
+        </label>
+
+        <input
+          id="period-7"
+          type="text"
+          placeholder="Example: Study Hall"
+        >
+      </div>
+
+      <div class="schedule-row">
+        <label class="period-label" for="period-8">
+          8th Period
+        </label>
+
+        <input
+          id="period-8"
+          type="text"
+          placeholder="Example: Planning"
+        >
+      </div>
+
+      <p class="quick-note">
+        Teachers can type any course name. Common entries may include
+        Planning, Study Hall, Advisory, Yearbook, Library, or a course title.
+      </p>
+    </section>
+
+    <section class="card">
+      <div class="actions">
+        <button
+          class="save-button"
+          onclick="saveTeacherSettings()"
+        >
+          Save Teacher Settings
+        </button>
+
+        <button
+          class="reset-button"
+          onclick="resetTeacherSettings()"
+        >
+          Reset
+        </button>
+      </div>
+
+      <div id="save-message" class="save-message">
+        Settings saved!
+      </div>
+
+      <a class="home-link" href="index.html">
+        Return to Patriot Classroom
+      </a>
+    </section>
+  </main>
+
+  <script>
+    const defaultSettings = {
+      teacherName: "",
+      teacherEmail: "",
+      room: "",
+      classes: {
+        "1st Period": "",
+        "2nd Period": "",
+        "3rd Period": "",
+        "4th Period": "",
+        "Advisory": "",
+        "5th Period": "",
+        "6th Period": "",
+        "7th Period": "",
+        "8th Period": ""
+      }
+    };
+
+    const fieldMap = {
+      "1st Period": "period-1",
+      "2nd Period": "period-2",
+      "3rd Period": "period-3",
+      "4th Period": "period-4",
+      "Advisory": "advisory",
+      "5th Period": "period-5",
+      "6th Period": "period-6",
+      "7th Period": "period-7",
+      "8th Period": "period-8"
+    };
+
+    function readSavedSettings() {
+      const saved = localStorage.getItem(
+        "patriotTeacherProfile"
+      );
+
+      if (!saved) {
+        return defaultSettings;
+      }
+
+      try {
+        const parsed = JSON.parse(saved);
+
+        return {
+          ...defaultSettings,
+          ...parsed,
+          classes: {
+            ...defaultSettings.classes,
+            ...(parsed.classes || {})
+          }
+        };
+      } catch (error) {
+        console.error(
+          "Teacher settings could not be read.",
+          error
+        );
+
+        return defaultSettings;
+      }
+    }
+
+    function fillForm(settings) {
+      document.getElementById(
+        "teacher-name"
+      ).value = settings.teacherName || "";
+
+      document.getElementById(
+        "teacher-email"
+      ).value = settings.teacherEmail || "";
+
+      document.getElementById(
+        "teacher-room"
+      ).value = settings.room || "";
+
+      Object.entries(fieldMap).forEach(
+        ([periodName, fieldId]) => {
+          document.getElementById(
+            fieldId
+          ).value =
+            settings.classes[periodName] || "";
+        }
+      );
+    }
+
+    function collectForm() {
+      const classes = {};
+
+      Object.entries(fieldMap).forEach(
+        ([periodName, fieldId]) => {
+          classes[periodName] =
+            document
+              .getElementById(fieldId)
+              .value.trim();
+        }
+      );
+
+      return {
+        teacherName:
+          document
+            .getElementById("teacher-name")
+            .value.trim(),
+
+        teacherEmail:
+          document
+            .getElementById("teacher-email")
+            .value.trim(),
+
+        room:
+          document
+            .getElementById("teacher-room")
+            .value.trim(),
+
+        classes: classes
+      };
+    }
+
+    function saveTeacherSettings() {
+      const settings = collectForm();
+
+      if (!settings.teacherName) {
+        window.alert(
+          "Please enter the teacher name."
+        );
+
+        return;
+      }
+
+      if (!settings.teacherEmail) {
+        window.alert(
+          "Please enter the school email."
+        );
+
+        return;
+      }
+
+      localStorage.setItem(
+        "patriotTeacherProfile",
+        JSON.stringify(settings)
+      );
+
+      /*
+        Keep the older classroom page compatible
+        while we transition to the new class system.
+      */
+      localStorage.setItem(
+        "patriotTeacherSettings",
+        JSON.stringify({
+          teacher: settings.teacherName,
+          course:
+            settings.classes["1st Period"] ||
+            "Your Class",
+          room: settings.room
+        })
+      );
+
+      const message =
+        document.getElementById("save-message");
+
+      message.classList.add("show");
+
+      setTimeout(() => {
+        message.classList.remove("show");
+      }, 1800);
+    }
+
+    function resetTeacherSettings() {
+      const confirmed = window.confirm(
+        "Reset all teacher and class information?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      localStorage.removeItem(
+        "patriotTeacherProfile"
+      );
+
+      localStorage.removeItem(
+        "patriotTeacherSettings"
+      );
+
+      fillForm(defaultSettings);
+    }
+
+    fillForm(readSavedSettings());
+  </script>
+</body>
+</html>
