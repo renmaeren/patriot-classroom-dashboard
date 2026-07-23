@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
   <meta
     name="viewport"
     content="width=device-width, initial-scale=1.0"
   >
 
-  <title>Patriot Classroom</title>
+  <title>Patriot Command</title>
 
   <style>
     :root {
@@ -16,6 +17,8 @@
       --white: #ffffff;
       --cream: #f7f2e8;
       --gold: #d3a84f;
+      --green: #2f7d4a;
+      --gray: #657184;
       --shadow: rgba(0, 0, 0, 0.18);
     }
 
@@ -46,8 +49,8 @@
     }
 
     .home-card {
-      width: min(760px, 100%);
-      padding: 40px;
+      width: min(800px, 100%);
+      padding: 38px;
       text-align: center;
       background: var(--cream);
       border: 5px solid var(--white);
@@ -58,32 +61,86 @@
     h1 {
       margin: 0;
       color: var(--red);
-      font-size: clamp(2.3rem, 6vw, 4.6rem);
+      font-size: clamp(2.5rem, 7vw, 4.8rem);
     }
 
-    .subtitle {
-      margin: 12px 0 32px;
-      font-size: 1.2rem;
+    .tagline {
+      margin: 8px 0 26px;
+      color: var(--gray);
+      font-size: 1.08rem;
+      font-weight: bold;
+    }
+
+    .greeting {
+      margin-bottom: 22px;
+    }
+
+    #greeting-text {
+      margin: 0;
+      font-size: clamp(1.5rem, 4vw, 2.3rem);
+    }
+
+    #today-date {
+      margin: 7px 0 0;
+      color: var(--gray);
+      font-size: 1rem;
+    }
+
+    .current-class {
+      margin: 24px 0;
+      padding: 24px;
+      color: var(--white);
+      background: var(--navy);
+      border-bottom: 6px solid var(--gold);
+      border-radius: 15px;
+    }
+
+    .status-label {
+      margin-bottom: 7px;
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+    }
+
+    #period-name {
+      font-size: clamp(1.5rem, 4vw, 2.3rem);
+      font-weight: bold;
+    }
+
+    #course-name {
+      margin-top: 6px;
+      font-size: clamp(1.25rem, 3vw, 1.8rem);
+    }
+
+    #time-message {
+      margin-top: 12px;
+      font-size: 1rem;
     }
 
     .home-actions {
       display: grid;
-      gap: 14px;
+      gap: 13px;
     }
 
     .home-button {
       display: block;
-      padding: 17px 20px;
+      padding: 16px 20px;
       color: var(--white);
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: bold;
       text-decoration: none;
       background: var(--navy);
-      border-radius: 12px;
+      border-radius: 11px;
     }
 
     .home-button.primary {
       background: var(--red);
+    }
+
+    .home-button.settings {
+      background: var(--green);
     }
 
     .home-button.disabled {
@@ -92,50 +149,409 @@
       cursor: not-allowed;
     }
 
-    .note {
-      margin-top: 24px;
-      color: #5f6570;
-      font-size: 0.92rem;
+    .home-button:hover:not(.disabled) {
+      filter: brightness(1.08);
+    }
+
+    .setup-warning {
+      display: none;
+      margin: 0 0 18px;
+      padding: 13px;
+      color: #713b00;
+      background: #fff0cf;
+      border: 2px solid #d6a23d;
+      border-radius: 9px;
+    }
+
+    .setup-warning.show {
+      display: block;
+    }
+
+    .small-note {
+      margin: 20px 0 0;
+      color: var(--gray);
+      font-size: 0.88rem;
+    }
+
+    @media (max-width: 600px) {
+      .home-card {
+        padding: 26px 20px;
+      }
     }
   </style>
 </head>
 
 <body>
   <main class="home-card">
-    <h1>Patriot Classroom</h1>
+    <h1>Patriot Command</h1>
 
-    <p class="subtitle">
+    <p class="tagline">
       Plan once. Save it. Launch it.
     </p>
+
+    <section class="greeting">
+      <h2 id="greeting-text">
+        Welcome!
+      </h2>
+
+      <p id="today-date">
+        Loading today’s date...
+      </p>
+    </section>
+
+    <div id="setup-warning" class="setup-warning">
+      Complete Teacher Settings once so Patriot Command
+      can identify your classes automatically.
+    </div>
+
+    <section class="current-class">
+      <div id="status-label" class="status-label">
+        Current Class
+      </div>
+
+      <div id="period-name">
+        Checking the schedule...
+      </div>
+
+      <div id="course-name"></div>
+
+      <div id="time-message"></div>
+    </section>
 
     <div class="home-actions">
       <a
         class="home-button primary"
         href="classroom.html"
       >
-        Create or Edit Today’s Lesson
+        📝 Today’s Lesson
       </a>
+
+      <span class="home-button disabled">
+        📚 My Lessons — Coming Next
+      </span>
 
       <a
-        class="home-button"
-        href="classroom.html"
+        class="home-button settings"
+        href="settings.html"
       >
-        Launch Classroom View
+        ⚙️ Teacher Settings
       </a>
-
-      <span class="home-button disabled">
-        My Lessons — Coming Next
-      </span>
-
-      <span class="home-button disabled">
-        Teacher Settings — Coming Next
-      </span>
     </div>
 
-    <p class="note">
-      This is the temporary home screen while we build
-      class switching and the lesson archive.
+    <p class="small-note">
+      Patriot Command automatically checks the current
+      period using the ACSHS bell schedule.
     </p>
   </main>
+
+  <script src="data/schedules.js"></script>
+
+  <script>
+    const periodCourseMap = {
+      "1st Period": "1st Period",
+      "2nd Period": "2nd Period",
+      "3rd Period": "3rd Period",
+      "4th Period": "4th Period",
+      "Advisory": "Advisory",
+      "5th Period": "5th Period",
+      "6th Period": "6th Period",
+      "7th Period": "7th Period",
+      "8th Period": "8th Period"
+    };
+
+    function readTeacherProfile() {
+      const savedProfile =
+        localStorage.getItem("patriotTeacherProfile");
+
+      if (!savedProfile) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(savedProfile);
+      } catch (error) {
+        console.error(
+          "Teacher information could not be read.",
+          error
+        );
+
+        return null;
+      }
+    }
+
+    function getGreeting() {
+      const hour = new Date().getHours();
+
+      if (hour < 12) {
+        return "Good morning";
+      }
+
+      if (hour < 17) {
+        return "Good afternoon";
+      }
+
+      return "Good evening";
+    }
+
+    function updateGreeting(profile) {
+      const greeting =
+        document.getElementById("greeting-text");
+
+      const teacherName =
+        profile && profile.teacherName
+          ? profile.teacherName
+          : "";
+
+      greeting.textContent =
+        teacherName
+          ? `${getGreeting()}, ${teacherName}`
+          : "Welcome to Patriot Command";
+
+      document.getElementById(
+        "today-date"
+      ).textContent =
+        new Date().toLocaleDateString([], {
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+        });
+    }
+
+    function timeToDate(timeText) {
+      const [hours, minutes] =
+        timeText.split(":").map(Number);
+
+      const time = new Date();
+
+      time.setHours(hours, minutes, 0, 0);
+
+      return time;
+    }
+
+    function formatTime(timeText) {
+      return timeToDate(
+        timeText
+      ).toLocaleTimeString([], {
+        hour: "numeric",
+        minute: "2-digit"
+      });
+    }
+
+    function formatCountdown(totalSeconds) {
+      const safeSeconds =
+        Math.max(0, totalSeconds);
+
+      const hours =
+        Math.floor(safeSeconds / 3600);
+
+      const minutes =
+        Math.floor(
+          (safeSeconds % 3600) / 60
+        );
+
+      const seconds =
+        safeSeconds % 60;
+
+      if (hours > 0) {
+        return (
+          `${hours} hr ` +
+          `${minutes} min`
+        );
+      }
+
+      return (
+        `${minutes}:` +
+        String(seconds).padStart(2, "0")
+      );
+    }
+
+    function getInstructionalPeriods() {
+      return bellSchedule.filter(period =>
+        Object.prototype.hasOwnProperty.call(
+          periodCourseMap,
+          period.name
+        )
+      );
+    }
+
+    function findCurrentPeriod(now) {
+      return bellSchedule.find(period => {
+        const start = timeToDate(period.start);
+        const end = timeToDate(period.end);
+
+        return now >= start && now < end;
+      });
+    }
+
+    function findNextInstructionalPeriod(now) {
+      return getInstructionalPeriods().find(
+        period => now < timeToDate(period.start)
+      );
+    }
+
+    function getCourseName(profile, periodName) {
+      if (
+        !profile ||
+        !profile.classes ||
+        !periodCourseMap[periodName]
+      ) {
+        return "";
+      }
+
+      return (
+        profile.classes[
+          periodCourseMap[periodName]
+        ] || ""
+      );
+    }
+
+    function updateCurrentClass() {
+      const now = new Date();
+      const profile = readTeacherProfile();
+
+      updateGreeting(profile);
+
+      const setupWarning =
+        document.getElementById("setup-warning");
+
+      setupWarning.classList.toggle(
+        "show",
+        !profile
+      );
+
+      const label =
+        document.getElementById("status-label");
+
+      const periodNameDisplay =
+        document.getElementById("period-name");
+
+      const courseNameDisplay =
+        document.getElementById("course-name");
+
+      const timeMessage =
+        document.getElementById("time-message");
+
+      const currentPeriod =
+        findCurrentPeriod(now);
+
+      if (
+        currentPeriod &&
+        periodCourseMap[currentPeriod.name]
+      ) {
+        const courseName =
+          getCourseName(
+            profile,
+            currentPeriod.name
+          );
+
+        label.textContent = "Current Class";
+
+        periodNameDisplay.textContent =
+          currentPeriod.name;
+
+        courseNameDisplay.textContent =
+          courseName ||
+          "Course not entered in Teacher Settings";
+
+        const secondsRemaining =
+          Math.floor(
+            (
+              timeToDate(currentPeriod.end) -
+              now
+            ) / 1000
+          );
+
+        timeMessage.textContent =
+          `Ends at ${formatTime(
+            currentPeriod.end
+          )} · ${formatCountdown(
+            secondsRemaining
+          )} remaining`;
+
+        return;
+      }
+
+      if (currentPeriod) {
+        label.textContent = "Current Schedule";
+
+        periodNameDisplay.textContent =
+          currentPeriod.name;
+
+        courseNameDisplay.textContent = "";
+
+        const secondsRemaining =
+          Math.floor(
+            (
+              timeToDate(currentPeriod.end) -
+              now
+            ) / 1000
+          );
+
+        timeMessage.textContent =
+          `Ends at ${formatTime(
+            currentPeriod.end
+          )} · ${formatCountdown(
+            secondsRemaining
+          )} remaining`;
+
+        return;
+      }
+
+      const nextPeriod =
+        findNextInstructionalPeriod(now);
+
+      if (nextPeriod) {
+        const nextCourse =
+          getCourseName(
+            profile,
+            nextPeriod.name
+          );
+
+        label.textContent = "Next Class";
+
+        periodNameDisplay.textContent =
+          nextPeriod.name;
+
+        courseNameDisplay.textContent =
+          nextCourse ||
+          "Course not entered in Teacher Settings";
+
+        const secondsUntilStart =
+          Math.floor(
+            (
+              timeToDate(nextPeriod.start) -
+              now
+            ) / 1000
+          );
+
+        timeMessage.textContent =
+          `Begins at ${formatTime(
+            nextPeriod.start
+          )} · in ${formatCountdown(
+            secondsUntilStart
+          )}`;
+
+        return;
+      }
+
+      label.textContent = "School Day Complete";
+
+      periodNameDisplay.textContent =
+        "No more scheduled classes today";
+
+      courseNameDisplay.textContent = "";
+
+      timeMessage.textContent =
+        "You can still prepare or review lessons.";
+    }
+
+    updateCurrentClass();
+
+    setInterval(
+      updateCurrentClass,
+      1000
+    );
+  </script>
 </body>
 </html>
