@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Patriot Classroom</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #b3262e;
+      --white: #ffffff;
+      --cream: #f7f2e8;
+      --gold: #d3a84f;
+      --shadow: rgba(0, 0, 0, 0.18);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background:
+        linear-gradient(
+          rgba(17, 40, 74, 0.92),
+          rgba(17, 40, 74, 0.92)
+        ),
+        repeating-linear-gradient(
+          45deg,
+          #ffffff,
+          #ffffff 20px,
+          #eeeeee 20px,
+          #eeeeee 40px
+        );
+    }
+
+    .home-card {
+      width: min(760px, 100%);
+      padding: 40px;
+      text-align: center;
+      background: var(--cream);
+      border: 5px solid var(--white);
+      border-radius: 22px;
+      box-shadow: 0 14px 36px var(--shadow);
+    }
+
+    h1 {
+      margin: 0;
+      color: var(--red);
+      font-size: clamp(2.3rem, 6vw, 4.6rem);
+    }
+
+    .subtitle {
+      margin: 12px 0 32px;
+      font-size: 1.2rem;
+    }
+
+    .home-actions {
+      display: grid;
+      gap: 14px;
+    }
+
+    .home-button {
+      display: block;
+      padding: 17px 20px;
+      color: var(--white);
+      font-size: 1.15rem;
+      font-weight: bold;
+      text-decoration: none;
+      background: var(--navy);
+      border-radius: 12px;
+    }
+
+    .home-button.primary {
+      background: var(--red);
+    }
+
+    .home-button.disabled {
+      color: #666666;
+      background: #dddddd;
+      cursor: not-allowed;
+    }
+
+    .note {
+      margin-top: 24px;
+      color: #5f6570;
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main class="home-card">
+    <h1>Patriot Classroom</h1>
+
+    <p class="subtitle">
+      Plan once. Save it. Launch it.
+    </p>
+
+    <div class="home-actions">
+      <a
+        class="home-button primary"
+        href="classroom.html"
+      >
+        Create or Edit Today’s Lesson
+      </a>
+
+      <a
+        class="home-button"
+        href="classroom.html"
+      >
+        Launch Classroom View
+      </a>
+
+      <span class="home-button disabled">
+        My Lessons — Coming Next
+      </span>
+
+      <span class="home-button disabled">
+        Teacher Settings — Coming Next
+      </span>
+    </div>
+
+    <p class="note">
+      This is the temporary home screen while we build
+      class switching and the lesson archive.
+    </p>
+  </main>
+</body>
+</html>
