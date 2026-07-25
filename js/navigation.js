@@ -101,8 +101,7 @@
     const brand = document.createElement("a");
     brand.className = "patriot-nav-brand";
     brand.href = "index.html";
-    brand.textContent = "🇺🇸 Patriot Command";
-
+brand.textContent = "Patriot Command";
     const links = document.createElement("div");
     links.className = "patriot-nav-links";
 
