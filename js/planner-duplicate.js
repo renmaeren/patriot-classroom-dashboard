@@ -12,15 +12,18 @@ Duplicate Lesson into Planner
   function getTodayText() {
     const today = new Date();
 
-    const year = today.getFullYear();
+    const year =
+      today.getFullYear();
 
-    const month = String(
-      today.getMonth() + 1
-    ).padStart(2, "0");
+    const month =
+      String(
+        today.getMonth() + 1
+      ).padStart(2, "0");
 
-    const day = String(
-      today.getDate()
-    ).padStart(2, "0");
+    const day =
+      String(
+        today.getDate()
+      ).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   }
@@ -52,7 +55,8 @@ Duplicate Lesson into Planner
       document.getElementById(id);
 
     if (field) {
-      field.value = value || "";
+      field.value =
+        value || "";
     }
   }
 
@@ -65,7 +69,9 @@ Duplicate Lesson into Planner
     }
 
     const matchingOption =
-      Array.from(select.options).find(
+      Array.from(
+        select.options
+      ).find(
         option =>
           option.textContent
             .trim()
@@ -85,19 +91,24 @@ Duplicate Lesson into Planner
     const periods =
       String(periodText || "")
         .split(",")
-        .map(period => period.trim())
+        .map(
+          period =>
+            period.trim()
+        )
         .filter(Boolean);
 
     document
       .querySelectorAll(
         'input[name="planner-class"]'
       )
-      .forEach(checkbox => {
-        checkbox.checked =
-          periods.includes(
-            checkbox.value
-          );
-      });
+      .forEach(
+        checkbox => {
+          checkbox.checked =
+            periods.includes(
+              checkbox.value
+            );
+        }
+      );
   }
 
   function waitForClasses(
@@ -109,18 +120,26 @@ Duplicate Lesson into Planner
         'input[name="planner-class"]'
       );
 
-    if (classCheckboxes.length > 0) {
-      selectClasses(periodText);
+    if (
+      classCheckboxes.length > 0
+    ) {
+      selectClasses(
+        periodText
+      );
+
       return;
     }
 
     if (attempts < 30) {
-      setTimeout(() => {
-        waitForClasses(
-          periodText,
-          attempts + 1
-        );
-      }, 100);
+      setTimeout(
+        () => {
+          waitForClasses(
+            periodText,
+            attempts + 1
+          );
+        },
+        100
+      );
     }
   }
 
@@ -133,7 +152,9 @@ Duplicate Lesson into Planner
       const resources =
         JSON.parse(value);
 
-      return Array.isArray(resources)
+      return Array.isArray(
+        resources
+      )
         ? resources
         : [];
     } catch (error) {
@@ -141,9 +162,13 @@ Duplicate Lesson into Planner
     }
   }
 
-  function fillResources(resourceText) {
+  function fillResources(
+    resourceText
+  ) {
     const resources =
-      parseResources(resourceText);
+      parseResources(
+        resourceText
+      );
 
     if (!resources.length) {
       return;
@@ -159,7 +184,10 @@ Duplicate Lesson into Planner
         "add-resource-button"
       );
 
-    if (!list || !addButton) {
+    if (
+      !list ||
+      !addButton
+    ) {
       return;
     }
 
@@ -182,7 +210,8 @@ Duplicate Lesson into Planner
             );
         }
 
-        const row = rows[index];
+        const row =
+          rows[index];
 
         if (!row) {
           return;
@@ -200,7 +229,8 @@ Duplicate Lesson into Planner
 
         if (type) {
           type.value =
-            resource.type || "other";
+            resource.type ||
+            "other";
         }
 
         if (url) {
@@ -221,7 +251,9 @@ Duplicate Lesson into Planner
     }
 
     const style =
-      document.createElement("style");
+      document.createElement(
+        "style"
+      );
 
     style.id =
       "duplicate-banner-styles";
@@ -230,8 +262,8 @@ Duplicate Lesson into Planner
       .duplicate-banner {
         width: min(1100px, 94%);
         margin: 24px auto 0;
-        padding: 18px 22px;
-        color: #1f5632;
+        padding: 20px 24px;
+        color: #244f31;
         background: #e7f5eb;
         border: 2px solid #4d8256;
         border-radius: 12px;
@@ -239,33 +271,26 @@ Duplicate Lesson into Planner
       }
 
       .duplicate-banner h2 {
-        margin: 0 0 8px;
+        margin: 0 0 12px;
         color: #2f6c40;
         font-size: 1.25rem;
       }
 
-      .duplicate-banner p {
-        margin: 0 0 10px;
-        line-height: 1.45;
-      }
-
-      .duplicate-next-steps {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px 18px;
+      .duplicate-banner ol {
         margin: 0;
-        padding: 0;
-        list-style: none;
+        padding-left: 26px;
+        line-height: 1.65;
         font-weight: bold;
       }
 
-      .duplicate-banner.fade-out {
-        opacity: 0;
-        transition: opacity 0.5s ease;
+      .duplicate-banner li {
+        padding-left: 4px;
       }
     `;
 
-    document.head.appendChild(style);
+    document.head.appendChild(
+      style
+    );
   }
 
   function showDuplicateBanner() {
@@ -287,9 +312,13 @@ Duplicate Lesson into Planner
     }
 
     const banner =
-      document.createElement("section");
+      document.createElement(
+        "section"
+      );
 
-    banner.id = "duplicate-banner";
+    banner.id =
+      "duplicate-banner";
+
     banner.className =
       "duplicate-banner";
 
@@ -300,35 +329,32 @@ Duplicate Lesson into Planner
 
     banner.innerHTML = `
       <h2>
-        ✓ Lesson duplicated. Ready to make it your own?
+        Lesson duplicated. Make it your own:
       </h2>
 
-      <p>
-        Next steps:
-      </p>
+      <ol>
+        <li>
+          Choose a new date.
+        </li>
 
-      <ul class="duplicate-next-steps">
-        <li>📅 Choose a new date</li>
-        <li>👥 Select your class(es)</li>
-        <li>✏️ Make any changes</li>
-        <li>💾 Save as a new lesson</li>
-      </ul>
+        <li>
+          Select your class(es).
+        </li>
+
+        <li>
+          Make any changes.
+        </li>
+
+        <li>
+          Save as a new lesson.
+        </li>
+      </ol>
     `;
 
     header.insertAdjacentElement(
       "afterend",
       banner
     );
-
-    setTimeout(() => {
-      banner.classList.add(
-        "fade-out"
-      );
-
-      setTimeout(() => {
-        banner.remove();
-      }, 500);
-    }, 10000);
   }
 
   function hideOldBottomMessage() {
@@ -468,7 +494,8 @@ Duplicate Lesson into Planner
   }
 
   if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ) {
     document.addEventListener(
       "DOMContentLoaded",
