@@ -521,6 +521,7 @@ document.addEventListener(
       window.location.href =
         "library.html";
     }
+    }
   );
 }
 
