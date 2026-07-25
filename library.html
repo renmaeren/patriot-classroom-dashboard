@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Lesson Library | Patriot Command</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #aa3235;
+      --gold: #d3a84f;
+      --white: #ffffff;
+      --gray: #657184;
+      --border: #d7dce3;
+      --shadow: rgba(0, 0, 0, 0.13);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background: #e9edf2;
+    }
+
+    .library-header {
+      padding: 34px 24px;
+      color: var(--white);
+      text-align: center;
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .library-header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .library-header p {
+      margin: 9px 0 0;
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    main {
+      width: min(1100px, 94%);
+      margin: 28px auto 50px;
+    }
+
+    .library-card {
+      padding: 28px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 7px 20px var(--shadow);
+    }
+
+    .library-card h2 {
+      margin: 0 0 10px;
+      color: var(--red);
+    }
+
+    .library-card p {
+      margin: 0;
+      color: var(--gray);
+      line-height: 1.5;
+    }
+
+    .coming-soon {
+      margin-top: 24px;
+      padding: 25px;
+      text-align: center;
+      border: 2px dashed var(--border);
+      border-radius: 12px;
+    }
+
+    .coming-soon strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--navy);
+      font-size: 1.3rem;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="library-header">
+    <h1>📚 Lesson Library</h1>
+
+    <p>
+      Find, review, reuse, and launch your saved lessons.
+    </p>
+  </header>
+
+  <main>
+    <section class="library-card">
+      <h2>Your Saved Lessons</h2>
+
+      <p>
+        This page will show lessons from your Patriot Command
+        archive by date, class, and keyword.
+      </p>
+
+      <div class="coming-soon">
+        <strong>Your Lesson Library is connected next.</strong>
+
+        Recent lessons, calendar browsing, and search will appear here.
+      </div>
+    </section>
+  </main>
+
+  <script src="js/navigation.js"></script>
+</body>
+</html>
