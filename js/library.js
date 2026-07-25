@@ -12,6 +12,53 @@ Lesson Library
   const TEACHER_PROFILE_KEY =
     "patriotTeacherProfile";
 
+  const DUPLICATE_LESSON_KEY =
+    "patriotDuplicateLesson";
+
+  function addLibraryActionStyles() {
+    const style =
+      document.createElement("style");
+
+    style.textContent = `
+      .lesson-card-actions {
+        display: flex;
+        flex: 0 0 auto;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+        gap: 9px;
+      }
+
+      .lesson-duplicate-button {
+        padding: 11px 15px;
+        color: #11284a;
+        font-weight: bold;
+        background: #ffffff;
+        border: 2px solid #11284a;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .lesson-duplicate-button:hover {
+        color: #ffffff;
+        background: #aa3235;
+        border-color: #aa3235;
+      }
+
+      @media (max-width: 650px) {
+        .lesson-card-actions {
+          width: 100%;
+          flex-direction: column;
+        }
+
+        .lesson-card-actions button {
+          width: 100%;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
   function readTeacherProfile() {
     const saved =
       localStorage.getItem(
@@ -74,7 +121,8 @@ Lesson Library
     }
 
     try {
-      const resources = JSON.parse(value);
+      const resources =
+        JSON.parse(value);
 
       return Array.isArray(resources)
         ? resources
@@ -124,7 +172,9 @@ Lesson Library
             return `
               <a
                 class="lesson-resource-link"
-                href="${escapeHtml(resource.url)}"
+                href="${escapeHtml(
+                  resource.url
+                )}"
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -135,6 +185,16 @@ Lesson Library
           .join("")}
       </div>
     `;
+  }
+
+  function duplicateLesson(lesson) {
+    localStorage.setItem(
+      DUPLICATE_LESSON_KEY,
+      JSON.stringify(lesson)
+    );
+
+    window.location.href =
+      "planner.html?mode=duplicate";
   }
 
   function createLessonCard(lesson) {
@@ -179,17 +239,27 @@ Lesson Library
           </p>
         </div>
 
-        <button
-          class="lesson-details-button"
-          type="button"
-        >
-          View Lesson
-        </button>
+        <div class="lesson-card-actions">
+          <button
+            class="lesson-details-button"
+            type="button"
+          >
+            View Lesson
+          </button>
+
+          <button
+            class="lesson-duplicate-button"
+            type="button"
+          >
+            Duplicate
+          </button>
+        </div>
       </div>
 
       <div class="lesson-details">
         <div class="lesson-detail-section">
           <h4>Bell Ringer</h4>
+
           <p>
             ${escapeHtml(
               lesson.bellRinger ||
@@ -200,6 +270,7 @@ Lesson Library
 
         <div class="lesson-detail-section">
           <h4>Agenda</h4>
+
           <p>
             ${escapeHtml(
               lesson.agenda ||
@@ -210,6 +281,7 @@ Lesson Library
 
         <div class="lesson-detail-section">
           <h4>I Can / Learning Target</h4>
+
           <p>
             ${escapeHtml(
               lesson.learningTarget ||
@@ -220,6 +292,7 @@ Lesson Library
 
         <div class="lesson-detail-section">
           <h4>Standards</h4>
+
           <p>
             ${escapeHtml(
               lesson.standards ||
@@ -230,6 +303,7 @@ Lesson Library
 
         <div class="lesson-detail-section">
           <h4>Profile of a Patriot</h4>
+
           <p>
             ${escapeHtml(
               lesson.profileComponent ||
@@ -265,6 +339,11 @@ Lesson Library
         ".lesson-details-button"
       );
 
+    const duplicateButton =
+      card.querySelector(
+        ".lesson-duplicate-button"
+      );
+
     const details =
       card.querySelector(
         ".lesson-details"
@@ -282,6 +361,13 @@ Lesson Library
           isOpen
             ? "Hide Lesson"
             : "View Lesson";
+      }
+    );
+
+    duplicateButton.addEventListener(
+      "click",
+      () => {
+        duplicateLesson(lesson);
       }
     );
 
@@ -399,14 +485,19 @@ Lesson Library
     document.body.appendChild(script);
   }
 
+  function startLessonLibrary() {
+    addLibraryActionStyles();
+    loadLessons();
+  }
+
   if (
     document.readyState === "loading"
   ) {
     document.addEventListener(
       "DOMContentLoaded",
-      loadLessons
+      startLessonLibrary
     );
   } else {
-    loadLessons();
+    startLessonLibrary();
   }
 })();
