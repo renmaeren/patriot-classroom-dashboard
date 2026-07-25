@@ -120,10 +120,9 @@ href: "planner.html"
   href: "classroom.html"
 },
       {
-        label: "Lesson Library",
-        href: "#",
-        disabled: true
-      },
+  label: "Lesson Library",
+  href: "library.html"
+},
       {
         label: "Settings",
         href: "settings.html"
