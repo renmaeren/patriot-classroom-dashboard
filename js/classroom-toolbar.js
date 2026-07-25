@@ -1,7 +1,7 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Custom Classroom Toolbar
+Sleek Classroom Toolbar
 ==========================================
 */
 
@@ -9,29 +9,29 @@ Custom Classroom Toolbar
   const TOOLBAR_STORAGE_KEY =
     "patriotClassroomToolbar";
 
-  /*
-    These appear until the teacher
-    customizes the toolbar in Settings.
-  */
   const defaultTools = [
     {
-      label: "IC",
+      id: "campus",
       name: "Infinite Campus",
+      icon: "assets/icons/campus.png",
       url: ""
     },
     {
-      label: "YT",
+      id: "youtube",
       name: "YouTube",
+      icon: "assets/icons/youtube.png",
       url: "https://www.youtube.com"
     },
     {
-      label: "GM",
+      id: "gmail",
       name: "Gmail",
+      icon: "assets/icons/gmail.png",
       url: "https://mail.google.com"
     },
     {
-      label: "Drive",
+      id: "drive",
       name: "Google Drive",
+      icon: "assets/icons/drive.png",
       url: "https://drive.google.com"
     }
   ];
@@ -93,97 +93,169 @@ Custom Classroom Toolbar
         top: 50%;
         right: 0;
         z-index: 4001;
-        padding: 15px 10px;
-        color: #ffffff;
-        font-weight: bold;
-        writing-mode: vertical-rl;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 68px;
+        padding: 8px;
         transform: translateY(-50%);
-        background: #11284a;
-        border: 0;
-        border-radius: 9px 0 0 9px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+        background: rgba(17, 40, 74, 0.74);
+        border: 1px solid rgba(255, 255, 255, 0.28);
+        border-right: 0;
+        border-radius: 14px 0 0 14px;
+        box-shadow: -3px 3px 12px rgba(0, 0, 0, 0.18);
         cursor: pointer;
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        transition:
+          width 0.18s ease,
+          background 0.18s ease,
+          transform 0.18s ease;
+      }
+
+      .classroom-toolbar-tab:hover {
+        width: 50px;
+        background: rgba(179, 38, 46, 0.88);
+      }
+
+      .classroom-toolbar-tab img {
+        display: block;
+        width: 28px;
+        height: 28px;
+        object-fit: contain;
+        filter: brightness(0) invert(1);
+        pointer-events: none;
       }
 
       .classroom-toolbar-panel {
         position: fixed;
-        top: 0;
-        right: -245px;
+        top: 50%;
+        right: -92px;
         z-index: 4000;
-        width: 225px;
-        height: 100vh;
-        padding: 22px 16px;
-        overflow-y: auto;
-        background: #f7f2e8;
-        border-left: 5px solid #b3262e;
-        box-shadow: -8px 0 24px rgba(0, 0, 0, 0.24);
-        transition: right 0.25s ease;
+        width: 80px;
+        padding: 12px 10px;
+        transform: translateY(-50%);
+        background: rgba(17, 40, 74, 0.78);
+        border: 1px solid rgba(255, 255, 255, 0.24);
+        border-right: 0;
+        border-radius: 15px 0 0 15px;
+        box-shadow: -5px 4px 18px rgba(0, 0, 0, 0.22);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+        transition: right 0.24s ease;
       }
 
       .classroom-toolbar-panel.open {
         right: 0;
       }
 
-      .classroom-toolbar-heading {
-        margin: 0 0 18px;
-        color: #11284a;
-        font-size: 1.2rem;
-        text-align: center;
-      }
-
       .classroom-toolbar-links {
         display: grid;
+        justify-content: center;
         gap: 10px;
       }
 
       .classroom-toolbar-link {
+        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
-        min-height: 52px;
-        padding: 11px;
-        color: #ffffff;
-        font-weight: bold;
-        text-align: center;
-        text-decoration: none;
-        background: #11284a;
-        border-radius: 9px;
+        width: 56px;
+        height: 56px;
+        padding: 7px;
+        background: rgba(255, 255, 255, 0.94);
+        border: 1px solid rgba(255, 255, 255, 0.62);
+        border-radius: 12px;
+        box-shadow: 0 2px 7px rgba(0, 0, 0, 0.13);
+        transition:
+          transform 0.16s ease,
+          background 0.16s ease,
+          box-shadow 0.16s ease;
       }
 
       .classroom-toolbar-link:hover {
-        background: #b3262e;
+        transform: scale(1.06);
+        background: #ffffff;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+      }
+
+      .classroom-toolbar-link img {
+        display: block;
+        width: 40px;
+        height: 40px;
+        object-fit: contain;
+        pointer-events: none;
       }
 
       .classroom-toolbar-link.disabled {
-        color: #657184;
-        background: #dfe3e8;
+        opacity: 0.38;
         cursor: default;
         pointer-events: none;
       }
 
       .classroom-toolbar-close {
-        width: 100%;
-        margin-top: 18px;
-        padding: 11px;
-        color: #11284a;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 56px;
+        height: 34px;
+        margin: 11px auto 0;
+        padding: 0;
+        color: #ffffff;
+        font-size: 1.35rem;
         font-weight: bold;
-        background: #ffffff;
-        border: 2px solid #11284a;
-        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.13);
+        border: 1px solid rgba(255, 255, 255, 0.34);
+        border-radius: 10px;
         cursor: pointer;
+        transition:
+          background 0.16s ease,
+          transform 0.16s ease;
       }
 
       .classroom-toolbar-close:hover {
-        color: #ffffff;
-        background: #b3262e;
-        border-color: #b3262e;
+        background: rgba(179, 38, 46, 0.94);
+        transform: scale(1.03);
+      }
+
+      @media (max-width: 700px) {
+        .classroom-toolbar-tab {
+          width: 42px;
+          height: 62px;
+        }
+
+        .classroom-toolbar-panel {
+          width: 74px;
+        }
+
+        .classroom-toolbar-link,
+        .classroom-toolbar-close {
+          width: 50px;
+        }
+
+        .classroom-toolbar-link {
+          height: 50px;
+        }
+
+        .classroom-toolbar-link img {
+          width: 35px;
+          height: 35px;
+        }
       }
     `;
 
     document.head.appendChild(style);
   }
 
-  function createToolLink(tool) {
+  function createToolButton(tool) {
+    const name =
+      tool.name ||
+      "Classroom Tool";
+
+    const icon =
+      tool.icon || "";
+
     const hasLink =
       tool.url &&
       String(tool.url).trim();
@@ -192,12 +264,13 @@ Custom Classroom Toolbar
       return `
         <span
           class="classroom-toolbar-link disabled"
-          title="${escapeHtml(
-            tool.name ||
-            tool.label
-          )} link has not been added yet."
+          title="${escapeHtml(name)} link has not been added yet."
+          aria-label="${escapeHtml(name)} unavailable"
         >
-          ${escapeHtml(tool.label)}
+          <img
+            src="${escapeHtml(icon)}"
+            alt=""
+          >
         </span>
       `;
     }
@@ -208,12 +281,13 @@ Custom Classroom Toolbar
         href="${escapeHtml(tool.url)}"
         target="_blank"
         rel="noopener noreferrer"
-        title="${escapeHtml(
-          tool.name ||
-          tool.label
-        )}"
+        title="${escapeHtml(name)}"
+        aria-label="${escapeHtml(name)}"
       >
-        ${escapeHtml(tool.label)}
+        <img
+          src="${escapeHtml(icon)}"
+          alt=""
+        >
       </a>
     `;
   }
@@ -232,7 +306,8 @@ Custom Classroom Toolbar
         .filter(
           tool =>
             tool &&
-            tool.label
+            tool.name &&
+            tool.icon
         );
 
     const tab =
@@ -245,7 +320,13 @@ Custom Classroom Toolbar
       "classroom-toolbar-tab";
 
     tab.type = "button";
-    tab.textContent = "Tools";
+
+    tab.innerHTML = `
+      <img
+        src="assets/icons/tool-tab.png"
+        alt=""
+      >
+    `;
 
     tab.setAttribute(
       "aria-label",
@@ -256,6 +337,9 @@ Custom Classroom Toolbar
       "aria-expanded",
       "false"
     );
+
+    tab.title =
+      "Classroom Tools";
 
     const panel =
       document.createElement("aside");
@@ -272,13 +356,9 @@ Custom Classroom Toolbar
     );
 
     panel.innerHTML = `
-      <h2 class="classroom-toolbar-heading">
-        Classroom Tools
-      </h2>
-
       <div class="classroom-toolbar-links">
         ${tools
-          .map(createToolLink)
+          .map(createToolButton)
           .join("")}
       </div>
 
@@ -286,8 +366,10 @@ Custom Classroom Toolbar
         id="classroom-toolbar-close"
         class="classroom-toolbar-close"
         type="button"
+        aria-label="Close classroom tools"
+        title="Close"
       >
-        Close
+        ×
       </button>
     `;
 
@@ -311,7 +393,7 @@ Custom Classroom Toolbar
 
     function closeToolbar() {
       panel.classList.remove("open");
-      tab.style.display = "block";
+      tab.style.display = "flex";
 
       tab.setAttribute(
         "aria-expanded",
