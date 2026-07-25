@@ -9,32 +9,32 @@ Sleek Classroom Toolbar
   const TOOLBAR_STORAGE_KEY =
     "patriotClassroomToolbar";
 
-  const defaultTools = [
-    {
-      id: "campus",
-      name: "Infinite Campus",
-      icon: "assets/icons/campus.png",
-      url: ""
-    },
-    {
-      id: "youtube",
-      name: "YouTube",
-      icon: "assets/icons/youtube.png",
-      url: "https://www.youtube.com"
-    },
-    {
-      id: "gmail",
-      name: "Gmail",
-      icon: "assets/icons/gmail.png",
-      url: "https://mail.google.com"
-    },
-    {
-      id: "drive",
-      name: "Google Drive",
-      icon: "assets/icons/drive.png",
-      url: "https://drive.google.com"
-    }
-  ];
+const defaultTools = [
+  {
+    id: "campus",
+    name: "Infinite Campus",
+    icon: "assets/icons/InfiniteCampus.png",
+    url: ""
+  },
+  {
+    id: "youtube",
+    name: "YouTube",
+    icon: "assets/icons/YouTube.png",
+    url: "https://www.youtube.com"
+  },
+  {
+    id: "gmail",
+    name: "Gmail",
+    icon: "assets/icons/gmail.png",
+    url: "https://mail.google.com"
+  },
+  {
+    id: "drive",
+    name: "Google Drive",
+    icon: "assets/icons/Drive.png",
+    url: "https://drive.google.com"
+  }
+];
 
   function readToolbarSettings() {
     const saved =
