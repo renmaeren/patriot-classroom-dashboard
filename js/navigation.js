@@ -111,14 +111,14 @@
         label: "Dashboard",
         href: "index.html"
       },
-      {
-        label: "Lesson Planner",
-        href: "classroom.html"
-      },
-      {
-        label: "Teach",
-        href: "classroom.html"
-      },
+     {
+  label: "Lesson Planner",
+  href: "classroom.html?mode=plan"
+},
+{
+  label: "Teach",
+  href: "classroom.html"
+},
       {
         label: "Lesson Library",
         href: "#",
