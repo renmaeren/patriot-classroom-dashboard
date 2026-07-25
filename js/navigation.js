@@ -112,8 +112,8 @@
         href: "index.html"
       },
      {
-  label: "Lesson Planner",
-  href: "classroom.html?mode=plan"
+ label: "Lesson Planner",
+href: "planner.html"
 },
 {
   label: "Teach",
