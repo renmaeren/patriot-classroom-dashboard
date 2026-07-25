@@ -1,28 +1,42 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Lesson Library Search
+Lesson Library Search and Class Filter
 ==========================================
 */
 
 (function () {
-  function addSearchStyles() {
+  function addFilterStyles() {
+    if (
+      document.getElementById(
+        "library-filter-styles"
+      )
+    ) {
+      return;
+    }
+
     const style =
       document.createElement("style");
 
+    style.id = "library-filter-styles";
+
     style.textContent = `
       .library-search-area {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 14px;
         margin-top: 18px;
       }
 
-      .library-search-label {
+      .library-filter-group label {
         display: block;
         margin-bottom: 7px;
         color: #11284a;
         font-weight: bold;
       }
 
-      .library-search-input {
+      .library-search-input,
+      .library-class-filter {
         width: 100%;
         padding: 13px 15px;
         color: #11284a;
@@ -32,22 +46,24 @@ Lesson Library Search
         border-radius: 9px;
       }
 
-      .library-search-input:focus {
+      .library-search-input:focus,
+      .library-class-filter:focus {
         outline: 3px solid rgba(211, 168, 79, 0.35);
         border-color: #d3a84f;
       }
 
       .library-search-results {
-        margin: 10px 0 0;
+        grid-column: 1 / -1;
+        margin: 0;
         color: #657184;
         font-size: 0.92rem;
       }
 
-      .lesson-card.search-hidden {
+      .lesson-card.library-hidden {
         display: none;
       }
 
-      .library-no-search-results {
+      .library-no-results {
         display: none;
         margin-top: 18px;
         padding: 18px;
@@ -58,15 +74,25 @@ Lesson Library Search
         border-radius: 10px;
       }
 
-      .library-no-search-results.show {
+      .library-no-results.show {
         display: block;
+      }
+
+      @media (max-width: 700px) {
+        .library-search-area {
+          grid-template-columns: 1fr;
+        }
+
+        .library-search-results {
+          grid-column: auto;
+        }
       }
     `;
 
     document.head.appendChild(style);
   }
 
-  function createSearchArea() {
+  function createFilterArea() {
     const toolbar =
       document.querySelector(
         ".library-toolbar"
@@ -88,20 +114,34 @@ Lesson Library Search
       "library-search-area";
 
     area.innerHTML = `
-      <label
-        class="library-search-label"
-        for="library-search-input"
-      >
-        Search Your Lessons
-      </label>
+      <div class="library-filter-group">
+        <label for="library-search-input">
+          Search Your Lessons
+        </label>
 
-      <input
-        id="library-search-input"
-        class="library-search-input"
-        type="search"
-        placeholder="Search by title, course, date, standard, agenda, or keyword"
-        autocomplete="off"
-      >
+        <input
+          id="library-search-input"
+          class="library-search-input"
+          type="search"
+          placeholder="Search by title, standard, agenda, or keyword"
+          autocomplete="off"
+        >
+      </div>
+
+      <div class="library-filter-group">
+        <label for="library-class-filter">
+          Class
+        </label>
+
+        <select
+          id="library-class-filter"
+          class="library-class-filter"
+        >
+          <option value="">
+            All Classes
+          </option>
+        </select>
+      </div>
 
       <p
         id="library-search-results"
@@ -115,13 +155,13 @@ Lesson Library Search
       document.createElement("div");
 
     noResults.id =
-      "library-no-search-results";
+      "library-no-results";
 
     noResults.className =
-      "library-no-search-results";
+      "library-no-results";
 
     noResults.textContent =
-      "No lessons match that search.";
+      "No lessons match those choices.";
 
     const lessonList =
       document.getElementById(
@@ -136,10 +176,77 @@ Lesson Library Search
     }
   }
 
+  function getCourseFromCard(card) {
+    const metaLines =
+      card.querySelectorAll(
+        ".lesson-card-meta"
+      );
+
+    if (metaLines.length < 2) {
+      return "";
+    }
+
+    return metaLines[1]
+      .textContent
+      .split("·")[0]
+      .trim();
+  }
+
+  function buildClassChoices() {
+    const select =
+      document.getElementById(
+        "library-class-filter"
+      );
+
+    if (!select) {
+      return;
+    }
+
+    const currentValue =
+      select.value;
+
+    const courses = [
+      ...new Set(
+        Array.from(
+          document.querySelectorAll(
+            ".lesson-card"
+          )
+        )
+          .map(getCourseFromCard)
+          .filter(Boolean)
+      )
+    ].sort();
+
+    select.innerHTML = `
+      <option value="">
+        All Classes
+      </option>
+    `;
+
+    courses.forEach(course => {
+      const option =
+        document.createElement("option");
+
+      option.value =
+        course.toLowerCase();
+
+      option.textContent = course;
+
+      select.appendChild(option);
+    });
+
+    select.value = currentValue;
+  }
+
   function filterLessons() {
-    const input =
+    const searchInput =
       document.getElementById(
         "library-search-input"
+      );
+
+    const classFilter =
+      document.getElementById(
+        "library-class-filter"
       );
 
     const resultText =
@@ -149,17 +256,20 @@ Lesson Library Search
 
     const noResults =
       document.getElementById(
-        "library-no-search-results"
+        "library-no-results"
       );
 
-    if (!input) {
+    if (!searchInput || !classFilter) {
       return;
     }
 
     const searchText =
-      input.value
+      searchInput.value
         .trim()
         .toLowerCase();
+
+    const selectedCourse =
+      classFilter.value;
 
     const cards =
       Array.from(
@@ -172,41 +282,43 @@ Lesson Library Search
 
     cards.forEach(card => {
       const cardText =
-        card.textContent
+        card.textContent.toLowerCase();
+
+      const cardCourse =
+        getCourseFromCard(card)
           .toLowerCase();
 
-      const matches =
+      const matchesSearch =
         !searchText ||
         cardText.includes(searchText);
 
+      const matchesCourse =
+        !selectedCourse ||
+        cardCourse === selectedCourse;
+
+      const shouldShow =
+        matchesSearch &&
+        matchesCourse;
+
       card.classList.toggle(
-        "search-hidden",
-        !matches
+        "library-hidden",
+        !shouldShow
       );
 
-      if (matches) {
+      if (shouldShow) {
         visibleCount += 1;
       }
     });
 
     if (resultText) {
-      if (!searchText) {
-        resultText.textContent =
-          cards.length
-            ? `${cards.length} saved lesson${
-                cards.length === 1
-                  ? ""
-                  : "s"
-              }`
-            : "";
-      } else {
-        resultText.textContent =
-          `${visibleCount} lesson${
-            visibleCount === 1
-              ? ""
-              : "s"
-          } found`;
-      }
+      resultText.textContent =
+        cards.length
+          ? `${visibleCount} of ${cards.length} saved lesson${
+              cards.length === 1
+                ? ""
+                : "s"
+            } shown`
+          : "";
     }
 
     if (noResults) {
@@ -218,29 +330,30 @@ Lesson Library Search
     }
   }
 
-  function connectSearch() {
-    const input =
+  function connectFilters() {
+    const searchInput =
       document.getElementById(
         "library-search-input"
       );
 
-    if (!input) {
+    const classFilter =
+      document.getElementById(
+        "library-class-filter"
+      );
+
+    if (!searchInput || !classFilter) {
       return;
     }
 
-    input.addEventListener(
+    searchInput.addEventListener(
       "input",
       filterLessons
     );
 
-    /*
-      The lesson cards arrive from Google
-      shortly after the page opens.
-    */
-    const observer =
-      new MutationObserver(
-        filterLessons
-      );
+    classFilter.addEventListener(
+      "change",
+      filterLessons
+    );
 
     const lessonList =
       document.getElementById(
@@ -248,6 +361,12 @@ Lesson Library Search
       );
 
     if (lessonList) {
+      const observer =
+        new MutationObserver(() => {
+          buildClassChoices();
+          filterLessons();
+        });
+
       observer.observe(
         lessonList,
         {
@@ -256,13 +375,14 @@ Lesson Library Search
       );
     }
 
+    buildClassChoices();
     filterLessons();
   }
 
-  function startLibrarySearch() {
-    addSearchStyles();
-    createSearchArea();
-    connectSearch();
+  function startLibraryFilters() {
+    addFilterStyles();
+    createFilterArea();
+    connectFilters();
   }
 
   if (
@@ -270,9 +390,9 @@ Lesson Library Search
   ) {
     document.addEventListener(
       "DOMContentLoaded",
-      startLibrarySearch
+      startLibraryFilters
     );
   } else {
-    startLibrarySearch();
+    startLibraryFilters();
   }
 })();
