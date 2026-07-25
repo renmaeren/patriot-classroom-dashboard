@@ -211,20 +211,136 @@ Duplicate Lesson into Planner
     );
   }
 
-  function showDuplicateMessage() {
-    const status =
+  function addBannerStyles() {
+    if (
+      document.getElementById(
+        "duplicate-banner-styles"
+      )
+    ) {
+      return;
+    }
+
+    const style =
+      document.createElement("style");
+
+    style.id =
+      "duplicate-banner-styles";
+
+    style.textContent = `
+      .duplicate-banner {
+        width: min(1100px, 94%);
+        margin: 24px auto 0;
+        padding: 18px 22px;
+        color: #1f5632;
+        background: #e7f5eb;
+        border: 2px solid #4d8256;
+        border-radius: 12px;
+        box-shadow: 0 5px 14px rgba(0, 0, 0, 0.10);
+      }
+
+      .duplicate-banner h2 {
+        margin: 0 0 8px;
+        color: #2f6c40;
+        font-size: 1.25rem;
+      }
+
+      .duplicate-banner p {
+        margin: 0 0 10px;
+        line-height: 1.45;
+      }
+
+      .duplicate-next-steps {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px 18px;
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-weight: bold;
+      }
+
+      .duplicate-banner.fade-out {
+        opacity: 0;
+        transition: opacity 0.5s ease;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function showDuplicateBanner() {
+    if (
+      document.getElementById(
+        "duplicate-banner"
+      )
+    ) {
+      return;
+    }
+
+    const header =
+      document.querySelector(
+        ".planner-header"
+      );
+
+    if (!header) {
+      return;
+    }
+
+    const banner =
+      document.createElement("section");
+
+    banner.id = "duplicate-banner";
+    banner.className =
+      "duplicate-banner";
+
+    banner.setAttribute(
+      "role",
+      "status"
+    );
+
+    banner.innerHTML = `
+      <h2>
+        ✓ Lesson duplicated. Ready to make it your own?
+      </h2>
+
+      <p>
+        Next steps:
+      </p>
+
+      <ul class="duplicate-next-steps">
+        <li>📅 Choose a new date</li>
+        <li>👥 Select your class(es)</li>
+        <li>✏️ Make any changes</li>
+        <li>💾 Save as a new lesson</li>
+      </ul>
+    `;
+
+    header.insertAdjacentElement(
+      "afterend",
+      banner
+    );
+
+    setTimeout(() => {
+      banner.classList.add(
+        "fade-out"
+      );
+
+      setTimeout(() => {
+        banner.remove();
+      }, 500);
+    }, 10000);
+  }
+
+  function hideOldBottomMessage() {
+    const oldStatus =
       document.getElementById(
         "planner-status"
       );
 
-    if (!status) {
-      return;
+    if (oldStatus) {
+      oldStatus.style.display =
+        "none";
     }
-
-    status.textContent =
-      "Lesson copied from your Library. Choose the new date and classes, make any changes, and click Save Lesson.";
-
-    status.style.display = "block";
   }
 
   function fillDuplicateLesson() {
@@ -333,7 +449,8 @@ Duplicate Lesson into Planner
       lesson.lessonResources
     );
 
-    showDuplicateMessage();
+    hideOldBottomMessage();
+    showDuplicateBanner();
 
     window.scrollTo({
       top: 0,
@@ -342,6 +459,8 @@ Duplicate Lesson into Planner
   }
 
   function startDuplicateLesson() {
+    addBannerStyles();
+
     setTimeout(
       fillDuplicateLesson,
       200
