@@ -7,6 +7,6 @@ Lesson Planner Page
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    console.log("Lesson Planner Loaded");
+    alert("Lesson Planner Loaded!");
 
 });
