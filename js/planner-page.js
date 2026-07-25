@@ -515,16 +515,14 @@ document.addEventListener(
       }
 
       if (libraryButton) {
-        libraryButton.addEventListener(
-          "click",
-          () => {
-            window.alert(
-              "The Lesson Library page is coming next."
-            );
-          }
-        );
-      }
+  libraryButton.addEventListener(
+    "click",
+    () => {
+      window.location.href =
+        "library.html";
     }
+  );
+}
 
     setDefaultDate();
     loadTeacherClasses();
