@@ -442,7 +442,7 @@ document.addEventListener(
       );
     }
 
-    function connectTemporaryButtons() {
+    function connectPlannerButtons() {
       const planAnotherButton =
         document.getElementById(
           "plan-another-button"
@@ -457,9 +457,59 @@ document.addEventListener(
         planAnotherButton.addEventListener(
           "click",
           () => {
-            window.alert(
-              "Plan Another Lesson will be connected after saving is added."
-            );
+            const confirmed =
+              window.confirm(
+                "Start planning another lesson? Your saved lesson will remain safely in the archive."
+              );
+
+            if (!confirmed) {
+              return;
+            }
+
+            const form =
+              document.getElementById(
+                "lesson-planner-form"
+              );
+
+            if (form) {
+              form.reset();
+            }
+
+            setDefaultDate();
+            loadTeacherClasses();
+
+            populateProfileComponents();
+            populateProfileFocus();
+
+            const resourceList =
+              document.getElementById(
+                "resource-list"
+              );
+
+            if (resourceList) {
+              resourceList.innerHTML = "";
+              resourceList.appendChild(
+                createResourceRow()
+              );
+            }
+
+            const status =
+              document.getElementById(
+                "planner-status"
+              );
+
+            if (status) {
+              status.textContent =
+                "Ready for your next lesson.";
+
+              status.style.display =
+                "block";
+            }
+
+            window.scrollTo({
+              top: 0,
+              behavior: "smooth"
+            });
           }
         );
       }
@@ -469,7 +519,7 @@ document.addEventListener(
           "click",
           () => {
             window.alert(
-              "The Lesson Library is the next major page we will build."
+              "The Lesson Library page is coming next."
             );
           }
         );
@@ -487,6 +537,6 @@ document.addEventListener(
     connectExistingResourceRow();
     connectAddResourceButton();
 
-    connectTemporaryButtons();
+    connectPlannerButtons();
   }
 );
