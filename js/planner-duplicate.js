@@ -38,6 +38,11 @@ Duplicate Lesson into Planner
     try {
       return JSON.parse(saved);
     } catch (error) {
+      console.error(
+        "Duplicated lesson could not be read.",
+        error
+      );
+
       return null;
     }
   }
@@ -60,16 +65,15 @@ Duplicate Lesson into Planner
     }
 
     const matchingOption =
-      Array.from(select.options)
-        .find(
-          option =>
-            option.textContent
-              .trim()
-              .toLowerCase() ===
-            String(text)
-              .trim()
-              .toLowerCase()
-        );
+      Array.from(select.options).find(
+        option =>
+          option.textContent
+            .trim()
+            .toLowerCase() ===
+          String(text)
+            .trim()
+            .toLowerCase()
+      );
 
     if (matchingOption) {
       select.value =
@@ -94,6 +98,30 @@ Duplicate Lesson into Planner
             checkbox.value
           );
       });
+  }
+
+  function waitForClasses(
+    periodText,
+    attempts = 0
+  ) {
+    const classCheckboxes =
+      document.querySelectorAll(
+        'input[name="planner-class"]'
+      );
+
+    if (classCheckboxes.length > 0) {
+      selectClasses(periodText);
+      return;
+    }
+
+    if (attempts < 30) {
+      setTimeout(() => {
+        waitForClasses(
+          periodText,
+          attempts + 1
+        );
+      }, 100);
+    }
   }
 
   function parseResources(value) {
@@ -135,26 +163,26 @@ Duplicate Lesson into Planner
       return;
     }
 
-    const firstRow =
-      list.querySelector(
-        ".resource-row"
-      );
-
     resources.forEach(
       (resource, index) => {
-        let row = firstRow;
+        let rows =
+          list.querySelectorAll(
+            ".resource-row"
+          );
 
-        if (index > 0) {
+        if (
+          index > 0 &&
+          rows.length <= index
+        ) {
           addButton.click();
 
-          const rows =
+          rows =
             list.querySelectorAll(
               ".resource-row"
             );
-
-          row =
-            rows[rows.length - 1];
         }
+
+        const row = rows[index];
 
         if (!row) {
           return;
@@ -183,9 +211,7 @@ Duplicate Lesson into Planner
     );
   }
 
-  function showDuplicateMessage(
-    lesson
-  ) {
+  function showDuplicateMessage() {
     const status =
       document.getElementById(
         "planner-status"
@@ -273,7 +299,7 @@ Duplicate Lesson into Planner
       lesson.teacherNotes
     );
 
-    selectClasses(
+    waitForClasses(
       lesson.periods
     );
 
@@ -307,7 +333,7 @@ Duplicate Lesson into Planner
       lesson.lessonResources
     );
 
-    showDuplicateMessage(lesson);
+    showDuplicateMessage();
 
     window.scrollTo({
       top: 0,
@@ -315,14 +341,21 @@ Duplicate Lesson into Planner
     });
   }
 
+  function startDuplicateLesson() {
+    setTimeout(
+      fillDuplicateLesson,
+      200
+    );
+  }
+
   if (
     document.readyState === "loading"
   ) {
     document.addEventListener(
       "DOMContentLoaded",
-      fillDuplicateLesson
+      startDuplicateLesson
     );
   } else {
-    fillDuplicateLesson();
+    startDuplicateLesson();
   }
 })();
