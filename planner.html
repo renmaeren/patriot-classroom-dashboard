@@ -1,37 +1,589 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta charset="UTF-8">
 
-<meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
+  <title>Lesson Planner | Patriot Command</title>
 
-<title>Lesson Planner | Patriot Command</title>
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #aa3235;
+      --green: #4d8256;
+      --gold: #d3a84f;
+      --cream: #f7f2e8;
+      --white: #ffffff;
+      --gray: #657184;
+      --border: #d7dce3;
+      --shadow: rgba(0, 0, 0, 0.13);
+    }
 
-<link rel="stylesheet" href="style.css">
+    * {
+      box-sizing: border-box;
+    }
 
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background: #e9edf2;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+      font: inherit;
+    }
+
+    .planner-header {
+      padding: 34px 24px;
+      color: var(--white);
+      text-align: center;
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .planner-header h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .planner-header p {
+      margin: 9px 0 0;
+      color: var(--gold);
+      font-weight: bold;
+    }
+
+    main {
+      width: min(1100px, 94%);
+      margin: 28px auto 50px;
+    }
+
+    .planner-card {
+      padding: 26px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 7px 20px var(--shadow);
+    }
+
+    .section {
+      margin-bottom: 28px;
+      padding-bottom: 25px;
+      border-bottom: 2px solid #e3e6ea;
+    }
+
+    .section:last-of-type {
+      border-bottom: 0;
+    }
+
+    .section h2 {
+      margin: 0 0 17px;
+      color: var(--red);
+      font-size: 1.25rem;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 18px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    label,
+    .group-label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .required {
+      color: var(--red);
+    }
+
+    .help-text {
+      display: block;
+      margin: -2px 0 8px;
+      color: var(--gray);
+      font-size: 0.87rem;
+    }
+
+    input,
+    textarea,
+    select {
+      width: 100%;
+      padding: 12px;
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+    }
+
+    textarea {
+      min-height: 105px;
+      line-height: 1.45;
+      resize: vertical;
+    }
+
+    #agenda {
+      min-height: 145px;
+    }
+
+    .class-options {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .class-choice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background: var(--cream);
+      border: 2px solid var(--border);
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .class-choice input {
+      width: 20px;
+      height: 20px;
+      margin: 0;
+    }
+
+    .resource-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .resource-row {
+      display: grid;
+      grid-template-columns: 180px 1fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      background: var(--cream);
+      border-radius: 10px;
+    }
+
+    .remove-resource {
+      padding: 11px 14px;
+      color: var(--white);
+      font-weight: bold;
+      background: var(--red);
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .add-resource {
+      width: 100%;
+      margin-top: 12px;
+      padding: 13px;
+      color: var(--white);
+      font-weight: bold;
+      background: var(--navy);
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    details {
+      padding: 16px;
+      background: var(--cream);
+      border-radius: 10px;
+    }
+
+    summary {
+      color: var(--navy);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .optional-fields {
+      margin-top: 18px;
+    }
+
+    .planner-actions {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .action-button {
+      padding: 15px 18px;
+      color: var(--white);
+      font-weight: bold;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .save-button {
+      background: var(--green);
+    }
+
+    .new-button {
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--navy);
+    }
+
+    .library-button {
+      background: var(--navy);
+    }
+
+    .status-message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      background: var(--green);
+      border-radius: 9px;
+    }
+
+    @media (max-width: 760px) {
+      .form-grid,
+      .class-options,
+      .planner-actions,
+      .resource-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <header class="planner-header">
+    <h1>📝 Lesson Planner</h1>
 
-<h1 style="text-align:center;margin-top:60px;">
-📝 Lesson Planner
-</h1>
+    <p>
+      Plan today, tomorrow, next week, or whenever works for you.
+    </p>
+  </header>
 
-<p style="
-text-align:center;
-font-size:1.2rem;
-color:#666;
-margin-top:20px;
-">
+  <main>
+    <form
+      id="lesson-planner-form"
+      class="planner-card"
+    >
+      <section class="section">
+        <h2>Lesson Information</h2>
 
-The full Lesson Planner is coming soon.
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="lesson-date">
+              Lesson Date
+              <span class="required">*</span>
+            </label>
 
-</p>
+            <input
+              id="lesson-date"
+              type="date"
+              required
+            >
+          </div>
 
-<script src="js/navigation.js"></script>
-<script src="js/planner-page.js"></script>
+          <div class="form-group">
+            <label for="lesson-title">
+              Lesson Title or Topic
+            </label>
+
+            <input
+              id="lesson-title"
+              type="text"
+              placeholder="Example: Introduction to The Crucible"
+            >
+          </div>
+        </div>
+
+        <span class="group-label">
+          Use This Lesson For
+          <span class="required">*</span>
+        </span>
+
+        <span class="help-text">
+          Your classes from Teacher Settings will appear here.
+        </span>
+
+        <div
+          id="planner-class-options"
+          class="class-options"
+        >
+          <p>
+            Loading your classes...
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Required Lesson Components</h2>
+
+        <div class="form-group">
+          <label for="bell-ringer">
+            Bell Ringer
+            <span class="required">*</span>
+          </label>
+
+          <textarea
+            id="bell-ringer"
+            placeholder="What should students do as they enter?"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="agenda">
+            Agenda
+            <span class="required">*</span>
+          </label>
+
+          <span class="help-text">
+            Type one agenda item on each line.
+          </span>
+
+          <textarea
+            id="agenda"
+            placeholder="Bell Ringer&#10;Mini Lesson&#10;Guided Practice&#10;Independent Work&#10;Exit Ticket"
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="learning-target">
+            I Can / Learning Target
+            <span class="required">*</span>
+          </label>
+
+          <textarea
+            id="learning-target"
+            placeholder="I can..."
+            required
+          ></textarea>
+        </div>
+
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="profile-component">
+              Profile of a Patriot
+              <span class="required">*</span>
+            </label>
+
+            <select
+              id="profile-component"
+              required
+            >
+              <option value="">
+                Choose a component
+              </option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="profile-focus">
+              Optional Focus Statement
+            </label>
+
+            <select id="profile-focus">
+              <option value="">
+                Use the general component
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="standards">
+            Standards
+            <span class="required">*</span>
+          </label>
+
+          <textarea
+            id="standards"
+            placeholder="Type or paste the applicable Kentucky standard(s)."
+            required
+          ></textarea>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>Lesson Resources</h2>
+
+        <span class="help-text">
+          Add Slides, StudySync, videos, Google Docs, Canva,
+          PDFs, or websites in the order you plan to use them.
+        </span>
+
+        <div
+          id="resource-list"
+          class="resource-list"
+        >
+          <div class="resource-row">
+            <select class="resource-type">
+              <option value="slides">
+                Google Slides
+              </option>
+
+              <option value="video">
+                Video / YouTube
+              </option>
+
+              <option value="studysync">
+                StudySync
+              </option>
+
+              <option value="document">
+                Google Doc
+              </option>
+
+              <option value="canva">
+                Canva
+              </option>
+
+              <option value="pdf">
+                PDF
+              </option>
+
+              <option value="website">
+                Website
+              </option>
+
+              <option value="other">
+                Other
+              </option>
+            </select>
+
+            <input
+              class="resource-url"
+              type="url"
+              placeholder="Paste the complete https:// link"
+            >
+
+            <button
+              class="remove-resource"
+              type="button"
+            >
+              Remove
+            </button>
+          </div>
+        </div>
+
+        <button
+          id="add-resource-button"
+          class="add-resource"
+          type="button"
+        >
+          + Add Another Resource
+        </button>
+      </section>
+
+      <section class="section">
+        <details>
+          <summary>
+            More Options
+          </summary>
+
+          <div class="optional-fields">
+            <div class="form-group">
+              <label for="success-criteria">
+                Success Criteria
+              </label>
+
+              <textarea
+                id="success-criteria"
+                placeholder="How will students know they are successful?"
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="why-learning">
+                Why Are We Learning This?
+              </label>
+
+              <textarea
+                id="why-learning"
+                placeholder="Explain the relevance or purpose of the lesson."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="materials">
+                Materials Needed
+              </label>
+
+              <textarea
+                id="materials"
+                placeholder="Chromebook, notebook, handout..."
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="teacher-notes">
+                Teacher Notes
+              </label>
+
+              <textarea
+                id="teacher-notes"
+                placeholder="Private notes that will not appear in Teach Mode."
+              ></textarea>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <div class="planner-actions">
+        <button
+          class="action-button save-button"
+          type="submit"
+        >
+          Save Lesson
+        </button>
+
+        <button
+          id="plan-another-button"
+          class="action-button new-button"
+          type="button"
+        >
+          Plan Another Lesson
+        </button>
+
+        <button
+          id="open-library-button"
+          class="action-button library-button"
+          type="button"
+        >
+          Open Lesson Library
+        </button>
+      </div>
+
+      <div
+        id="planner-status"
+        class="status-message"
+      >
+        Lesson saved!
+      </div>
+    </form>
+  </main>
+
+  <script src="data/profile-options.js"></script>
+  <script src="js/navigation.js"></script>
+  <script src="js/planner-page.js"></script>
 </body>
-
 </html>
