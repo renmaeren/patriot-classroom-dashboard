@@ -14,7 +14,7 @@ const defaultTools = [
     id: "campus",
     name: "Infinite Campus",
     icon: "Assets/Icons/InfiniteCampus.png",
-    url: ""
+    url: "https://allenky.infinitecampus.org/campus/allen.jsp"
   },
   {
     id: "youtube",
