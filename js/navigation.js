@@ -111,16 +111,20 @@ brand.textContent = "Patriot Command";
         href: "index.html"
       },
      {
- label: "Lesson Planner",
-href: "planner.html"
+{
+  label: "Planner",
+  href: "planner.html"
+},
 },
 {
   label: "Teach",
   href: "classroom.html"
 },
       {
-  label: "Lesson Library",
+ {
+  label: "Library",
   href: "library.html"
+},
 },
       {
         label: "Settings",
