@@ -989,31 +989,67 @@
       );
     }
 
-    function applyTeacherSettings(settings) {
-      document.getElementById(
-        "display-teacher"
-      ).textContent = settings.teacher;
+function applyTeacherSettings(settings) {
+  const teacherDisplay =
+    document.getElementById(
+      "display-teacher"
+    );
 
-      document.getElementById(
-        "display-course"
-      ).textContent = settings.course;
+  const courseDisplay =
+    document.getElementById(
+      "display-course"
+    );
 
-      document.getElementById(
-        "display-room"
-      ).textContent = settings.room;
+  const roomDisplay =
+    document.getElementById(
+      "display-room"
+    );
 
-      document.getElementById(
-        "teacher-input"
-      ).value = settings.teacher;
+  const teacherInput =
+    document.getElementById(
+      "teacher-input"
+    );
 
-      document.getElementById(
-        "course-input"
-      ).value = settings.course;
+  const courseInput =
+    document.getElementById(
+      "course-input"
+    );
 
-      document.getElementById(
-        "room-input"
-      ).value = settings.room;
-    }
+  const roomInput =
+    document.getElementById(
+      "room-input"
+    );
+
+  if (teacherDisplay) {
+    teacherDisplay.textContent =
+      settings.teacher;
+  }
+
+  if (courseDisplay) {
+    courseDisplay.textContent =
+      settings.course;
+  }
+
+  if (roomDisplay) {
+    roomDisplay.textContent =
+      settings.room;
+  }
+
+  if (teacherInput) {
+    teacherInput.value =
+      settings.teacher;
+  }
+
+  if (courseInput) {
+    courseInput.value =
+      settings.course;
+  }
+
+  if (roomInput) {
+    roomInput.value =
+      settings.room;
+  }
+}
 
     function setTextDisplay(
       elementId,
