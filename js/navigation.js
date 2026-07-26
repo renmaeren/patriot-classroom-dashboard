@@ -1,17 +1,25 @@
 /*
-  PATRIOT COMMAND
-  Shared navigation bar
+==========================================
+PATRIOT COMMAND
+Shared Navigation Bar
+==========================================
 */
 
 (function () {
   function addNavigationStyles() {
-    if (document.getElementById("patriot-navigation-styles")) {
+    if (
+      document.getElementById(
+        "patriot-navigation-styles"
+      )
+    ) {
       return;
     }
 
-    const style = document.createElement("style");
+    const style =
+      document.createElement("style");
 
-    style.id = "patriot-navigation-styles";
+    style.id =
+      "patriot-navigation-styles";
 
     style.textContent = `
       .patriot-nav {
@@ -59,11 +67,6 @@
         background: #b3262e;
       }
 
-      .patriot-nav-link.disabled {
-        opacity: 0.48;
-        pointer-events: none;
-      }
-
       @media (max-width: 720px) {
         .patriot-nav {
           align-items: flex-start;
@@ -81,51 +84,73 @@
   }
 
   function getCurrentPage() {
-    const path = window.location.pathname;
-    const fileName = path.split("/").pop();
+    const path =
+      window.location.pathname;
+
+    const fileName =
+      path.split("/").pop();
 
     return fileName || "index.html";
   }
 
   function createNavigation() {
-    if (document.querySelector(".patriot-nav")) {
+    if (
+      document.querySelector(
+        ".patriot-nav"
+      )
+    ) {
       return;
     }
 
-    const currentPage = getCurrentPage();
+    const currentPage =
+      getCurrentPage();
 
-    const nav = document.createElement("nav");
-    nav.className = "patriot-nav";
-    nav.setAttribute("aria-label", "Patriot Command navigation");
+    const nav =
+      document.createElement("nav");
 
-    const brand = document.createElement("a");
-    brand.className = "patriot-nav-brand";
-    brand.href = "index.html";
-brand.textContent = "Patriot Command";
-    const links = document.createElement("div");
-    links.className = "patriot-nav-links";
+    nav.className =
+      "patriot-nav";
+
+    nav.setAttribute(
+      "aria-label",
+      "Patriot Command navigation"
+    );
+
+    const brand =
+      document.createElement("a");
+
+    brand.className =
+      "patriot-nav-brand";
+
+    brand.href =
+      "index.html";
+
+    brand.textContent =
+      "Patriot Command";
+
+    const links =
+      document.createElement("div");
+
+    links.className =
+      "patriot-nav-links";
 
     const items = [
       {
         label: "Dashboard",
         href: "index.html"
       },
-     {
-{
-  label: "Planner",
-  href: "planner.html"
-},
-},
-{
-  label: "Teach",
-  href: "classroom.html"
-},
       {
- {
-  label: "Library",
-  href: "library.html"
-},
-},
+        label: "Planner",
+        href: "planner.html"
+      },
+      {
+        label: "Teach",
+        href: "classroom.html"
+      },
+      {
+        label: "Library",
+        href: "library.html"
+      },
       {
         label: "Settings",
         href: "settings.html"
@@ -133,22 +158,29 @@ brand.textContent = "Patriot Command";
     ];
 
     items.forEach(item => {
-      const link = document.createElement("a");
+      const link =
+        document.createElement("a");
 
-      link.className = "patriot-nav-link";
-      link.href = item.href;
-      link.textContent = item.label;
+      link.className =
+        "patriot-nav-link";
 
-      if (item.disabled) {
-        link.classList.add("disabled");
-        link.setAttribute("aria-disabled", "true");
-      }
+      link.href =
+        item.href;
+
+      link.textContent =
+        item.label;
 
       if (
-        !item.disabled &&
         currentPage === item.href
       ) {
-        link.classList.add("active");
+        link.classList.add(
+          "active"
+        );
+
+        link.setAttribute(
+          "aria-current",
+          "page"
+        );
       }
 
       links.appendChild(link);
@@ -168,7 +200,10 @@ brand.textContent = "Patriot Command";
     createNavigation();
   }
 
-  if (document.readyState === "loading") {
+  if (
+    document.readyState ===
+    "loading"
+  ) {
     document.addEventListener(
       "DOMContentLoaded",
       startNavigation
