@@ -13,25 +13,25 @@ const defaultTools = [
   {
     id: "campus",
     name: "Infinite Campus",
-    icon: "assets/icons/InfiniteCampus.png",
+    icon: "Assets/Icons/InfiniteCampus.png",
     url: ""
   },
   {
     id: "youtube",
     name: "YouTube",
-    icon: "assets/icons/YouTube.png",
+    icon: "Assets/Icons/YouTube.png",
     url: "https://www.youtube.com"
   },
   {
     id: "gmail",
     name: "Gmail",
-    icon: "assets/icons/gmail.png",
+    icon: "Assets/Icons/gmail.png",
     url: "https://mail.google.com"
   },
   {
     id: "drive",
     name: "Google Drive",
-    icon: "assets/icons/Drive.png",
+    icon: "Assets/Icons/Drive.png",
     url: "https://drive.google.com"
   }
 ];
@@ -323,8 +323,7 @@ const defaultTools = [
 
     tab.innerHTML = `
       <img
-        src="assets/icons/tool-tab.png"
-        alt=""
+src="Assets/Icons/tool-tab.png"        alt=""
       >
     `;
 
