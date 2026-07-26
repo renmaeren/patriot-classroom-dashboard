@@ -485,6 +485,29 @@ Teach — Load Today's Lesson
   }
 
   function showNoLesson(message) {
+    const courseDisplay =
+  document.getElementById(
+    "display-course"
+  );
+
+const periodDisplay =
+  document.getElementById(
+    "display-period"
+  );
+
+if (courseDisplay) {
+  courseDisplay.textContent =
+    isWeekend()
+      ? "Weekend"
+      : "No Active Class";
+}
+
+if (periodDisplay) {
+  periodDisplay.textContent =
+    isWeekend()
+      ? "No Classes Scheduled"
+      : "Outside Scheduled Class Time";
+}
     setText(
       "bellringer-display",
       "",
