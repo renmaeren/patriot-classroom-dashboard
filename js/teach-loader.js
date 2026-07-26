@@ -400,10 +400,10 @@ Teach — Load Today's Lesson
     const profile =
       readTeacherProfile();
 
-    const teacherDisplay =
-      document.getElementById(
-        "display-teacher"
-      );
+    const periodDisplay =
+  document.getElementById(
+    "display-period"
+  );
 
     const courseDisplay =
       document.getElementById(
@@ -415,11 +415,12 @@ Teach — Load Today's Lesson
         "display-room"
       );
 
-    if (teacherDisplay) {
-      teacherDisplay.textContent =
-        profile.teacherName ||
-        "Teacher";
-    }
+    if (periodDisplay) {
+  periodDisplay.textContent =
+    activePeriod
+      ? activePeriod.name
+      : "Current Period";
+}
 
     if (courseDisplay) {
       courseDisplay.textContent =
