@@ -2,6 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Teach — Load Today's Lesson
+with Developer Test Mode
 ==========================================
 */
 
@@ -42,8 +43,45 @@ Teach — Load Today's Lesson
     }
   }
 
+  function readTestMode() {
+    const parameters =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const testEnabled =
+      parameters.get("test") === "true";
+
+    if (!testEnabled) {
+      return null;
+    }
+
+    const testDate =
+      parameters.get("date");
+
+    const testPeriod =
+      parameters.get("period");
+
+    if (!testDate || !testPeriod) {
+      return null;
+    }
+
+    return {
+      date: testDate,
+      period: testPeriod
+    };
+  }
+
   function getTodayText() {
-    const today = new Date();
+    const testMode =
+      readTestMode();
+
+    if (testMode) {
+      return testMode.date;
+    }
+
+    const today =
+      new Date();
 
     const year =
       today.getFullYear();
@@ -61,9 +99,34 @@ Teach — Load Today's Lesson
     return `${year}-${month}-${day}`;
   }
 
+  function getEffectiveDate() {
+    const dateText =
+      getTodayText();
+
+    const parts =
+      dateText
+        .split("-")
+        .map(Number);
+
+    if (parts.length !== 3) {
+      return new Date();
+    }
+
+    return new Date(
+      parts[0],
+      parts[1] - 1,
+      parts[2],
+      12,
+      0,
+      0,
+      0
+    );
+  }
+
   function isWeekend() {
     const day =
-      new Date().getDay();
+      getEffectiveDate()
+        .getDay();
 
     return day === 0 || day === 6;
   }
@@ -74,7 +137,8 @@ Teach — Load Today's Lesson
         .split(":")
         .map(Number);
 
-    const date = new Date();
+    const date =
+      new Date();
 
     date.setHours(
       hours,
@@ -86,7 +150,55 @@ Teach — Load Today's Lesson
     return date;
   }
 
+  function createTestPeriod(periodValue) {
+    const normalized =
+      String(periodValue || "")
+        .trim()
+        .toLowerCase();
+
+    if (normalized === "advisory") {
+      return {
+        name: "Advisory",
+        start: "10:52",
+        end: "11:17",
+        type: "advisory"
+      };
+    }
+
+    const periodNumber =
+      normalized.match(/\d+/);
+
+    if (!periodNumber) {
+      return null;
+    }
+
+    return {
+      name:
+        `${periodNumber[0]}${
+          periodNumber[0] === "1"
+            ? "st"
+            : periodNumber[0] === "2"
+              ? "nd"
+              : periodNumber[0] === "3"
+                ? "rd"
+                : "th"
+        } Period`,
+      start: "",
+      end: "",
+      type: "class"
+    };
+  }
+
   function getCurrentPeriod() {
+    const testMode =
+      readTestMode();
+
+    if (testMode) {
+      return createTestPeriod(
+        testMode.period
+      );
+    }
+
     if (
       typeof bellSchedule ===
         "undefined" ||
@@ -95,7 +207,8 @@ Teach — Load Today's Lesson
       return null;
     }
 
-    const now = new Date();
+    const now =
+      new Date();
 
     return (
       bellSchedule.find(period => {
@@ -221,7 +334,8 @@ Teach — Load Today's Lesson
       const item =
         document.createElement("li");
 
-      item.textContent = itemText;
+      item.textContent =
+        itemText;
 
       list.appendChild(item);
     });
@@ -303,13 +417,18 @@ Teach — Load Today's Lesson
 
   function prepareEmbedLink(url) {
     let prepared =
-      String(url || "").trim();
+      String(url || "")
+        .trim();
 
     prepared =
-      convertYouTubeLink(prepared);
+      convertYouTubeLink(
+        prepared
+      );
 
     prepared =
-      convertSlidesLink(prepared);
+      convertSlidesLink(
+        prepared
+      );
 
     return prepared;
   }
@@ -318,7 +437,9 @@ Teach — Load Today's Lesson
     resourceText
   ) {
     const resources =
-      parseResources(resourceText);
+      parseResources(
+        resourceText
+      );
 
     const firstResource =
       resources.find(
@@ -351,8 +472,12 @@ Teach — Load Today's Lesson
     }
 
     if (!firstResource) {
-      frame.style.display = "none";
-      frame.removeAttribute("src");
+      frame.style.display =
+        "none";
+
+      frame.removeAttribute(
+        "src"
+      );
 
       placeholder.style.display =
         "flex";
@@ -401,9 +526,9 @@ Teach — Load Today's Lesson
       readTeacherProfile();
 
     const periodDisplay =
-  document.getElementById(
-    "display-period"
-  );
+      document.getElementById(
+        "display-period"
+      );
 
     const courseDisplay =
       document.getElementById(
@@ -416,11 +541,11 @@ Teach — Load Today's Lesson
       );
 
     if (periodDisplay) {
-  periodDisplay.textContent =
-    activePeriod
-      ? activePeriod.name
-      : "Current Period";
-}
+      periodDisplay.textContent =
+        activePeriod
+          ? activePeriod.name
+          : "Current Period";
+    }
 
     if (courseDisplay) {
       courseDisplay.textContent =
@@ -471,43 +596,45 @@ Teach — Load Today's Lesson
       lesson.lessonResources
     );
 
+    const periodName =
+      document.getElementById(
+        "period-name"
+      );
+
     if (
       activePeriod &&
-      document.getElementById(
-        "period-name"
-      )
+      periodName
     ) {
-      document.getElementById(
-        "period-name"
-      ).textContent =
+      periodName.textContent =
         activePeriod.name;
     }
   }
 
   function showNoLesson(message) {
     const courseDisplay =
-  document.getElementById(
-    "display-course"
-  );
+      document.getElementById(
+        "display-course"
+      );
 
-const periodDisplay =
-  document.getElementById(
-    "display-period"
-  );
+    const periodDisplay =
+      document.getElementById(
+        "display-period"
+      );
 
-if (courseDisplay) {
-  courseDisplay.textContent =
-    isWeekend()
-      ? "Weekend"
-      : "No Active Class";
-}
+    if (courseDisplay) {
+      courseDisplay.textContent =
+        isWeekend()
+          ? "Weekend"
+          : "No Active Class";
+    }
 
-if (periodDisplay) {
-  periodDisplay.textContent =
-    isWeekend()
-      ? "No Classes Scheduled"
-      : "Outside Scheduled Class Time";
-}
+    if (periodDisplay) {
+      periodDisplay.textContent =
+        isWeekend()
+          ? "No Classes Scheduled"
+          : "Outside Scheduled Class Time";
+    }
+
     setText(
       "bellringer-display",
       "",
@@ -555,7 +682,8 @@ if (periodDisplay) {
         lesson =>
           String(
             lesson.lessonDate || ""
-          ).slice(0, 10) === today
+          ).slice(0, 10) ===
+          today
       );
 
     return (
@@ -569,8 +697,66 @@ if (periodDisplay) {
     );
   }
 
+  function showTestModeNotice() {
+    const testMode =
+      readTestMode();
+
+    if (!testMode) {
+      return;
+    }
+
+    const existing =
+      document.getElementById(
+        "teach-test-mode-notice"
+      );
+
+    if (existing) {
+      return;
+    }
+
+    const notice =
+      document.createElement(
+        "div"
+      );
+
+    notice.id =
+      "teach-test-mode-notice";
+
+    notice.textContent =
+      `Test Mode: ${testMode.date} · ${createTestPeriod(testMode.period).name}`;
+
+    notice.style.cssText = `
+      padding: 8px 14px;
+      color: #11284a;
+      font-weight: bold;
+      text-align: center;
+      background: #f6e3a7;
+      border-bottom: 2px solid #d3a84f;
+    `;
+
+    const scheduleStrip =
+      document.querySelector(
+        ".schedule-strip"
+      );
+
+    if (scheduleStrip) {
+      scheduleStrip.insertAdjacentElement(
+        "beforebegin",
+        notice
+      );
+    }
+  }
+
   function loadTodayLesson() {
-    if (isWeekend()) {
+    const testMode =
+      readTestMode();
+
+    showTestModeNotice();
+
+    if (
+      !testMode &&
+      isWeekend()
+    ) {
       showNoLesson(
         "Enjoy your weekend! No classes are scheduled today."
       );
@@ -670,10 +856,6 @@ if (periodDisplay) {
   }
 
   function startTeachLoader() {
-    /*
-      Wait briefly so the existing Teach
-      page finishes loading first.
-    */
     setTimeout(
       loadTodayLesson,
       300
