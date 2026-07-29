@@ -7,6 +7,7 @@ Supports:
 1. Normal Teaching Mode
 2. Developer Test Mode
 3. Library Preview Mode
+4. Teach from Library Mode
 ==========================================
 */
 
@@ -19,6 +20,9 @@ Supports:
 
   const PREVIEW_LESSON_KEY =
     "patriotPreviewLesson";
+
+  const TEACH_LESSON_KEY =
+    "patriotTeachLesson";
 
   /*
   ==========================================
@@ -71,6 +75,10 @@ Supports:
     const mode =
       parameters.get("mode");
 
+    if (mode === "teach") {
+      return "teach";
+    }
+
     if (mode === "preview") {
       return "preview";
     }
@@ -85,10 +93,13 @@ Supports:
     return "normal";
   }
 
-  function readPreviewLesson() {
+  function readStoredLesson(
+    storageKey,
+    errorMessage
+  ) {
     const saved =
       localStorage.getItem(
-        PREVIEW_LESSON_KEY
+        storageKey
       );
 
     if (!saved) {
@@ -99,12 +110,26 @@ Supports:
       return JSON.parse(saved);
     } catch (error) {
       console.error(
-        "The preview lesson could not be read.",
+        errorMessage,
         error
       );
 
       return null;
     }
+  }
+
+  function readPreviewLesson() {
+    return readStoredLesson(
+      PREVIEW_LESSON_KEY,
+      "The preview lesson could not be read."
+    );
+  }
+
+  function readTeachLesson() {
+    return readStoredLesson(
+      TEACH_LESSON_KEY,
+      "The selected teaching lesson could not be read."
+    );
   }
 
   function readTestMode() {
@@ -328,8 +353,9 @@ Supports:
     );
   }
 
-  function createPreviewPeriod(
-    lesson
+  function createStoredLessonPeriod(
+    lesson,
+    fallbackName
   ) {
     const periods =
       String(
@@ -338,10 +364,10 @@ Supports:
 
     if (!periods) {
       return {
-        name: "Lesson Preview",
+        name: fallbackName,
         start: "",
         end: "",
-        type: "preview"
+        type: "library"
       };
     }
 
@@ -366,7 +392,7 @@ Supports:
           name: "Advisory",
           start: "",
           end: "",
-          type: "preview"
+          type: "library"
         };
       }
 
@@ -382,7 +408,7 @@ Supports:
 
           start: "",
           end: "",
-          type: "preview"
+          type: "library"
         };
       }
     }
@@ -393,8 +419,26 @@ Supports:
 
       start: "",
       end: "",
-      type: "preview"
+      type: "library"
     };
+  }
+
+  function createPreviewPeriod(
+    lesson
+  ) {
+    return createStoredLessonPeriod(
+      lesson,
+      "Lesson Preview"
+    );
+  }
+
+  function createTeachPeriod(
+    lesson
+  ) {
+    return createStoredLessonPeriod(
+      lesson,
+      "Teaching from Library"
+    );
   }
 
   function normalizePeriod(value) {
@@ -1119,14 +1163,109 @@ Supports:
     insertNotice(notice);
   }
 
-  function exitPreviewMode() {
-  localStorage.removeItem(
-    PREVIEW_LESSON_KEY
-  );
+  function showTeachModeNotice(
+    lesson
+  ) {
+    const existing =
+      document.getElementById(
+        "teach-library-mode-notice"
+      );
 
-  window.location.href =
-    "library.html";
-}
+    if (existing) {
+      return;
+    }
+
+    const notice =
+      document.createElement(
+        "div"
+      );
+
+    notice.id =
+      "teach-library-mode-notice";
+
+    notice.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 16px;
+      color: #ffffff;
+      font-weight: bold;
+      text-align: center;
+      background: #11284a;
+      border-bottom: 2px solid #07162b;
+    `;
+
+    const title =
+      lesson.lessonTitle ||
+      lesson.course ||
+      "Untitled Lesson";
+
+    const message =
+      document.createElement(
+        "span"
+      );
+
+    message.textContent =
+      `Teaching from Library: ${title} · ${formatLessonDate(
+        lesson.lessonDate
+      )}`;
+
+    const returnButton =
+      document.createElement(
+        "button"
+      );
+
+    returnButton.type =
+      "button";
+
+    returnButton.textContent =
+      "Return to Today's Lesson";
+
+    returnButton.style.cssText = `
+      padding: 7px 13px;
+      color: #11284a;
+      font-weight: bold;
+      background: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 7px;
+      cursor: pointer;
+    `;
+
+    returnButton.addEventListener(
+      "click",
+      exitTeachMode
+    );
+
+    notice.appendChild(
+      message
+    );
+
+    notice.appendChild(
+      returnButton
+    );
+
+    insertNotice(notice);
+  }
+
+  function exitPreviewMode() {
+    localStorage.removeItem(
+      PREVIEW_LESSON_KEY
+    );
+
+    window.location.href =
+      "library.html";
+  }
+
+  function exitTeachMode() {
+    localStorage.removeItem(
+      TEACH_LESSON_KEY
+    );
+
+    window.location.href =
+      "classroom.html";
+  }
 
   /*
   ==========================================
@@ -1172,7 +1311,7 @@ Supports:
 
     if (!lesson) {
       showNoLesson(
-        "The preview lesson could not be found. Return to the Library and select Teach Preview again."
+        "The preview lesson could not be found. Return to the Library and select the lesson again."
       );
 
       showMissingPreviewNotice();
@@ -1261,6 +1400,125 @@ Supports:
       function () {
         localStorage.removeItem(
           PREVIEW_LESSON_KEY
+        );
+
+        window.location.href =
+          "library.html";
+      }
+    );
+
+    notice.appendChild(
+      message
+    );
+
+    notice.appendChild(
+      libraryButton
+    );
+
+    insertNotice(notice);
+  }
+
+  /*
+  ==========================================
+  TEACH FROM LIBRARY MODE
+  ==========================================
+  */
+
+  function loadLibraryTeachLesson() {
+    const lesson =
+      readTeachLesson();
+
+    if (!lesson) {
+      showNoLesson(
+        "The selected lesson could not be found. Return to the Library and select Teach again."
+      );
+
+      showMissingTeachNotice();
+
+      return;
+    }
+
+    const teachPeriod =
+      createTeachPeriod(
+        lesson
+      );
+
+    showTeachModeNotice(
+      lesson
+    );
+
+    showLesson(
+      lesson,
+      teachPeriod
+    );
+  }
+
+  function showMissingTeachNotice() {
+    const existing =
+      document.getElementById(
+        "teach-library-mode-notice"
+      );
+
+    if (existing) {
+      return;
+    }
+
+    const notice =
+      document.createElement(
+        "div"
+      );
+
+    notice.id =
+      "teach-library-mode-notice";
+
+    notice.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 16px;
+      color: #ffffff;
+      font-weight: bold;
+      text-align: center;
+      background: #aa3235;
+      border-bottom: 2px solid #7d2023;
+    `;
+
+    const message =
+      document.createElement(
+        "span"
+      );
+
+    message.textContent =
+      "Teaching from Library: No lesson was found.";
+
+    const libraryButton =
+      document.createElement(
+        "button"
+      );
+
+    libraryButton.type =
+      "button";
+
+    libraryButton.textContent =
+      "Return to Library";
+
+    libraryButton.style.cssText = `
+      padding: 7px 13px;
+      color: #11284a;
+      font-weight: bold;
+      background: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 7px;
+      cursor: pointer;
+    `;
+
+    libraryButton.addEventListener(
+      "click",
+      function () {
+        localStorage.removeItem(
+          TEACH_LESSON_KEY
         );
 
         window.location.href =
@@ -1414,6 +1672,12 @@ Supports:
   function loadTeachPage() {
     const mode =
       readPageMode();
+
+    if (mode === "teach") {
+      loadLibraryTeachLesson();
+
+      return;
+    }
 
     if (mode === "preview") {
       loadPreviewLesson();
