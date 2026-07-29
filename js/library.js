@@ -18,6 +18,9 @@ Lesson Library
   const EDIT_LESSON_KEY =
     "patriotEditLesson";
 
+  const PREVIEW_LESSON_KEY =
+    "patriotPreviewLesson";
+
   function addLibraryActionStyles() {
     if (
       document.getElementById(
@@ -42,12 +45,24 @@ Lesson Library
         gap: 9px;
       }
 
+      .lesson-preview-button,
       .lesson-edit-button,
       .lesson-duplicate-button {
         padding: 11px 15px;
         font-weight: bold;
         border-radius: 8px;
         cursor: pointer;
+      }
+
+      .lesson-preview-button {
+        color: #ffffff;
+        background: #11284a;
+        border: 2px solid #11284a;
+      }
+
+      .lesson-preview-button:hover {
+        background: #aa3235;
+        border-color: #aa3235;
       }
 
       .lesson-edit-button {
@@ -230,6 +245,16 @@ Lesson Library
     `;
   }
 
+  function previewLesson(lesson) {
+    localStorage.setItem(
+      PREVIEW_LESSON_KEY,
+      JSON.stringify(lesson)
+    );
+
+    window.location.href =
+      "classroom.html?mode=preview";
+  }
+
   function editLesson(lesson) {
     localStorage.setItem(
       EDIT_LESSON_KEY,
@@ -301,6 +326,13 @@ Lesson Library
             type="button"
           >
             View Lesson
+          </button>
+
+          <button
+            class="lesson-preview-button"
+            type="button"
+          >
+            Teach Preview
           </button>
 
           <button
@@ -417,6 +449,11 @@ Lesson Library
         ".lesson-details-button"
       );
 
+    const previewButton =
+      card.querySelector(
+        ".lesson-preview-button"
+      );
+
     const editButton =
       card.querySelector(
         ".lesson-edit-button"
@@ -444,6 +481,13 @@ Lesson Library
           isOpen
             ? "Hide Lesson"
             : "View Lesson";
+      }
+    );
+
+    previewButton.addEventListener(
+      "click",
+      () => {
+        previewLesson(lesson);
       }
     );
 
