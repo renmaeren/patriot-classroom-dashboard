@@ -142,15 +142,16 @@
       font-weight: bold;
     }
 
-    main {
-      display: grid;
-      grid-template-columns:
-        minmax(245px, 0.9fr)
-        minmax(400px, 2fr)
-        minmax(245px, 0.9fr);
-      gap: 16px;
-      width: min(1600px, 97%);
-      margin: 16px auto;
+  main {
+  display: grid;
+  grid-template-columns:
+    minmax(250px, 0.9fr)
+    minmax(700px, 2.7fr)
+    minmax(250px, 0.85fr);
+  gap: 16px;
+  width: min(1750px, 98%);
+  margin: 16px auto;
+}
     }
 
     .column {
@@ -687,15 +688,7 @@
         </div>
       </section>
 
-      <section class="card">
-        <h2>📝 Today’s Agenda</h2>
-
-        <ol id="agenda-display" class="agenda-list">
-          <li class="empty-text">
-            Add today’s agenda.
-          </li>
-        </ol>
-      </section>
+    
     </div>
   </main>
 
@@ -1733,10 +1726,15 @@ function applyTeacherSettings(settings) {
   </script>
 
   
- <script src="js/navigation.js"></script>
-<script src="js/classroom-toolbar.js?v=5"></script>
+<script src="js/navigation.js"></script>
+
+<script src="js/classroom-toolbar.js?v=6"></script>
+
+<script src="js/classroom-widgets.js?v=1"></script>
+
 <script src="js/teach-loader.js?v=3"></script>
-  <script src="js/teach-auto-refresh.js?v=1"></script>
+
+<script src="js/teach-auto-refresh.js?v=1"></script>
 
 </body>
 </html>
