@@ -1,7 +1,7 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Lesson Library
+Lesson Library with Calendar
 ==========================================
 */
 
@@ -21,87 +21,24 @@ Lesson Library
   const PREVIEW_LESSON_KEY =
     "patriotPreviewLesson";
 
-  function addLibraryActionStyles() {
-    if (
-      document.getElementById(
-        "lesson-library-action-styles"
-      )
-    ) {
-      return;
-    }
+  let allLessons = [];
 
-    const style =
-      document.createElement("style");
+  let selectedDate = "";
 
-    style.id =
-      "lesson-library-action-styles";
+  const today = new Date();
 
-    style.textContent = `
-      .lesson-card-actions {
-        display: flex;
-        flex: 0 0 auto;
-        flex-wrap: wrap;
-        justify-content: flex-end;
-        gap: 9px;
-      }
+  let visibleMonth =
+    new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      1
+    );
 
-      .lesson-preview-button,
-      .lesson-edit-button,
-      .lesson-duplicate-button {
-        padding: 11px 15px;
-        font-weight: bold;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .lesson-preview-button {
-        color: #ffffff;
-        background: #11284a;
-        border: 2px solid #11284a;
-      }
-
-      .lesson-preview-button:hover {
-        background: #aa3235;
-        border-color: #aa3235;
-      }
-
-      .lesson-edit-button {
-        color: #ffffff;
-        background: #4d8256;
-        border: 2px solid #4d8256;
-      }
-
-      .lesson-edit-button:hover {
-        background: #376640;
-        border-color: #376640;
-      }
-
-      .lesson-duplicate-button {
-        color: #11284a;
-        background: #ffffff;
-        border: 2px solid #11284a;
-      }
-
-      .lesson-duplicate-button:hover {
-        color: #ffffff;
-        background: #aa3235;
-        border-color: #aa3235;
-      }
-
-      @media (max-width: 650px) {
-        .lesson-card-actions {
-          width: 100%;
-          flex-direction: column;
-        }
-
-        .lesson-card-actions button {
-          width: 100%;
-        }
-      }
-    `;
-
-    document.head.appendChild(style);
-  }
+  /*
+  ==========================================
+  TEACHER PROFILE
+  ==========================================
+  */
 
   function readTeacherProfile() {
     const saved =
@@ -131,6 +68,139 @@ Lesson Library
     }
   }
 
+  /*
+  ==========================================
+  DATE HELPERS
+  ==========================================
+  */
+
+  function dateToText(date) {
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, "0");
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  function normalizeLessonDate(value) {
+    if (!value) {
+      return "";
+    }
+
+    const text =
+      String(value).trim();
+
+    if (
+      /^\d{4}-\d{2}-\d{2}$/.test(text)
+    ) {
+      return text;
+    }
+
+    const date =
+      new Date(text);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return "";
+    }
+
+    return dateToText(date);
+  }
+
+  function textToLocalDate(value) {
+    const normalized =
+      normalizeLessonDate(value);
+
+    if (!normalized) {
+      return null;
+    }
+
+    const parts =
+      normalized
+        .split("-")
+        .map(Number);
+
+    return new Date(
+      parts[0],
+      parts[1] - 1,
+      parts[2],
+      12,
+      0,
+      0
+    );
+  }
+
+  function formatLessonDate(value) {
+    const date =
+      textToLocalDate(value);
+
+    if (!date) {
+      return (
+        value ||
+        "Date not available"
+      );
+    }
+
+    return date.toLocaleDateString(
+      [],
+      {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }
+    );
+  }
+
+  function formatResultsDate(value) {
+    const date =
+      textToLocalDate(value);
+
+    if (!date) {
+      return value;
+    }
+
+    return date.toLocaleDateString(
+      [],
+      {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }
+    );
+  }
+
+  function isSameMonth(
+    firstDate,
+    secondDate
+  ) {
+    return (
+      firstDate.getFullYear() ===
+        secondDate.getFullYear() &&
+      firstDate.getMonth() ===
+        secondDate.getMonth()
+    );
+  }
+
+  /*
+  ==========================================
+  HTML AND RESOURCE HELPERS
+  ==========================================
+  */
+
   function escapeHtml(value) {
     return String(value || "")
       .replaceAll("&", "&amp;")
@@ -138,30 +208,6 @@ Lesson Library
       .replaceAll(">", "&gt;")
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
-  }
-
-  function formatLessonDate(value) {
-    if (!value) {
-      return "Date not available";
-    }
-
-    const date =
-      new Date(value);
-
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return value;
-    }
-
-    return date.toLocaleDateString([], {
-      weekday: "long",
-      month: "long",
-      day: "numeric",
-      year: "numeric"
-    });
   }
 
   function parseResources(value) {
@@ -195,8 +241,10 @@ Lesson Library
       other: "Resource"
     };
 
-    return labels[type] ||
-      "Resource";
+    return (
+      labels[type] ||
+      "Resource"
+    );
   }
 
   function createResourceLinks(
@@ -220,6 +268,12 @@ Lesson Library
     return `
       <div class="lesson-resource-links">
         ${resources
+          .filter(resource => {
+            return (
+              resource &&
+              resource.url
+            );
+          })
           .map(resource => {
             const label =
               resource.label ||
@@ -244,6 +298,12 @@ Lesson Library
       </div>
     `;
   }
+
+  /*
+  ==========================================
+  LESSON ACTIONS
+  ==========================================
+  */
 
   function previewLesson(lesson) {
     localStorage.setItem(
@@ -275,6 +335,12 @@ Lesson Library
       "planner.html?mode=duplicate";
   }
 
+  /*
+  ==========================================
+  LESSON CARDS
+  ==========================================
+  */
+
   function createLessonCard(lesson) {
     const card =
       document.createElement(
@@ -283,6 +349,29 @@ Lesson Library
 
     card.className =
       "lesson-card";
+
+    card.dataset.lessonDate =
+      normalizeLessonDate(
+        lesson.lessonDate
+      );
+
+    card.dataset.searchText = [
+      lesson.lessonTitle,
+      lesson.course,
+      lesson.periods,
+      lesson.bellRinger,
+      lesson.agenda,
+      lesson.learningTarget,
+      lesson.successCriteria,
+      lesson.standards,
+      lesson.profileComponent,
+      lesson.profileFocus,
+      lesson.materials,
+      lesson.teacherNotes
+    ]
+      .filter(Boolean)
+      .join(" ")
+      .toLowerCase();
 
     const title =
       lesson.lessonTitle ||
@@ -388,6 +477,17 @@ Lesson Library
         </div>
 
         <div class="lesson-detail-section">
+          <h4>Why We Are Learning</h4>
+
+          <p>
+            ${escapeHtml(
+              lesson.whyLearning ||
+              "Not entered"
+            )}
+          </p>
+        </div>
+
+        <div class="lesson-detail-section">
           <h4>Success Criteria</h4>
 
           <p>
@@ -435,6 +535,28 @@ Lesson Library
         </div>
 
         <div class="lesson-detail-section">
+          <h4>Materials</h4>
+
+          <p>
+            ${escapeHtml(
+              lesson.materials ||
+              "Not entered"
+            )}
+          </p>
+        </div>
+
+        <div class="lesson-detail-section">
+          <h4>Teacher Notes</h4>
+
+          <p>
+            ${escapeHtml(
+              lesson.teacherNotes ||
+              "Not entered"
+            )}
+          </p>
+        </div>
+
+        <div class="lesson-detail-section">
           <h4>Resources</h4>
 
           ${createResourceLinks(
@@ -471,7 +593,7 @@ Lesson Library
 
     detailsButton.addEventListener(
       "click",
-      () => {
+      function () {
         const isOpen =
           details.classList.toggle(
             "show"
@@ -486,26 +608,65 @@ Lesson Library
 
     previewButton.addEventListener(
       "click",
-      () => {
+      function () {
         previewLesson(lesson);
       }
     );
 
     editButton.addEventListener(
       "click",
-      () => {
+      function () {
         editLesson(lesson);
       }
     );
 
     duplicateButton.addEventListener(
       "click",
-      () => {
+      function () {
         duplicateLesson(lesson);
       }
     );
 
     return card;
+  }
+
+  /*
+  ==========================================
+  RESULTS DISPLAY
+  ==========================================
+  */
+
+  function updateResultsHeading(
+    lessons
+  ) {
+    const title =
+      document.getElementById(
+        "lesson-results-title"
+      );
+
+    const count =
+      document.getElementById(
+        "lesson-results-count"
+      );
+
+    if (title) {
+      title.textContent =
+        selectedDate
+          ? `Lessons for ${formatResultsDate(
+              selectedDate
+            )}`
+          : "All Saved Lessons";
+    }
+
+    if (count) {
+      const lessonWord =
+        lessons.length === 1
+          ? "lesson"
+          : "lessons";
+
+      count.textContent =
+        `${lessons.length} ${lessonWord}`;
+    }
   }
 
   function displayLessons(lessons) {
@@ -528,9 +689,15 @@ Lesson Library
 
     container.innerHTML = "";
 
+    updateResultsHeading(
+      lessons
+    );
+
     if (!lessons.length) {
       message.textContent =
-        "No saved lessons were found for this account.";
+        selectedDate
+          ? "No lessons are saved for this date."
+          : "No saved lessons were found for this account.";
 
       message.classList.add(
         "show"
@@ -548,7 +715,419 @@ Lesson Library
         createLessonCard(lesson)
       );
     });
+
+    window.dispatchEvent(
+      new CustomEvent(
+        "patriotLibraryRendered",
+        {
+          detail: {
+            lessons:
+              lessons.slice(),
+
+            selectedDate:
+              selectedDate
+          }
+        }
+      )
+    );
   }
+
+  function getLessonsForDate(
+    dateText
+  ) {
+    return allLessons.filter(
+      lesson => {
+        return (
+          normalizeLessonDate(
+            lesson.lessonDate
+          ) === dateText
+        );
+      }
+    );
+  }
+
+  function showAllLessons() {
+    selectedDate = "";
+
+    displayLessons(
+      allLessons
+    );
+
+    renderCalendar();
+  }
+
+  function selectCalendarDate(
+    dateText
+  ) {
+    selectedDate =
+      dateText;
+
+    const selected =
+      textToLocalDate(
+        dateText
+      );
+
+    if (
+      selected &&
+      !isSameMonth(
+        selected,
+        visibleMonth
+      )
+    ) {
+      visibleMonth =
+        new Date(
+          selected.getFullYear(),
+          selected.getMonth(),
+          1
+        );
+    }
+
+    displayLessons(
+      getLessonsForDate(
+        dateText
+      )
+    );
+
+    renderCalendar();
+
+    const resultsHeading =
+      document.querySelector(
+        ".lesson-results-heading"
+      );
+
+    if (resultsHeading) {
+      resultsHeading.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    }
+  }
+
+  /*
+  ==========================================
+  CALENDAR
+  ==========================================
+  */
+
+  function buildLessonDateCounts() {
+    const counts = {};
+
+    allLessons.forEach(lesson => {
+      const dateText =
+        normalizeLessonDate(
+          lesson.lessonDate
+        );
+
+      if (!dateText) {
+        return;
+      }
+
+      counts[dateText] =
+        (counts[dateText] || 0) +
+        1;
+    });
+
+    return counts;
+  }
+
+  function createCalendarDay(
+    date,
+    dateCounts
+  ) {
+    const dateText =
+      dateToText(date);
+
+    const lessonCount =
+      dateCounts[dateText] || 0;
+
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.type =
+      "button";
+
+    button.className =
+      "calendar-day";
+
+    button.setAttribute(
+      "role",
+      "gridcell"
+    );
+
+    button.dataset.date =
+      dateText;
+
+    if (
+      !isSameMonth(
+        date,
+        visibleMonth
+      )
+    ) {
+      button.classList.add(
+        "outside-month"
+      );
+    }
+
+    if (lessonCount > 0) {
+      button.classList.add(
+        "has-lessons"
+      );
+    }
+
+    if (
+      selectedDate ===
+      dateText
+    ) {
+      button.classList.add(
+        "selected"
+      );
+
+      button.setAttribute(
+        "aria-selected",
+        "true"
+      );
+    } else {
+      button.setAttribute(
+        "aria-selected",
+        "false"
+      );
+    }
+
+    if (
+      dateText ===
+      dateToText(today)
+    ) {
+      button.classList.add(
+        "today"
+      );
+    }
+
+    const lessonWord =
+      lessonCount === 1
+        ? "lesson"
+        : "lessons";
+
+    button.setAttribute(
+      "aria-label",
+      lessonCount > 0
+        ? `${formatResultsDate(
+            dateText
+          )}, ${lessonCount} ${lessonWord}`
+        : `${formatResultsDate(
+            dateText
+          )}, no lessons`
+    );
+
+    button.innerHTML = `
+      <span class="calendar-day-number">
+        ${date.getDate()}
+      </span>
+
+      ${
+        lessonCount > 0
+          ? `
+            <span class="calendar-day-lesson-count">
+              ${lessonCount}
+              ${lessonWord}
+            </span>
+
+            <span
+              class="calendar-day-dots"
+              aria-hidden="true"
+            >
+              ${Array.from({
+                length:
+                  Math.min(
+                    lessonCount,
+                    5
+                  )
+              })
+                .map(() => {
+                  return `
+                    <span
+                      class="calendar-day-dot"
+                    ></span>
+                  `;
+                })
+                .join("")}
+            </span>
+          `
+          : ""
+      }
+    `;
+
+    button.addEventListener(
+      "click",
+      function () {
+        selectCalendarDate(
+          dateText
+        );
+      }
+    );
+
+    return button;
+  }
+
+  function renderCalendar() {
+    const grid =
+      document.getElementById(
+        "lesson-calendar-grid"
+      );
+
+    const monthLabel =
+      document.getElementById(
+        "calendar-month-label"
+      );
+
+    if (
+      !grid ||
+      !monthLabel
+    ) {
+      return;
+    }
+
+    monthLabel.textContent =
+      visibleMonth.toLocaleDateString(
+        [],
+        {
+          month: "long",
+          year: "numeric"
+        }
+      );
+
+    grid.innerHTML = "";
+
+    const dateCounts =
+      buildLessonDateCounts();
+
+    const firstDayOfMonth =
+      new Date(
+        visibleMonth.getFullYear(),
+        visibleMonth.getMonth(),
+        1
+      );
+
+    const gridStart =
+      new Date(
+        visibleMonth.getFullYear(),
+        visibleMonth.getMonth(),
+        1 -
+          firstDayOfMonth.getDay()
+      );
+
+    for (
+      let index = 0;
+      index < 42;
+      index += 1
+    ) {
+      const date =
+        new Date(
+          gridStart.getFullYear(),
+          gridStart.getMonth(),
+          gridStart.getDate() +
+            index,
+          12,
+          0,
+          0
+        );
+
+      grid.appendChild(
+        createCalendarDay(
+          date,
+          dateCounts
+        )
+      );
+    }
+  }
+
+  function changeVisibleMonth(
+    amount
+  ) {
+    visibleMonth =
+      new Date(
+        visibleMonth.getFullYear(),
+        visibleMonth.getMonth() +
+          amount,
+        1
+      );
+
+    renderCalendar();
+  }
+
+  function goToToday() {
+    visibleMonth =
+      new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        1
+      );
+
+    selectCalendarDate(
+      dateToText(today)
+    );
+  }
+
+  function connectCalendarControls() {
+    const previousButton =
+      document.getElementById(
+        "calendar-previous-month"
+      );
+
+    const nextButton =
+      document.getElementById(
+        "calendar-next-month"
+      );
+
+    const todayButton =
+      document.getElementById(
+        "calendar-today-button"
+      );
+
+    const allLessonsButton =
+      document.getElementById(
+        "calendar-all-lessons-button"
+      );
+
+    if (previousButton) {
+      previousButton.addEventListener(
+        "click",
+        function () {
+          changeVisibleMonth(-1);
+        }
+      );
+    }
+
+    if (nextButton) {
+      nextButton.addEventListener(
+        "click",
+        function () {
+          changeVisibleMonth(1);
+        }
+      );
+    }
+
+    if (todayButton) {
+      todayButton.addEventListener(
+        "click",
+        goToToday
+      );
+    }
+
+    if (allLessonsButton) {
+      allLessonsButton.addEventListener(
+        "click",
+        showAllLessons
+      );
+    }
+  }
+
+  /*
+  ==========================================
+  ARCHIVE LOADING
+  ==========================================
+  */
 
   function showError(messageText) {
     const message =
@@ -568,9 +1147,115 @@ Lesson Library
     );
   }
 
+  function showLoadingMessage() {
+    const message =
+      document.getElementById(
+        "library-message"
+      );
+
+    if (!message) {
+      return;
+    }
+
+    message.textContent =
+      "Loading your saved lessons...";
+
+    message.classList.add(
+      "show"
+    );
+  }
+
+  function sortLessonsNewestFirst(
+    lessons
+  ) {
+    return lessons
+      .slice()
+      .sort(
+        (
+          firstLesson,
+          secondLesson
+        ) => {
+          const firstDate =
+            textToLocalDate(
+              firstLesson.lessonDate
+            );
+
+          const secondDate =
+            textToLocalDate(
+              secondLesson.lessonDate
+            );
+
+          const firstTime =
+            firstDate
+              ? firstDate.getTime()
+              : 0;
+
+          const secondTime =
+            secondDate
+              ? secondDate.getTime()
+              : 0;
+
+          return (
+            secondTime -
+            firstTime
+          );
+        }
+      );
+  }
+
+  function setInitialCalendarMonth() {
+    if (!allLessons.length) {
+      return;
+    }
+
+    const lessonDates =
+      allLessons
+        .map(lesson => {
+          return textToLocalDate(
+            lesson.lessonDate
+          );
+        })
+        .filter(Boolean);
+
+    if (!lessonDates.length) {
+      return;
+    }
+
+    const currentMonthHasLessons =
+      lessonDates.some(date => {
+        return isSameMonth(
+          date,
+          visibleMonth
+        );
+      });
+
+    if (currentMonthHasLessons) {
+      return;
+    }
+
+    const newestLessonDate =
+      lessonDates.sort(
+        (firstDate, secondDate) => {
+          return (
+            secondDate.getTime() -
+            firstDate.getTime()
+          );
+        }
+      )[0];
+
+    visibleMonth =
+      new Date(
+        newestLessonDate.getFullYear(),
+        newestLessonDate.getMonth(),
+        1
+      );
+  }
+
   function loadLessons() {
     const teacher =
       readTeacherProfile();
+
+    showLoadingMessage();
 
     if (!teacher.teacherEmail) {
       showError(
@@ -596,11 +1281,27 @@ Lesson Library
               : "The Library could not be loaded."
           );
 
+          delete window[
+            callbackName
+          ];
+
           return;
         }
 
+        allLessons =
+          sortLessonsNewestFirst(
+            response.lessons || []
+          );
+
+        window.patriotLibraryLessons =
+          allLessons.slice();
+
+        setInitialCalendarMonth();
+
+        renderCalendar();
+
         displayLessons(
-          response.lessons || []
+          allLessons
         );
 
         delete window[
@@ -630,6 +1331,10 @@ Lesson Library
         showError(
           "Patriot Command could not reach the Google lesson archive."
         );
+
+        delete window[
+          callbackName
+        ];
       };
 
     document.body.appendChild(
@@ -637,8 +1342,17 @@ Lesson Library
     );
   }
 
+  /*
+  ==========================================
+  STARTUP
+  ==========================================
+  */
+
   function startLessonLibrary() {
-    addLibraryActionStyles();
+    connectCalendarControls();
+
+    renderCalendar();
+
     loadLessons();
   }
 
