@@ -1,0 +1,1697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Student Rosters | Patriot Command</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #b3262e;
+      --cream: #f7f2e8;
+      --white: #ffffff;
+      --gold: #d3a84f;
+      --green: #2f7d4a;
+      --gray: #d7dce3;
+      --dark-gray: #657184;
+      --light-blue: #e8edf3;
+      --warning: #fff0cf;
+      --warning-border: #d6a23d;
+      --shadow: rgba(0, 0, 0, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background: var(--light-blue);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    header {
+      padding: 24px 30px;
+      color: var(--white);
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .header-inner {
+      width: min(1050px, 94%);
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--gold);
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1050px, 94%);
+      margin: 26px auto;
+    }
+
+    .card {
+      margin-bottom: 22px;
+      padding: 25px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 7px 20px var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      color: var(--red);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .instructions {
+      margin: 0 0 20px;
+      padding: 14px;
+      line-height: 1.5;
+      background: var(--cream);
+      border-left: 5px solid var(--gold);
+      border-radius: 8px;
+    }
+
+    .warning {
+      display: none;
+      margin-bottom: 20px;
+      padding: 14px;
+      color: #713b00;
+      line-height: 1.5;
+      background: var(--warning);
+      border: 2px solid var(--warning-border);
+      border-radius: 9px;
+    }
+
+    .warning.show {
+      display: block;
+    }
+
+    .form-group label,
+    .field-label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select,
+    .student-table input {
+      width: 100%;
+      padding: 11px;
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .student-table input:focus {
+      outline: 3px solid rgba(211, 168, 79, 0.35);
+      border-color: var(--gold);
+    }
+
+    .class-row {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(180px, 1fr);
+      gap: 18px;
+      align-items: end;
+    }
+
+    .roster-summary {
+      padding: 12px 15px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      background: var(--navy);
+      border-radius: 9px;
+    }
+
+    .import-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(220px, 1fr);
+      gap: 18px;
+      align-items: end;
+    }
+
+    .file-input {
+      padding: 9px !important;
+    }
+
+    .import-choice {
+      display: grid;
+      gap: 8px;
+    }
+
+    .radio-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      padding: 10px;
+      background: var(--cream);
+      border-radius: 8px;
+    }
+
+    .radio-row input {
+      width: auto;
+      margin-top: 3px;
+    }
+
+    .radio-row label {
+      margin: 0;
+      font-weight: normal;
+      line-height: 1.35;
+    }
+
+    .import-result {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      line-height: 1.45;
+      background: #e5f4e9;
+      border-left: 5px solid var(--green);
+      border-radius: 8px;
+    }
+
+    .import-result.show {
+      display: block;
+    }
+
+    .manual-add {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr auto;
+      gap: 12px;
+      align-items: end;
+      margin-bottom: 22px;
+      padding: 18px;
+      background: var(--cream);
+      border-radius: 12px;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 17px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      text-decoration: none;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      filter: brightness(1.08);
+    }
+
+    .button-primary {
+      background: var(--navy);
+    }
+
+    .button-save {
+      background: var(--green);
+    }
+
+    .button-danger {
+      background: var(--red);
+    }
+
+    .button-secondary {
+      color: var(--navy);
+      background: var(--gray);
+    }
+
+    .button-small {
+      padding: 9px 11px;
+      font-size: 0.88rem;
+    }
+
+    .button:disabled {
+      color: #666666;
+      background: #dddddd;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+    }
+
+    .student-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    .student-table th,
+    .student-table td {
+      padding: 10px;
+      text-align: left;
+      vertical-align: middle;
+      border-bottom: 1px solid var(--gray);
+    }
+
+    .student-table th {
+      color: var(--white);
+      background: var(--navy);
+    }
+
+    .student-table th:first-child {
+      width: 60px;
+      text-align: center;
+    }
+
+    .student-table th:last-child {
+      width: 100px;
+      text-align: center;
+    }
+
+    .student-number,
+    .student-actions {
+      text-align: center !important;
+    }
+
+    .empty-state {
+      padding: 28px 15px;
+      color: var(--dark-gray);
+      text-align: center;
+      line-height: 1.5;
+      background: var(--cream);
+      border-radius: 10px;
+    }
+
+    .roster-actions {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .save-message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      background: var(--green);
+      border-radius: 8px;
+    }
+
+    .save-message.show {
+      display: block;
+    }
+
+    .small-note {
+      margin: 15px 0 0;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 760px) {
+      .class-row,
+      .import-grid,
+      .manual-add,
+      .roster-actions {
+        grid-template-columns: 1fr;
+      }
+
+      .manual-add .button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>Student Rosters</h1>
+
+      <p class="subtitle">
+        Import student names from an Infinite Campus CSV file.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>Select a Class</h2>
+
+      <p class="instructions">
+        Rosters are saved by class period. Patriot Command only uses
+        these names for classroom tools such as seating charts,
+        student picker, review-game points, and substitute access.
+      </p>
+
+      <div id="settings-warning" class="warning">
+        No classes were found. Open Teacher Settings and enter at least
+        one class before importing a roster.
+      </div>
+
+      <div class="class-row">
+        <div class="form-group">
+          <label for="class-selector">
+            Class
+          </label>
+
+          <select id="class-selector">
+            <option value="">
+              Select a class
+            </option>
+          </select>
+        </div>
+
+        <div id="roster-summary" class="roster-summary">
+          No class selected
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Import Infinite Campus CSV</h2>
+
+      <p class="instructions">
+        Export the class roster from Infinite Campus as a CSV file.
+        Patriot Command will look for first-name, last-name, preferred-name,
+        or full-name columns and show the results before anything is saved.
+      </p>
+
+      <div class="import-grid">
+        <div class="form-group">
+          <label for="csv-file">
+            Choose CSV File
+          </label>
+
+          <input
+            id="csv-file"
+            class="file-input"
+            type="file"
+            accept=".csv,text/csv"
+            disabled
+          >
+        </div>
+
+        <div class="import-choice">
+          <span class="field-label">
+            Import Method
+          </span>
+
+          <div class="radio-row">
+            <input
+              id="replace-roster"
+              type="radio"
+              name="import-method"
+              value="replace"
+              checked
+            >
+
+            <label for="replace-roster">
+              Replace the current roster with the imported names.
+            </label>
+          </div>
+
+          <div class="radio-row">
+            <input
+              id="merge-roster"
+              type="radio"
+              name="import-method"
+              value="merge"
+            >
+
+            <label for="merge-roster">
+              Merge imported names with the current roster.
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div
+        id="import-result"
+        class="import-result"
+        aria-live="polite"
+      ></div>
+
+      <p class="small-note">
+        Student numbers, grades, attendance, contact information, and
+        other Infinite Campus data are not saved.
+      </p>
+    </section>
+
+    <section class="card">
+      <h2>Review Roster</h2>
+
+      <div class="manual-add">
+        <div class="form-group">
+          <label for="new-first-name">
+            First Name
+          </label>
+
+          <input
+            id="new-first-name"
+            type="text"
+            placeholder="First name"
+            disabled
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="new-last-name">
+            Last Name
+          </label>
+
+          <input
+            id="new-last-name"
+            type="text"
+            placeholder="Last name"
+            disabled
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="new-preferred-name">
+            Preferred Name
+          </label>
+
+          <input
+            id="new-preferred-name"
+            type="text"
+            placeholder="Optional"
+            disabled
+          >
+        </div>
+
+        <button
+          id="add-student-button"
+          class="button button-primary"
+          type="button"
+          disabled
+        >
+          Add Student
+        </button>
+      </div>
+
+      <div id="empty-state" class="empty-state">
+        Select a class to view or import its roster.
+      </div>
+
+      <div
+        id="table-wrap"
+        class="table-wrap"
+        hidden
+      >
+        <table class="student-table">
+          <thead>
+            <tr>
+              <th scope="col">
+                #
+              </th>
+
+              <th scope="col">
+                First Name
+              </th>
+
+              <th scope="col">
+                Last Name
+              </th>
+
+              <th scope="col">
+                Preferred Name
+              </th>
+
+              <th scope="col">
+                Remove
+              </th>
+            </tr>
+          </thead>
+
+          <tbody id="student-table-body"></tbody>
+        </table>
+      </div>
+
+      <div class="roster-actions">
+        <button
+          id="save-roster-button"
+          class="button button-save"
+          type="button"
+          disabled
+        >
+          Save Roster
+        </button>
+
+        <button
+          id="clear-roster-button"
+          class="button button-danger"
+          type="button"
+          disabled
+        >
+          Clear Roster
+        </button>
+      </div>
+
+      <div
+        id="save-message"
+        class="save-message"
+        aria-live="polite"
+      >
+        Roster saved!
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const PROFILE_STORAGE_KEY =
+      "patriotTeacherProfile";
+
+    const ROSTER_STORAGE_KEY =
+      "patriotStudentRosters";
+
+    const classSelector =
+      document.getElementById("class-selector");
+
+    const csvFileInput =
+      document.getElementById("csv-file");
+
+    const studentTableBody =
+      document.getElementById("student-table-body");
+
+    const tableWrap =
+      document.getElementById("table-wrap");
+
+    const emptyState =
+      document.getElementById("empty-state");
+
+    const rosterSummary =
+      document.getElementById("roster-summary");
+
+    const settingsWarning =
+      document.getElementById("settings-warning");
+
+    const importResult =
+      document.getElementById("import-result");
+
+    const saveMessage =
+      document.getElementById("save-message");
+
+    const addStudentButton =
+      document.getElementById("add-student-button");
+
+    const saveRosterButton =
+      document.getElementById("save-roster-button");
+
+    const clearRosterButton =
+      document.getElementById("clear-roster-button");
+
+    const newFirstName =
+      document.getElementById("new-first-name");
+
+    const newLastName =
+      document.getElementById("new-last-name");
+
+    const newPreferredName =
+      document.getElementById("new-preferred-name");
+
+    let workingRoster = [];
+    let selectedClassKey = "";
+    let hasUnsavedChanges = false;
+
+    function createStudent(
+      firstName,
+      lastName,
+      preferredName = ""
+    ) {
+      return {
+        id:
+          "student-" +
+          Date.now() +
+          "-" +
+          Math.random()
+            .toString(16)
+            .slice(2),
+
+        firstName:
+          String(firstName || "").trim(),
+
+        lastName:
+          String(lastName || "").trim(),
+
+        preferredName:
+          String(preferredName || "").trim(),
+
+        active: true
+      };
+    }
+
+    function readTeacherProfile() {
+      const saved =
+        localStorage.getItem(
+          PROFILE_STORAGE_KEY
+        );
+
+      if (!saved) {
+        return null;
+      }
+
+      try {
+        return JSON.parse(saved);
+      } catch (error) {
+        console.error(
+          "Teacher profile could not be read.",
+          error
+        );
+
+        return null;
+      }
+    }
+
+    function readRosters() {
+      const saved =
+        localStorage.getItem(
+          ROSTER_STORAGE_KEY
+        );
+
+      if (!saved) {
+        return {};
+      }
+
+      try {
+        const parsed = JSON.parse(saved);
+
+        return (
+          parsed &&
+          typeof parsed === "object"
+            ? parsed
+            : {}
+        );
+      } catch (error) {
+        console.error(
+          "Student rosters could not be read.",
+          error
+        );
+
+        return {};
+      }
+    }
+
+    function saveAllRosters(rosters) {
+      localStorage.setItem(
+        ROSTER_STORAGE_KEY,
+        JSON.stringify(rosters)
+      );
+    }
+
+    function getClassOptions() {
+      const profile =
+        readTeacherProfile();
+
+      if (
+        !profile ||
+        !profile.classes
+      ) {
+        return [];
+      }
+
+      return Object.entries(
+        profile.classes
+      )
+        .filter(
+          ([periodName, courseName]) =>
+            periodName &&
+            String(courseName || "").trim()
+        )
+        .map(
+          ([periodName, courseName]) => ({
+            key: periodName,
+            periodName: periodName,
+            courseName:
+              String(courseName).trim()
+          })
+        );
+    }
+
+    function populateClassSelector() {
+      const classes =
+        getClassOptions();
+
+      classSelector.innerHTML = `
+        <option value="">
+          Select a class
+        </option>
+      `;
+
+      classes.forEach(classInfo => {
+        const option =
+          document.createElement("option");
+
+        option.value =
+          classInfo.key;
+
+        option.textContent =
+          `${classInfo.periodName} — ` +
+          classInfo.courseName;
+
+        classSelector.appendChild(option);
+      });
+
+      settingsWarning.classList.toggle(
+        "show",
+        classes.length === 0
+      );
+
+      classSelector.disabled =
+        classes.length === 0;
+    }
+
+    function cloneRoster(roster) {
+      return roster.map(student => ({
+        ...student
+      }));
+    }
+
+    function loadSelectedRoster() {
+      selectedClassKey =
+        classSelector.value;
+
+      importResult.classList.remove(
+        "show"
+      );
+
+      importResult.textContent = "";
+
+      if (!selectedClassKey) {
+        workingRoster = [];
+        hasUnsavedChanges = false;
+
+        setControlsEnabled(false);
+        renderRoster();
+
+        return;
+      }
+
+      const rosters =
+        readRosters();
+
+      workingRoster =
+        cloneRoster(
+          rosters[selectedClassKey] || []
+        );
+
+      hasUnsavedChanges = false;
+
+      setControlsEnabled(true);
+      renderRoster();
+    }
+
+    function setControlsEnabled(enabled) {
+      csvFileInput.disabled =
+        !enabled;
+
+      newFirstName.disabled =
+        !enabled;
+
+      newLastName.disabled =
+        !enabled;
+
+      newPreferredName.disabled =
+        !enabled;
+
+      addStudentButton.disabled =
+        !enabled;
+
+      saveRosterButton.disabled =
+        !enabled;
+
+      clearRosterButton.disabled =
+        !enabled;
+    }
+
+    function updateRosterSummary() {
+      if (!selectedClassKey) {
+        rosterSummary.textContent =
+          "No class selected";
+
+        return;
+      }
+
+      const count =
+        workingRoster.length;
+
+      rosterSummary.textContent =
+        count === 1
+          ? "1 student"
+          : `${count} students`;
+    }
+
+    function renderRoster() {
+      studentTableBody.innerHTML = "";
+
+      updateRosterSummary();
+
+      if (!selectedClassKey) {
+        tableWrap.hidden = true;
+        emptyState.hidden = false;
+
+        emptyState.textContent =
+          "Select a class to view or import its roster.";
+
+        return;
+      }
+
+      if (workingRoster.length === 0) {
+        tableWrap.hidden = true;
+        emptyState.hidden = false;
+
+        emptyState.textContent =
+          "This class does not have any students yet. Import a CSV file or add a student manually.";
+
+        return;
+      }
+
+      tableWrap.hidden = false;
+      emptyState.hidden = true;
+
+      workingRoster.forEach(
+        (student, index) => {
+          const row =
+            document.createElement("tr");
+
+          const numberCell =
+            document.createElement("td");
+
+          numberCell.className =
+            "student-number";
+
+          numberCell.textContent =
+            String(index + 1);
+
+          const firstNameCell =
+            createEditableCell(
+              student,
+              "firstName",
+              "First name"
+            );
+
+          const lastNameCell =
+            createEditableCell(
+              student,
+              "lastName",
+              "Last name"
+            );
+
+          const preferredNameCell =
+            createEditableCell(
+              student,
+              "preferredName",
+              "Preferred name"
+            );
+
+          const actionCell =
+            document.createElement("td");
+
+          actionCell.className =
+            "student-actions";
+
+          const removeButton =
+            document.createElement("button");
+
+          removeButton.type =
+            "button";
+
+          removeButton.className =
+            "button button-danger button-small";
+
+          removeButton.textContent =
+            "Remove";
+
+          removeButton.addEventListener(
+            "click",
+            () => {
+              removeStudent(
+                student.id
+              );
+            }
+          );
+
+          actionCell.appendChild(
+            removeButton
+          );
+
+          row.appendChild(numberCell);
+          row.appendChild(firstNameCell);
+          row.appendChild(lastNameCell);
+          row.appendChild(
+            preferredNameCell
+          );
+          row.appendChild(actionCell);
+
+          studentTableBody.appendChild(
+            row
+          );
+        }
+      );
+    }
+
+    function createEditableCell(
+      student,
+      propertyName,
+      accessibleLabel
+    ) {
+      const cell =
+        document.createElement("td");
+
+      const input =
+        document.createElement("input");
+
+      input.type = "text";
+
+      input.value =
+        student[propertyName] || "";
+
+      input.setAttribute(
+        "aria-label",
+        `${accessibleLabel} for ` +
+        `${student.firstName} ${student.lastName}`
+      );
+
+      input.addEventListener(
+        "input",
+        event => {
+          student[propertyName] =
+            event.target.value;
+
+          hasUnsavedChanges = true;
+        }
+      );
+
+      cell.appendChild(input);
+
+      return cell;
+    }
+
+    function addStudent() {
+      if (!selectedClassKey) {
+        return;
+      }
+
+      const firstName =
+        newFirstName.value.trim();
+
+      const lastName =
+        newLastName.value.trim();
+
+      const preferredName =
+        newPreferredName.value.trim();
+
+      if (!firstName && !lastName) {
+        window.alert(
+          "Enter at least a first or last name."
+        );
+
+        return;
+      }
+
+      workingRoster.push(
+        createStudent(
+          firstName,
+          lastName,
+          preferredName
+        )
+      );
+
+      newFirstName.value = "";
+      newLastName.value = "";
+      newPreferredName.value = "";
+
+      hasUnsavedChanges = true;
+
+      renderRoster();
+
+      newFirstName.focus();
+    }
+
+    function removeStudent(studentId) {
+      const student =
+        workingRoster.find(
+          item => item.id === studentId
+        );
+
+      if (!student) {
+        return;
+      }
+
+      const displayName =
+        [
+          student.firstName,
+          student.lastName
+        ]
+          .filter(Boolean)
+          .join(" ");
+
+      const confirmed =
+        window.confirm(
+          `Remove ${displayName || "this student"} from the roster?`
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      workingRoster =
+        workingRoster.filter(
+          item => item.id !== studentId
+        );
+
+      hasUnsavedChanges = true;
+
+      renderRoster();
+    }
+
+    function saveRoster() {
+      if (!selectedClassKey) {
+        window.alert(
+          "Select a class first."
+        );
+
+        return;
+      }
+
+      const cleanedRoster =
+        workingRoster
+          .map(student => ({
+            ...student,
+
+            firstName:
+              String(
+                student.firstName || ""
+              ).trim(),
+
+            lastName:
+              String(
+                student.lastName || ""
+              ).trim(),
+
+            preferredName:
+              String(
+                student.preferredName || ""
+              ).trim()
+          }))
+          .filter(
+            student =>
+              student.firstName ||
+              student.lastName
+          );
+
+      workingRoster =
+        cleanedRoster;
+
+      const rosters =
+        readRosters();
+
+      rosters[selectedClassKey] =
+        cloneRoster(workingRoster);
+
+      saveAllRosters(rosters);
+
+      hasUnsavedChanges = false;
+
+      renderRoster();
+
+      saveMessage.classList.add(
+        "show"
+      );
+
+      setTimeout(() => {
+        saveMessage.classList.remove(
+          "show"
+        );
+      }, 1800);
+    }
+
+    function clearRoster() {
+      if (
+        !selectedClassKey ||
+        workingRoster.length === 0
+      ) {
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          "Clear every student from this class roster?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      workingRoster = [];
+      hasUnsavedChanges = true;
+
+      renderRoster();
+    }
+
+    function normalizeHeader(value) {
+      return String(value || "")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+    }
+
+    function parseCsv(csvText) {
+      const rows = [];
+      let row = [];
+      let field = "";
+      let insideQuotes = false;
+
+      for (
+        let index = 0;
+        index < csvText.length;
+        index += 1
+      ) {
+        const character =
+          csvText[index];
+
+        const nextCharacter =
+          csvText[index + 1];
+
+        if (
+          character === '"' &&
+          insideQuotes &&
+          nextCharacter === '"'
+        ) {
+          field += '"';
+          index += 1;
+
+          continue;
+        }
+
+        if (character === '"') {
+          insideQuotes =
+            !insideQuotes;
+
+          continue;
+        }
+
+        if (
+          character === "," &&
+          !insideQuotes
+        ) {
+          row.push(field);
+          field = "";
+
+          continue;
+        }
+
+        if (
+          (
+            character === "\n" ||
+            character === "\r"
+          ) &&
+          !insideQuotes
+        ) {
+          if (
+            character === "\r" &&
+            nextCharacter === "\n"
+          ) {
+            index += 1;
+          }
+
+          row.push(field);
+
+          if (
+            row.some(
+              value =>
+                String(value).trim()
+            )
+          ) {
+            rows.push(row);
+          }
+
+          row = [];
+          field = "";
+
+          continue;
+        }
+
+        field += character;
+      }
+
+      row.push(field);
+
+      if (
+        row.some(
+          value =>
+            String(value).trim()
+        )
+      ) {
+        rows.push(row);
+      }
+
+      return rows;
+    }
+
+    function findColumnIndex(
+      normalizedHeaders,
+      possibleNames
+    ) {
+      return normalizedHeaders.findIndex(
+        header =>
+          possibleNames.includes(header)
+      );
+    }
+
+    function splitFullName(fullName) {
+      const cleanName =
+        String(fullName || "")
+          .trim()
+          .replace(/\s+/g, " ");
+
+      if (!cleanName) {
+        return {
+          firstName: "",
+          lastName: ""
+        };
+      }
+
+      if (cleanName.includes(",")) {
+        const parts =
+          cleanName
+            .split(",")
+            .map(part => part.trim());
+
+        return {
+          firstName:
+            parts.slice(1).join(" "),
+
+          lastName:
+            parts[0] || ""
+        };
+      }
+
+      const parts =
+        cleanName.split(" ");
+
+      if (parts.length === 1) {
+        return {
+          firstName: parts[0],
+          lastName: ""
+        };
+      }
+
+      return {
+        firstName: parts[0],
+        lastName:
+          parts.slice(1).join(" ")
+      };
+    }
+
+    function extractStudentsFromRows(rows) {
+      if (rows.length < 2) {
+        return [];
+      }
+
+      const headers =
+        rows[0].map(
+          normalizeHeader
+        );
+
+      const firstNameIndex =
+        findColumnIndex(
+          headers,
+          [
+            "firstname",
+            "first",
+            "studentfirstname",
+            "legalfirstname"
+          ]
+        );
+
+      const lastNameIndex =
+        findColumnIndex(
+          headers,
+          [
+            "lastname",
+            "last",
+            "studentlastname",
+            "legallastname"
+          ]
+        );
+
+      const preferredNameIndex =
+        findColumnIndex(
+          headers,
+          [
+            "preferredname",
+            "nickname",
+            "calledname",
+            "studentpreferredname"
+          ]
+        );
+
+      const fullNameIndex =
+        findColumnIndex(
+          headers,
+          [
+            "studentname",
+            "name",
+            "fullname",
+            "studentfullname"
+          ]
+        );
+
+      if (
+        firstNameIndex === -1 &&
+        lastNameIndex === -1 &&
+        fullNameIndex === -1
+      ) {
+        throw new Error(
+          "Patriot Command could not find a student-name column in this CSV."
+        );
+      }
+
+      return rows
+        .slice(1)
+        .map(row => {
+          let firstName = "";
+          let lastName = "";
+
+          if (
+            firstNameIndex !== -1 ||
+            lastNameIndex !== -1
+          ) {
+            firstName =
+              row[firstNameIndex] || "";
+
+            lastName =
+              row[lastNameIndex] || "";
+          } else {
+            const splitName =
+              splitFullName(
+                row[fullNameIndex]
+              );
+
+            firstName =
+              splitName.firstName;
+
+            lastName =
+              splitName.lastName;
+          }
+
+          const preferredName =
+            preferredNameIndex !== -1
+              ? row[preferredNameIndex] || ""
+              : "";
+
+          return createStudent(
+            firstName,
+            lastName,
+            preferredName
+          );
+        })
+        .filter(
+          student =>
+            student.firstName ||
+            student.lastName
+        );
+    }
+
+    function getStudentComparisonKey(
+      student
+    ) {
+      return (
+        `${student.firstName}|` +
+        `${student.lastName}`
+      )
+        .trim()
+        .toLowerCase();
+    }
+
+    function removeDuplicateStudents(
+      students
+    ) {
+      const seen = new Set();
+
+      return students.filter(student => {
+        const key =
+          getStudentComparisonKey(
+            student
+          );
+
+        if (
+          !key ||
+          seen.has(key)
+        ) {
+          return false;
+        }
+
+        seen.add(key);
+
+        return true;
+      });
+    }
+
+    function importStudents(
+      importedStudents
+    ) {
+      const method =
+        document.querySelector(
+          'input[name="import-method"]:checked'
+        ).value;
+
+      const previousCount =
+        workingRoster.length;
+
+      if (method === "merge") {
+        workingRoster =
+          removeDuplicateStudents([
+            ...workingRoster,
+            ...importedStudents
+          ]);
+      } else {
+        workingRoster =
+          removeDuplicateStudents(
+            importedStudents
+          );
+      }
+
+      hasUnsavedChanges = true;
+
+      renderRoster();
+
+      const addedCount =
+        workingRoster.length -
+        (
+          method === "merge"
+            ? previousCount
+            : 0
+        );
+
+      importResult.textContent =
+        method === "merge"
+          ? `${Math.max(
+              0,
+              addedCount
+            )} new student names were added. Review the roster, then select Save Roster.`
+          : `${workingRoster.length} student names were imported. Review the roster, then select Save Roster.`;
+
+      importResult.classList.add(
+        "show"
+      );
+    }
+
+    function handleCsvUpload(event) {
+      const file =
+        event.target.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      if (!selectedClassKey) {
+        window.alert(
+          "Select a class before importing a roster."
+        );
+
+        csvFileInput.value = "";
+
+        return;
+      }
+
+      const reader =
+        new FileReader();
+
+      reader.addEventListener(
+        "load",
+        () => {
+          try {
+            const rows =
+              parseCsv(
+                String(reader.result || "")
+              );
+
+            const importedStudents =
+              extractStudentsFromRows(
+                rows
+              );
+
+            if (
+              importedStudents.length === 0
+            ) {
+              throw new Error(
+                "No student names were found in this CSV."
+              );
+            }
+
+            importStudents(
+              importedStudents
+            );
+          } catch (error) {
+            console.error(
+              "CSV import failed.",
+              error
+            );
+
+            window.alert(
+              error.message ||
+              "The CSV file could not be imported."
+            );
+          } finally {
+            csvFileInput.value = "";
+          }
+        }
+      );
+
+      reader.addEventListener(
+        "error",
+        () => {
+          window.alert(
+            "The CSV file could not be read."
+          );
+
+          csvFileInput.value = "";
+        }
+      );
+
+      reader.readAsText(file);
+    }
+
+    function confirmClassChange() {
+      if (!hasUnsavedChanges) {
+        return true;
+      }
+
+      return window.confirm(
+        "You have unsaved roster changes. Leave this class without saving them?"
+      );
+    }
+
+    let previousClassValue = "";
+
+    classSelector.addEventListener(
+      "focus",
+      () => {
+        previousClassValue =
+          classSelector.value;
+      }
+    );
+
+    classSelector.addEventListener(
+      "change",
+      () => {
+        if (!confirmClassChange()) {
+          classSelector.value =
+            previousClassValue;
+
+          return;
+        }
+
+        previousClassValue =
+          classSelector.value;
+
+        loadSelectedRoster();
+      }
+    );
+
+    csvFileInput.addEventListener(
+      "change",
+      handleCsvUpload
+    );
+
+    addStudentButton.addEventListener(
+      "click",
+      addStudent
+    );
+
+    saveRosterButton.addEventListener(
+      "click",
+      saveRoster
+    );
+
+    clearRosterButton.addEventListener(
+      "click",
+      clearRoster
+    );
+
+    [
+      newFirstName,
+      newLastName,
+      newPreferredName
+    ].forEach(input => {
+      input.addEventListener(
+        "keydown",
+        event => {
+          if (event.key === "Enter") {
+            addStudent();
+          }
+        }
+      );
+    });
+
+    window.addEventListener(
+      "beforeunload",
+      event => {
+        if (!hasUnsavedChanges) {
+          return;
+        }
+
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    );
+
+    populateClassSelector();
+    setControlsEnabled(false);
+    renderRoster();
+  </script>
+
+  <script src="js/navigation.js"></script>
+</body>
+</html>
