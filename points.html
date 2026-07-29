@@ -1,0 +1,1805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Review Game Points | Patriot Command</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #b3262e;
+      --gold: #d3a84f;
+      --green: #2f7d4a;
+      --cream: #f7f2e8;
+      --white: #ffffff;
+      --light-blue: #e8edf3;
+      --gray: #d7dce3;
+      --dark-gray: #657184;
+      --shadow: rgba(0, 0, 0, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--navy);
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--light-blue);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    header {
+      padding: 24px 30px;
+      color: var(--white);
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .header-inner {
+      width: min(1200px, 94%);
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--gold);
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1200px, 94%);
+      margin: 26px auto;
+    }
+
+    .card {
+      margin-bottom: 22px;
+      padding: 24px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 7px 20px var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      color: var(--red);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .instructions {
+      margin: 0 0 20px;
+      padding: 14px;
+      line-height: 1.5;
+      background: var(--cream);
+      border-left: 5px solid var(--gold);
+      border-radius: 8px;
+    }
+
+    .warning {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px;
+      color: #713b00;
+      line-height: 1.5;
+      background: #fff0cf;
+      border: 2px solid #d6a23d;
+      border-radius: 9px;
+    }
+
+    .warning.show {
+      display: block;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(160px, 1fr)
+        minmax(140px, 1fr);
+      gap: 14px;
+      align-items: end;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 11px;
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: 3px solid rgba(211, 168, 79, 0.35);
+      border-color: var(--gold);
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 17px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      filter: brightness(1.08);
+    }
+
+    .button-primary {
+      background: var(--navy);
+    }
+
+    .button-save {
+      background: var(--green);
+    }
+
+    .button-danger {
+      background: var(--red);
+    }
+
+    .button-secondary {
+      color: var(--navy);
+      background: var(--gray);
+    }
+
+    .button:disabled {
+      color: #666666;
+      background: #dddddd;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .game-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .game-title {
+      margin: 0;
+      font-size: 1.35rem;
+    }
+
+    .toolbar-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .scoreboard {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .score-card {
+      position: relative;
+      padding: 18px;
+      background: var(--cream);
+      border: 3px solid var(--gray);
+      border-radius: 14px;
+      transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .score-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+    }
+
+    .score-card.leader {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 4px rgba(211, 168, 79, 0.2);
+    }
+
+    .leader-label {
+      display: none;
+      position: absolute;
+      top: -12px;
+      right: 14px;
+      padding: 5px 10px;
+      color: var(--navy);
+      font-size: 0.75rem;
+      font-weight: bold;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      background: var(--gold);
+      border-radius: 999px;
+    }
+
+    .score-card.leader .leader-label {
+      display: block;
+    }
+
+    .participant-name {
+      margin: 0 0 14px;
+      font-size: 1.18rem;
+      line-height: 1.3;
+    }
+
+    .score-number {
+      margin-bottom: 16px;
+      color: var(--navy);
+      font-size: clamp(2.7rem, 7vw, 4.4rem);
+      font-weight: bold;
+      line-height: 1;
+      text-align: center;
+    }
+
+    .point-controls {
+      display: grid;
+      grid-template-columns:
+        repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .point-button {
+      min-height: 45px;
+      padding: 8px;
+      color: var(--white);
+      font-weight: bold;
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .point-button:hover {
+      filter: brightness(1.08);
+    }
+
+    .point-add {
+      background: var(--green);
+    }
+
+    .point-subtract {
+      background: var(--red);
+    }
+
+    .team-setup {
+      display: none;
+      margin-top: 18px;
+      padding: 18px;
+      background: var(--cream);
+      border-radius: 12px;
+    }
+
+    .team-setup.show {
+      display: block;
+    }
+
+    .team-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .student-assignment-list {
+      display: grid;
+      grid-template-columns:
+        repeat(auto-fit, minmax(230px, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .assignment-row {
+      display: grid;
+      grid-template-columns: 1fr 130px;
+      gap: 8px;
+      align-items: center;
+      padding: 10px;
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 9px;
+    }
+
+    .assignment-name {
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .assignment-row select {
+      width: 100%;
+      padding: 8px;
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 7px;
+    }
+
+    .empty-state {
+      padding: 34px 18px;
+      color: var(--dark-gray);
+      text-align: center;
+      line-height: 1.6;
+      background: var(--cream);
+      border-radius: 12px;
+    }
+
+    .status-message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      background: var(--green);
+      border-radius: 8px;
+    }
+
+    .status-message.show {
+      display: block;
+    }
+
+    .small-note {
+      margin: 14px 0 0;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 760px) {
+      .controls-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .game-toolbar {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .toolbar-buttons {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toolbar-buttons .button {
+        width: 100%;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .point-controls {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .toolbar-buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .assignment-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: var(--white);
+      }
+
+      .patriot-nav,
+      header,
+      .setup-card,
+      .toolbar-buttons,
+      .point-controls,
+      .status-message,
+      .small-note,
+      .team-setup {
+        display: none !important;
+      }
+
+      main {
+        width: 100%;
+        margin: 0;
+      }
+
+      .card {
+        padding: 0;
+        box-shadow: none;
+      }
+
+      .scoreboard {
+        grid-template-columns:
+          repeat(2, 1fr);
+      }
+
+      .score-card {
+        break-inside: avoid;
+        border: 2px solid #000000;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>Review Game Points</h1>
+
+      <p class="subtitle">
+        Keep score for individual students or classroom teams.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card setup-card">
+      <h2>Game Setup</h2>
+
+      <p class="instructions">
+        Choose a class and decide whether students will compete individually
+        or as teams. Scores are saved automatically for each class.
+      </p>
+
+      <div
+        id="class-warning"
+        class="warning"
+      >
+        No classes were found. Add your classes in Teacher Settings first.
+      </div>
+
+      <div
+        id="roster-warning"
+        class="warning"
+      >
+        This class does not have a saved roster. Import its roster on the
+        Students page before starting a game.
+      </div>
+
+      <div class="controls-grid">
+        <div class="form-group">
+          <label for="class-selector">
+            Class
+          </label>
+
+          <select id="class-selector">
+            <option value="">
+              Select a class
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="game-mode">
+            Scoreboard Mode
+          </label>
+
+          <select id="game-mode">
+            <option value="individual">
+              Individual Students
+            </option>
+
+            <option value="teams">
+              Teams
+            </option>
+          </select>
+        </div>
+
+        <button
+          id="start-game-button"
+          class="button button-primary"
+          type="button"
+          disabled
+        >
+          Start Game
+        </button>
+      </div>
+
+      <div
+        id="team-setup"
+        class="team-setup"
+      >
+        <h3>Team Setup</h3>
+
+        <div class="team-grid">
+          <div class="form-group">
+            <label for="team-count">
+              Number of Teams
+            </label>
+
+            <select id="team-count">
+              <option value="2">2 Teams</option>
+              <option value="3">3 Teams</option>
+              <option value="4">4 Teams</option>
+              <option value="5">5 Teams</option>
+              <option value="6">6 Teams</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="assignment-method">
+              Student Assignment
+            </label>
+
+            <select id="assignment-method">
+              <option value="random">
+                Randomly Assign
+              </option>
+
+              <option value="manual">
+                Assign Manually
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div
+          id="student-assignment-list"
+          class="student-assignment-list"
+        ></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="game-toolbar">
+        <h2
+          id="game-heading"
+          class="game-title"
+        >
+          Scoreboard
+        </h2>
+
+        <div class="toolbar-buttons">
+          <button
+            id="save-game-button"
+            class="button button-save"
+            type="button"
+            disabled
+          >
+            Save Scores
+          </button>
+
+          <button
+            id="reset-scores-button"
+            class="button button-danger"
+            type="button"
+            disabled
+          >
+            Reset Scores
+          </button>
+
+          <button
+            id="new-game-button"
+            class="button button-secondary"
+            type="button"
+            disabled
+          >
+            New Game
+          </button>
+
+          <button
+            id="print-button"
+            class="button button-secondary"
+            type="button"
+            disabled
+          >
+            Print
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="empty-state"
+        class="empty-state"
+      >
+        Select a class and start a game.
+      </div>
+
+      <div
+        id="scoreboard"
+        class="scoreboard"
+        hidden
+      ></div>
+
+      <div
+        id="status-message"
+        class="status-message"
+        aria-live="polite"
+      ></div>
+
+      <p
+        id="small-note"
+        class="small-note"
+        hidden
+      >
+        Scores are stored in this browser. Use Save Scores before leaving
+        the page to preserve the current game.
+      </p>
+    </section>
+  </main>
+
+  <script>
+    const PROFILE_STORAGE_KEY =
+      "patriotTeacherProfile";
+
+    const ROSTER_STORAGE_KEY =
+      "patriotStudentRosters";
+
+    const POINTS_STORAGE_KEY =
+      "patriotReviewGamePoints";
+
+    const classSelector =
+      document.getElementById(
+        "class-selector"
+      );
+
+    const gameMode =
+      document.getElementById(
+        "game-mode"
+      );
+
+    const teamSetup =
+      document.getElementById(
+        "team-setup"
+      );
+
+    const teamCount =
+      document.getElementById(
+        "team-count"
+      );
+
+    const assignmentMethod =
+      document.getElementById(
+        "assignment-method"
+      );
+
+    const studentAssignmentList =
+      document.getElementById(
+        "student-assignment-list"
+      );
+
+    const startGameButton =
+      document.getElementById(
+        "start-game-button"
+      );
+
+    const saveGameButton =
+      document.getElementById(
+        "save-game-button"
+      );
+
+    const resetScoresButton =
+      document.getElementById(
+        "reset-scores-button"
+      );
+
+    const newGameButton =
+      document.getElementById(
+        "new-game-button"
+      );
+
+    const printButton =
+      document.getElementById(
+        "print-button"
+      );
+
+    const classWarning =
+      document.getElementById(
+        "class-warning"
+      );
+
+    const rosterWarning =
+      document.getElementById(
+        "roster-warning"
+      );
+
+    const gameHeading =
+      document.getElementById(
+        "game-heading"
+      );
+
+    const emptyState =
+      document.getElementById(
+        "empty-state"
+      );
+
+    const scoreboard =
+      document.getElementById(
+        "scoreboard"
+      );
+
+    const statusMessage =
+      document.getElementById(
+        "status-message"
+      );
+
+    const smallNote =
+      document.getElementById(
+        "small-note"
+      );
+
+    let selectedClassKey = "";
+    let selectedClassLabel = "";
+    let roster = [];
+    let currentMode = "individual";
+    let participants = [];
+    let teamAssignments = {};
+    let hasUnsavedChanges = false;
+
+    function readStorage(
+      storageKey,
+      fallbackValue
+    ) {
+      const saved =
+        localStorage.getItem(
+          storageKey
+        );
+
+      if (!saved) {
+        return fallbackValue;
+      }
+
+      try {
+        return JSON.parse(saved) ??
+          fallbackValue;
+      } catch (error) {
+        console.error(
+          `Could not read ${storageKey}.`,
+          error
+        );
+
+        return fallbackValue;
+      }
+    }
+
+    function writeStorage(
+      storageKey,
+      value
+    ) {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify(value)
+      );
+    }
+
+    function getClassOptions() {
+      const profile =
+        readStorage(
+          PROFILE_STORAGE_KEY,
+          null
+        );
+
+      if (
+        !profile ||
+        !profile.classes
+      ) {
+        return [];
+      }
+
+      return Object.entries(
+        profile.classes
+      )
+        .filter(
+          ([periodName, courseName]) =>
+            periodName &&
+            String(
+              courseName || ""
+            ).trim()
+        )
+        .map(
+          ([periodName, courseName]) => ({
+            key: periodName,
+            label:
+              `${periodName} — ` +
+              String(courseName).trim()
+          })
+        );
+    }
+
+    function populateClassSelector() {
+      const classes =
+        getClassOptions();
+
+      classSelector.innerHTML = `
+        <option value="">
+          Select a class
+        </option>
+      `;
+
+      classes.forEach(classInfo => {
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          classInfo.key;
+
+        option.textContent =
+          classInfo.label;
+
+        classSelector.appendChild(
+          option
+        );
+      });
+
+      classWarning.classList.toggle(
+        "show",
+        classes.length === 0
+      );
+
+      classSelector.disabled =
+        classes.length === 0;
+    }
+
+    function getStudentDisplayName(
+      student
+    ) {
+      const preferredName =
+        String(
+          student.preferredName || ""
+        ).trim();
+
+      const firstName =
+        preferredName ||
+        String(
+          student.firstName || ""
+        ).trim();
+
+      const lastName =
+        String(
+          student.lastName || ""
+        ).trim();
+
+      return [
+        firstName,
+        lastName
+      ]
+        .filter(Boolean)
+        .join(" ");
+    }
+
+    function getSelectedClassLabel() {
+      const option =
+        classSelector.options[
+          classSelector.selectedIndex
+        ];
+
+      return option
+        ? option.textContent.trim()
+        : "";
+    }
+
+    function loadSelectedClass() {
+      if (
+        hasUnsavedChanges &&
+        !window.confirm(
+          "You have unsaved score changes. Continue without saving?"
+        )
+      ) {
+        return;
+      }
+
+      selectedClassKey =
+        classSelector.value;
+
+      selectedClassLabel =
+        getSelectedClassLabel();
+
+      roster = [];
+      participants = [];
+      teamAssignments = {};
+      hasUnsavedChanges = false;
+
+      hideScoreboard();
+
+      if (!selectedClassKey) {
+        rosterWarning.classList.remove(
+          "show"
+        );
+
+        startGameButton.disabled = true;
+
+        emptyState.textContent =
+          "Select a class and start a game.";
+
+        renderTeamSetup();
+
+        return;
+      }
+
+      const rosters =
+        readStorage(
+          ROSTER_STORAGE_KEY,
+          {}
+        );
+
+      roster =
+        Array.isArray(
+          rosters[selectedClassKey]
+        )
+          ? rosters[
+              selectedClassKey
+            ].filter(
+              student =>
+                student &&
+                student.active !== false
+            )
+          : [];
+
+      const hasRoster =
+        roster.length > 0;
+
+      rosterWarning.classList.toggle(
+        "show",
+        !hasRoster
+      );
+
+      startGameButton.disabled =
+        !hasRoster;
+
+      renderTeamSetup();
+
+      if (!hasRoster) {
+        emptyState.textContent =
+          "This class does not have a saved roster.";
+
+        return;
+      }
+
+      loadSavedGame();
+    }
+
+    function renderTeamSetup() {
+      const teamsSelected =
+        gameMode.value === "teams";
+
+      teamSetup.classList.toggle(
+        "show",
+        teamsSelected
+      );
+
+      if (!teamsSelected) {
+        studentAssignmentList.innerHTML =
+          "";
+
+        return;
+      }
+
+      renderManualAssignments();
+    }
+
+    function renderManualAssignments() {
+      studentAssignmentList.innerHTML =
+        "";
+
+      if (
+        assignmentMethod.value !==
+        "manual" ||
+        roster.length === 0
+      ) {
+        return;
+      }
+
+      const numberOfTeams =
+        Number(teamCount.value);
+
+      const sortedRoster =
+        [...roster].sort(
+          (studentA, studentB) =>
+            getStudentDisplayName(
+              studentA
+            ).localeCompare(
+              getStudentDisplayName(
+                studentB
+              )
+            )
+        );
+
+      sortedRoster.forEach(
+        (student, index) => {
+          const row =
+            document.createElement(
+              "div"
+            );
+
+          row.className =
+            "assignment-row";
+
+          const name =
+            document.createElement(
+              "span"
+            );
+
+          name.className =
+            "assignment-name";
+
+          name.textContent =
+            getStudentDisplayName(
+              student
+            );
+
+          const selector =
+            document.createElement(
+              "select"
+            );
+
+          selector.dataset.studentId =
+            student.id;
+
+          for (
+            let teamNumber = 1;
+            teamNumber <= numberOfTeams;
+            teamNumber += 1
+          ) {
+            const option =
+              document.createElement(
+                "option"
+              );
+
+            option.value =
+              String(teamNumber);
+
+            option.textContent =
+              `Team ${teamNumber}`;
+
+            if (
+              teamAssignments[
+                student.id
+              ] === teamNumber ||
+              (
+                !teamAssignments[
+                  student.id
+                ] &&
+                teamNumber ===
+                  (index %
+                    numberOfTeams) +
+                    1
+              )
+            ) {
+              option.selected = true;
+            }
+
+            selector.appendChild(
+              option
+            );
+          }
+
+          selector.addEventListener(
+            "change",
+            () => {
+              teamAssignments[
+                student.id
+              ] =
+                Number(
+                  selector.value
+                );
+            }
+          );
+
+          row.appendChild(name);
+          row.appendChild(selector);
+
+          studentAssignmentList.appendChild(
+            row
+          );
+        }
+      );
+    }
+
+    function loadSavedGame() {
+      const savedGames =
+        readStorage(
+          POINTS_STORAGE_KEY,
+          {}
+        );
+
+      const savedGame =
+        savedGames[
+          selectedClassKey
+        ];
+
+      if (
+        !savedGame ||
+        !Array.isArray(
+          savedGame.participants
+        )
+      ) {
+        return;
+      }
+
+      currentMode =
+        savedGame.mode === "teams"
+          ? "teams"
+          : "individual";
+
+      gameMode.value =
+        currentMode;
+
+      if (
+        currentMode === "teams"
+      ) {
+        teamCount.value =
+          String(
+            savedGame.teamCount || 2
+          );
+
+        assignmentMethod.value =
+          savedGame.assignmentMethod ||
+          "random";
+
+        teamAssignments =
+          savedGame.teamAssignments ||
+          {};
+      }
+
+      participants =
+        savedGame.participants
+          .map(participant => ({
+            id:
+              participant.id,
+
+            name:
+              participant.name,
+
+            score:
+              Number(
+                participant.score
+              ) || 0,
+
+            studentIds:
+              Array.isArray(
+                participant.studentIds
+              )
+                ? participant.studentIds
+                : []
+          }))
+          .filter(
+            participant =>
+              participant.id &&
+              participant.name
+          );
+
+      renderTeamSetup();
+
+      if (
+        participants.length > 0
+      ) {
+        showScoreboard();
+      }
+    }
+
+    function startGame() {
+      if (
+        !selectedClassKey ||
+        roster.length === 0
+      ) {
+        return;
+      }
+
+      currentMode =
+        gameMode.value;
+
+      if (
+        currentMode === "individual"
+      ) {
+        createIndividualParticipants();
+      } else {
+        createTeamParticipants();
+      }
+
+      hasUnsavedChanges = true;
+      showScoreboard();
+    }
+
+    function createIndividualParticipants() {
+      participants =
+        [...roster]
+          .sort(
+            (studentA, studentB) =>
+              getStudentDisplayName(
+                studentA
+              ).localeCompare(
+                getStudentDisplayName(
+                  studentB
+                )
+              )
+          )
+          .map(student => ({
+            id:
+              student.id,
+
+            name:
+              getStudentDisplayName(
+                student
+              ),
+
+            score: 0,
+
+            studentIds: [
+              student.id
+            ]
+          }));
+    }
+
+    function createTeamParticipants() {
+      const numberOfTeams =
+        Number(teamCount.value);
+
+      teamAssignments = {};
+
+      if (
+        assignmentMethod.value ===
+        "manual"
+      ) {
+        const selectors =
+          studentAssignmentList.querySelectorAll(
+            "select[data-student-id]"
+          );
+
+        selectors.forEach(selector => {
+          teamAssignments[
+            selector.dataset.studentId
+          ] =
+            Number(
+              selector.value
+            );
+        });
+      } else {
+        const shuffledRoster =
+          shuffleArray(
+            [...roster]
+          );
+
+        shuffledRoster.forEach(
+          (student, index) => {
+            teamAssignments[
+              student.id
+            ] =
+              (index %
+                numberOfTeams) +
+              1;
+          }
+        );
+      }
+
+      participants = [];
+
+      for (
+        let teamNumber = 1;
+        teamNumber <= numberOfTeams;
+        teamNumber += 1
+      ) {
+        const teamStudentIds =
+          roster
+            .filter(
+              student =>
+                teamAssignments[
+                  student.id
+                ] === teamNumber
+            )
+            .map(
+              student =>
+                student.id
+            );
+
+        participants.push({
+          id:
+            `team-${teamNumber}`,
+
+          name:
+            `Team ${teamNumber}`,
+
+          score: 0,
+
+          studentIds:
+            teamStudentIds
+        });
+      }
+    }
+
+    function shuffleArray(array) {
+      for (
+        let index =
+          array.length - 1;
+        index > 0;
+        index -= 1
+      ) {
+        const randomIndex =
+          Math.floor(
+            Math.random() *
+            (index + 1)
+          );
+
+        [
+          array[index],
+          array[randomIndex]
+        ] = [
+          array[randomIndex],
+          array[index]
+        ];
+      }
+
+      return array;
+    }
+
+    function showScoreboard() {
+      emptyState.hidden = true;
+      scoreboard.hidden = false;
+      smallNote.hidden = false;
+
+      saveGameButton.disabled = false;
+      resetScoresButton.disabled = false;
+      newGameButton.disabled = false;
+      printButton.disabled = false;
+
+      gameHeading.textContent =
+        `${selectedClassLabel} — ` +
+        (
+          currentMode === "teams"
+            ? "Team Scores"
+            : "Individual Scores"
+        );
+
+      renderScoreboard();
+    }
+
+    function hideScoreboard() {
+      emptyState.hidden = false;
+      scoreboard.hidden = true;
+      smallNote.hidden = true;
+
+      saveGameButton.disabled = true;
+      resetScoresButton.disabled = true;
+      newGameButton.disabled = true;
+      printButton.disabled = true;
+
+      gameHeading.textContent =
+        "Scoreboard";
+
+      scoreboard.innerHTML = "";
+    }
+
+    function renderScoreboard() {
+      scoreboard.innerHTML = "";
+
+      const highestScore =
+        participants.length > 0
+          ? Math.max(
+              ...participants.map(
+                participant =>
+                  participant.score
+              )
+            )
+          : 0;
+
+      participants.forEach(
+        participant => {
+          const card =
+            document.createElement(
+              "article"
+            );
+
+          card.className =
+            "score-card";
+
+          if (
+            participants.length > 1 &&
+            participant.score ===
+              highestScore
+          ) {
+            card.classList.add(
+              "leader"
+            );
+          }
+
+          const leaderLabel =
+            document.createElement(
+              "span"
+            );
+
+          leaderLabel.className =
+            "leader-label";
+
+          leaderLabel.textContent =
+            "Leader";
+
+          const name =
+            document.createElement(
+              "h3"
+            );
+
+          name.className =
+            "participant-name";
+
+          name.textContent =
+            participant.name;
+
+          if (
+            currentMode === "teams"
+          ) {
+            const studentNames =
+              participant.studentIds
+                .map(studentId => {
+                  const student =
+                    roster.find(
+                      item =>
+                        item.id ===
+                        studentId
+                    );
+
+                  return student
+                    ? getStudentDisplayName(
+                        student
+                      )
+                    : "";
+                })
+                .filter(Boolean);
+
+            if (
+              studentNames.length > 0
+            ) {
+              name.title =
+                studentNames.join(", ");
+            }
+          }
+
+          const score =
+            document.createElement(
+              "div"
+            );
+
+          score.className =
+            "score-number";
+
+          score.textContent =
+            participant.score;
+
+          const controls =
+            document.createElement(
+              "div"
+            );
+
+          controls.className =
+            "point-controls";
+
+          controls.appendChild(
+            createPointButton(
+              participant.id,
+              -5,
+              "−5",
+              "point-subtract"
+            )
+          );
+
+          controls.appendChild(
+            createPointButton(
+              participant.id,
+              -1,
+              "−1",
+              "point-subtract"
+            )
+          );
+
+          controls.appendChild(
+            createPointButton(
+              participant.id,
+              1,
+              "+1",
+              "point-add"
+            )
+          );
+
+          controls.appendChild(
+            createPointButton(
+              participant.id,
+              5,
+              "+5",
+              "point-add"
+            )
+          );
+
+          card.appendChild(
+            leaderLabel
+          );
+
+          card.appendChild(name);
+          card.appendChild(score);
+          card.appendChild(controls);
+
+          scoreboard.appendChild(
+            card
+          );
+        }
+      );
+    }
+
+    function createPointButton(
+      participantId,
+      amount,
+      label,
+      className
+    ) {
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.type =
+        "button";
+
+      button.className =
+        `point-button ${className}`;
+
+      button.textContent =
+        label;
+
+      button.setAttribute(
+        "aria-label",
+        `${label} points`
+      );
+
+      button.addEventListener(
+        "click",
+        () => {
+          changeScore(
+            participantId,
+            amount
+          );
+        }
+      );
+
+      return button;
+    }
+
+    function changeScore(
+      participantId,
+      amount
+    ) {
+      const participant =
+        participants.find(
+          item =>
+            item.id ===
+            participantId
+        );
+
+      if (!participant) {
+        return;
+      }
+
+      participant.score += amount;
+      hasUnsavedChanges = true;
+
+      renderScoreboard();
+    }
+
+    function saveGame() {
+      if (
+        !selectedClassKey ||
+        participants.length === 0
+      ) {
+        return;
+      }
+
+      const savedGames =
+        readStorage(
+          POINTS_STORAGE_KEY,
+          {}
+        );
+
+      savedGames[
+        selectedClassKey
+      ] = {
+        mode:
+          currentMode,
+
+        teamCount:
+          Number(
+            teamCount.value
+          ),
+
+        assignmentMethod:
+          assignmentMethod.value,
+
+        teamAssignments:
+          { ...teamAssignments },
+
+        participants:
+          participants.map(
+            participant => ({
+              id:
+                participant.id,
+
+              name:
+                participant.name,
+
+              score:
+                participant.score,
+
+              studentIds:
+                [
+                  ...participant.studentIds
+                ]
+            })
+          ),
+
+        updatedAt:
+          new Date().toISOString()
+      };
+
+      writeStorage(
+        POINTS_STORAGE_KEY,
+        savedGames
+      );
+
+      hasUnsavedChanges = false;
+
+      showStatus(
+        "Scores saved!"
+      );
+    }
+
+    function resetScores() {
+      if (
+        participants.length === 0
+      ) {
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          "Reset every score to zero?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      participants.forEach(
+        participant => {
+          participant.score = 0;
+        }
+      );
+
+      hasUnsavedChanges = true;
+      renderScoreboard();
+
+      showStatus(
+        "Scores reset to zero."
+      );
+    }
+
+    function createNewGame() {
+      if (
+        hasUnsavedChanges &&
+        !window.confirm(
+          "Start a new game without saving the current scores?"
+        )
+      ) {
+        return;
+      }
+
+      participants = [];
+      teamAssignments = {};
+      hasUnsavedChanges = false;
+
+      hideScoreboard();
+
+      emptyState.textContent =
+        "Choose your game settings and click Start Game.";
+
+      renderTeamSetup();
+    }
+
+    function showStatus(message) {
+      statusMessage.textContent =
+        message;
+
+      statusMessage.classList.add(
+        "show"
+      );
+
+      window.setTimeout(
+        () => {
+          statusMessage.classList.remove(
+            "show"
+          );
+        },
+        1800
+      );
+    }
+
+    classSelector.addEventListener(
+      "change",
+      loadSelectedClass
+    );
+
+    gameMode.addEventListener(
+      "change",
+      renderTeamSetup
+    );
+
+    teamCount.addEventListener(
+      "change",
+      renderManualAssignments
+    );
+
+    assignmentMethod.addEventListener(
+      "change",
+      renderManualAssignments
+    );
+
+    startGameButton.addEventListener(
+      "click",
+      startGame
+    );
+
+    saveGameButton.addEventListener(
+      "click",
+      saveGame
+    );
+
+    resetScoresButton.addEventListener(
+      "click",
+      resetScores
+    );
+
+    newGameButton.addEventListener(
+      "click",
+      createNewGame
+    );
+
+    printButton.addEventListener(
+      "click",
+      () => {
+        window.print();
+      }
+    );
+
+    window.addEventListener(
+      "beforeunload",
+      event => {
+        if (!hasUnsavedChanges) {
+          return;
+        }
+
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    );
+
+    populateClassSelector();
+    renderTeamSetup();
+  </script>
+
+  <script src="js/navigation.js"></script>
+</body>
+</html>
