@@ -1120,13 +1120,13 @@ Supports:
   }
 
   function exitPreviewMode() {
-    localStorage.removeItem(
-      PREVIEW_LESSON_KEY
-    );
+  localStorage.removeItem(
+    PREVIEW_LESSON_KEY
+  );
 
-    window.location.href =
-      "classroom.html";
-  }
+  window.location.href =
+    "library.html";
+}
 
   /*
   ==========================================
