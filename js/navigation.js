@@ -160,6 +160,10 @@ Shared Navigation Bar
         href: "seating.html"
       },
       {
+        label: "Picker",
+        href: "picker.html"
+      },
+      {
         label: "Settings",
         href: "settings.html"
       },
