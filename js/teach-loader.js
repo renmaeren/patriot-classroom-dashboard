@@ -1,8 +1,12 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Teach — Load Today's Lesson
-with Developer Test Mode
+Teach — Lesson Loader
+
+Supports:
+1. Normal Teaching Mode
+2. Developer Test Mode
+3. Library Preview Mode
 ==========================================
 */
 
@@ -12,6 +16,15 @@ with Developer Test Mode
 
   const TEACHER_PROFILE_KEY =
     "patriotTeacherProfile";
+
+  const PREVIEW_LESSON_KEY =
+    "patriotPreviewLesson";
+
+  /*
+  ==========================================
+  SETTINGS
+  ==========================================
+  */
 
   function readTeacherProfile() {
     const saved =
@@ -43,6 +56,57 @@ with Developer Test Mode
     }
   }
 
+  /*
+  ==========================================
+  MODE DETECTION
+  ==========================================
+  */
+
+  function readPageMode() {
+    const parameters =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const mode =
+      parameters.get("mode");
+
+    if (mode === "preview") {
+      return "preview";
+    }
+
+    if (
+      parameters.get("test") ===
+      "true"
+    ) {
+      return "test";
+    }
+
+    return "normal";
+  }
+
+  function readPreviewLesson() {
+    const saved =
+      localStorage.getItem(
+        PREVIEW_LESSON_KEY
+      );
+
+    if (!saved) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(saved);
+    } catch (error) {
+      console.error(
+        "The preview lesson could not be read.",
+        error
+      );
+
+      return null;
+    }
+  }
+
   function readTestMode() {
     const parameters =
       new URLSearchParams(
@@ -50,7 +114,8 @@ with Developer Test Mode
       );
 
     const testEnabled =
-      parameters.get("test") === "true";
+      parameters.get("test") ===
+      "true";
 
     if (!testEnabled) {
       return null;
@@ -62,7 +127,10 @@ with Developer Test Mode
     const testPeriod =
       parameters.get("period");
 
-    if (!testDate || !testPeriod) {
+    if (
+      !testDate ||
+      !testPeriod
+    ) {
       return null;
     }
 
@@ -71,6 +139,12 @@ with Developer Test Mode
       period: testPeriod
     };
   }
+
+  /*
+  ==========================================
+  DATE AND PERIOD HELPERS
+  ==========================================
+  */
 
   function getTodayText() {
     const testMode =
@@ -128,7 +202,10 @@ with Developer Test Mode
       getEffectiveDate()
         .getDay();
 
-    return day === 0 || day === 6;
+    return (
+      day === 0 ||
+      day === 6
+    );
   }
 
   function timeToDate(timeText) {
@@ -150,13 +227,34 @@ with Developer Test Mode
     return date;
   }
 
-  function createTestPeriod(periodValue) {
+  function getPeriodSuffix(number) {
+    if (number === "1") {
+      return "st";
+    }
+
+    if (number === "2") {
+      return "nd";
+    }
+
+    if (number === "3") {
+      return "rd";
+    }
+
+    return "th";
+  }
+
+  function createTestPeriod(
+    periodValue
+  ) {
     const normalized =
       String(periodValue || "")
         .trim()
         .toLowerCase();
 
-    if (normalized === "advisory") {
+    if (
+      normalized ===
+      "advisory"
+    ) {
       return {
         name: "Advisory",
         start: "10:52",
@@ -172,17 +270,15 @@ with Developer Test Mode
       return null;
     }
 
+    const number =
+      periodNumber[0];
+
     return {
       name:
-        `${periodNumber[0]}${
-          periodNumber[0] === "1"
-            ? "st"
-            : periodNumber[0] === "2"
-              ? "nd"
-              : periodNumber[0] === "3"
-                ? "rd"
-                : "th"
-        } Period`,
+        `${number}${getPeriodSuffix(
+          number
+        )} Period`,
+
       start: "",
       end: "",
       type: "class"
@@ -202,7 +298,9 @@ with Developer Test Mode
     if (
       typeof bellSchedule ===
         "undefined" ||
-      !Array.isArray(bellSchedule)
+      !Array.isArray(
+        bellSchedule
+      )
     ) {
       return null;
     }
@@ -213,10 +311,14 @@ with Developer Test Mode
     return (
       bellSchedule.find(period => {
         const start =
-          timeToDate(period.start);
+          timeToDate(
+            period.start
+          );
 
         const end =
-          timeToDate(period.end);
+          timeToDate(
+            period.end
+          );
 
         return (
           now >= start &&
@@ -224,6 +326,75 @@ with Developer Test Mode
         );
       }) || null
     );
+  }
+
+  function createPreviewPeriod(
+    lesson
+  ) {
+    const periods =
+      String(
+        lesson.periods || ""
+      ).trim();
+
+    if (!periods) {
+      return {
+        name: "Lesson Preview",
+        start: "",
+        end: "",
+        type: "preview"
+      };
+    }
+
+    const periodList =
+      periods
+        .split(",")
+        .map(period => {
+          return period.trim();
+        })
+        .filter(Boolean);
+
+    if (periodList.length === 1) {
+      const normalized =
+        periodList[0]
+          .toLowerCase();
+
+      if (
+        normalized ===
+        "advisory"
+      ) {
+        return {
+          name: "Advisory",
+          start: "",
+          end: "",
+          type: "preview"
+        };
+      }
+
+      const number =
+        normalized.match(/\d+/);
+
+      if (number) {
+        return {
+          name:
+            `${number[0]}${getPeriodSuffix(
+              number[0]
+            )} Period`,
+
+          start: "",
+          end: "",
+          type: "preview"
+        };
+      }
+    }
+
+    return {
+      name:
+        `Periods ${periods}`,
+
+      start: "",
+      end: "",
+      type: "preview"
+    };
   }
 
   function normalizePeriod(value) {
@@ -246,7 +417,10 @@ with Developer Test Mode
     lesson,
     activePeriod
   ) {
-    if (!lesson || !activePeriod) {
+    if (
+      !lesson ||
+      !activePeriod
+    ) {
       return false;
     }
 
@@ -262,6 +436,95 @@ with Developer Test Mode
       .map(normalizePeriod)
       .includes(activeValue);
   }
+
+  function normalizeLessonDate(
+    value
+  ) {
+    if (!value) {
+      return "";
+    }
+
+    const text =
+      String(value).trim();
+
+    if (
+      /^\d{4}-\d{2}-\d{2}$/.test(
+        text
+      )
+    ) {
+      return text;
+    }
+
+    const date =
+      new Date(text);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return "";
+    }
+
+    const year =
+      date.getFullYear();
+
+    const month =
+      String(
+        date.getMonth() + 1
+      ).padStart(2, "0");
+
+    const day =
+      String(
+        date.getDate()
+      ).padStart(2, "0");
+
+    return `${year}-${month}-${day}`;
+  }
+
+  function formatLessonDate(
+    value
+  ) {
+    const normalized =
+      normalizeLessonDate(
+        value
+      );
+
+    if (!normalized) {
+      return "Date unavailable";
+    }
+
+    const parts =
+      normalized
+        .split("-")
+        .map(Number);
+
+    const date =
+      new Date(
+        parts[0],
+        parts[1] - 1,
+        parts[2],
+        12,
+        0,
+        0
+      );
+
+    return date.toLocaleDateString(
+      [],
+      {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+        year: "numeric"
+      }
+    );
+  }
+
+  /*
+  ==========================================
+  LESSON DISPLAY HELPERS
+  ==========================================
+  */
 
   function setText(
     elementId,
@@ -297,7 +560,9 @@ with Developer Test Mode
     }
   }
 
-  function showAgenda(agendaText) {
+  function showAgenda(
+    agendaText
+  ) {
     const list =
       document.getElementById(
         "agenda-display"
@@ -312,12 +577,16 @@ with Developer Test Mode
     const items =
       String(agendaText || "")
         .split("\n")
-        .map(item => item.trim())
+        .map(item => {
+          return item.trim();
+        })
         .filter(Boolean);
 
     if (!items.length) {
       const item =
-        document.createElement("li");
+        document.createElement(
+          "li"
+        );
 
       item.textContent =
         "No agenda has been entered.";
@@ -332,7 +601,9 @@ with Developer Test Mode
 
     items.forEach(itemText => {
       const item =
-        document.createElement("li");
+        document.createElement(
+          "li"
+        );
 
       item.textContent =
         itemText;
@@ -352,7 +623,9 @@ with Developer Test Mode
           ? JSON.parse(value)
           : value;
 
-      return Array.isArray(resources)
+      return Array.isArray(
+        resources
+      )
         ? resources
         : [];
     } catch (error) {
@@ -360,7 +633,9 @@ with Developer Test Mode
     }
   }
 
-  function convertYouTubeLink(url) {
+  function convertYouTubeLink(
+    url
+  ) {
     try {
       const parsedUrl =
         new URL(url);
@@ -400,7 +675,9 @@ with Developer Test Mode
     return url;
   }
 
-  function convertSlidesLink(url) {
+  function convertSlidesLink(
+    url
+  ) {
     if (
       url.includes(
         "docs.google.com/presentation"
@@ -408,14 +685,19 @@ with Developer Test Mode
       url.includes("/edit")
     ) {
       return url
-        .replace("/edit", "/embed")
+        .replace(
+          "/edit",
+          "/embed"
+        )
         .split("?")[0];
     }
 
     return url;
   }
 
-  function prepareEmbedLink(url) {
+  function prepareEmbedLink(
+    url
+  ) {
     let prepared =
       String(url || "")
         .trim();
@@ -442,11 +724,12 @@ with Developer Test Mode
       );
 
     const firstResource =
-      resources.find(
-        resource =>
+      resources.find(resource => {
+        return (
           resource &&
           resource.url
-      );
+        );
+      });
 
     const frame =
       document.getElementById(
@@ -610,7 +893,9 @@ with Developer Test Mode
     }
   }
 
-  function showNoLesson(message) {
+  function showNoLesson(
+    message
+  ) {
     const courseDisplay =
       document.getElementById(
         "display-course"
@@ -670,75 +955,35 @@ with Developer Test Mode
     showFirstResource("");
   }
 
-  function normalizeLessonDate(value) {
-  if (!value) {
-    return "";
-  }
-
-  const text =
-    String(value).trim();
-
   /*
-    Already formatted as YYYY-MM-DD
+  ==========================================
+  NOTICE BANNERS
+  ==========================================
   */
-  if (
-    /^\d{4}-\d{2}-\d{2}$/.test(text)
+
+  function insertNotice(
+    notice
   ) {
-    return text;
-  }
+    const scheduleStrip =
+      document.querySelector(
+        ".schedule-strip"
+      );
 
-  const date =
-    new Date(text);
+    if (scheduleStrip) {
+      scheduleStrip.insertAdjacentElement(
+        "beforebegin",
+        notice
+      );
 
-  if (
-    Number.isNaN(
-      date.getTime()
-    )
-  ) {
-    return "";
-  }
+      return;
+    }
 
-  const year =
-    date.getFullYear();
-
-  const month =
-    String(
-      date.getMonth() + 1
-    ).padStart(2, "0");
-
-  const day =
-    String(
-      date.getDate()
-    ).padStart(2, "0");
-
-  return `${year}-${month}-${day}`;
-}
-
-function selectLesson(
-  lessons,
-  activePeriod
-) {
-  const today =
-    getTodayText();
-
-  const todayLessons =
-    lessons.filter(
-      lesson =>
-        normalizeLessonDate(
-          lesson.lessonDate
-        ) === today
+    document.body.insertAdjacentElement(
+      "afterbegin",
+      notice
     );
+  }
 
-  return (
-    todayLessons.find(
-      lesson =>
-        lessonMatchesPeriod(
-          lesson,
-          activePeriod
-        )
-    ) || null
-  );
-}
   function showTestModeNotice() {
     const testMode =
       readTestMode();
@@ -746,6 +991,11 @@ function selectLesson(
     if (!testMode) {
       return;
     }
+
+    const testPeriod =
+      createTestPeriod(
+        testMode.period
+      );
 
     const existing =
       document.getElementById(
@@ -765,7 +1015,11 @@ function selectLesson(
       "teach-test-mode-notice";
 
     notice.textContent =
-      `Test Mode: ${testMode.date} · ${createTestPeriod(testMode.period).name}`;
+      `Test Mode: ${testMode.date} · ${
+        testPeriod
+          ? testPeriod.name
+          : testMode.period
+      }`;
 
     notice.style.cssText = `
       padding: 8px 14px;
@@ -776,20 +1030,262 @@ function selectLesson(
       border-bottom: 2px solid #d3a84f;
     `;
 
-    const scheduleStrip =
-      document.querySelector(
-        ".schedule-strip"
-      );
-
-    if (scheduleStrip) {
-      scheduleStrip.insertAdjacentElement(
-        "beforebegin",
-        notice
-      );
-    }
+    insertNotice(notice);
   }
 
-  function loadTodayLesson() {
+  function showPreviewModeNotice(
+    lesson
+  ) {
+    const existing =
+      document.getElementById(
+        "teach-preview-mode-notice"
+      );
+
+    if (existing) {
+      return;
+    }
+
+    const notice =
+      document.createElement(
+        "div"
+      );
+
+    notice.id =
+      "teach-preview-mode-notice";
+
+    notice.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 16px;
+      color: #11284a;
+      font-weight: bold;
+      text-align: center;
+      background: #f6e3a7;
+      border-bottom: 2px solid #d3a84f;
+    `;
+
+    const title =
+      lesson.lessonTitle ||
+      lesson.course ||
+      "Untitled Lesson";
+
+    const message =
+      document.createElement(
+        "span"
+      );
+
+    message.textContent =
+      `Preview Mode: ${title} · ${formatLessonDate(
+        lesson.lessonDate
+      )}`;
+
+    const exitButton =
+      document.createElement(
+        "button"
+      );
+
+    exitButton.type =
+      "button";
+
+    exitButton.textContent =
+      "Exit Preview";
+
+    exitButton.style.cssText = `
+      padding: 7px 13px;
+      color: #ffffff;
+      font-weight: bold;
+      background: #aa3235;
+      border: 2px solid #aa3235;
+      border-radius: 7px;
+      cursor: pointer;
+    `;
+
+    exitButton.addEventListener(
+      "click",
+      exitPreviewMode
+    );
+
+    notice.appendChild(
+      message
+    );
+
+    notice.appendChild(
+      exitButton
+    );
+
+    insertNotice(notice);
+  }
+
+  function exitPreviewMode() {
+    localStorage.removeItem(
+      PREVIEW_LESSON_KEY
+    );
+
+    window.location.href =
+      "classroom.html";
+  }
+
+  /*
+  ==========================================
+  LESSON SELECTION
+  ==========================================
+  */
+
+  function selectLesson(
+    lessons,
+    activePeriod
+  ) {
+    const today =
+      getTodayText();
+
+    const todayLessons =
+      lessons.filter(lesson => {
+        return (
+          normalizeLessonDate(
+            lesson.lessonDate
+          ) === today
+        );
+      });
+
+    return (
+      todayLessons.find(lesson => {
+        return lessonMatchesPeriod(
+          lesson,
+          activePeriod
+        );
+      }) || null
+    );
+  }
+
+  /*
+  ==========================================
+  PREVIEW MODE
+  ==========================================
+  */
+
+  function loadPreviewLesson() {
+    const lesson =
+      readPreviewLesson();
+
+    if (!lesson) {
+      showNoLesson(
+        "The preview lesson could not be found. Return to the Library and select Teach Preview again."
+      );
+
+      showMissingPreviewNotice();
+
+      return;
+    }
+
+    const previewPeriod =
+      createPreviewPeriod(
+        lesson
+      );
+
+    showPreviewModeNotice(
+      lesson
+    );
+
+    showLesson(
+      lesson,
+      previewPeriod
+    );
+  }
+
+  function showMissingPreviewNotice() {
+    const existing =
+      document.getElementById(
+        "teach-preview-mode-notice"
+      );
+
+    if (existing) {
+      return;
+    }
+
+    const notice =
+      document.createElement(
+        "div"
+      );
+
+    notice.id =
+      "teach-preview-mode-notice";
+
+    notice.style.cssText = `
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding: 10px 16px;
+      color: #ffffff;
+      font-weight: bold;
+      text-align: center;
+      background: #aa3235;
+      border-bottom: 2px solid #7d2023;
+    `;
+
+    const message =
+      document.createElement(
+        "span"
+      );
+
+    message.textContent =
+      "Preview Mode: No preview lesson was found.";
+
+    const libraryButton =
+      document.createElement(
+        "button"
+      );
+
+    libraryButton.type =
+      "button";
+
+    libraryButton.textContent =
+      "Return to Library";
+
+    libraryButton.style.cssText = `
+      padding: 7px 13px;
+      color: #11284a;
+      font-weight: bold;
+      background: #ffffff;
+      border: 2px solid #ffffff;
+      border-radius: 7px;
+      cursor: pointer;
+    `;
+
+    libraryButton.addEventListener(
+      "click",
+      function () {
+        localStorage.removeItem(
+          PREVIEW_LESSON_KEY
+        );
+
+        window.location.href =
+          "library.html";
+      }
+    );
+
+    notice.appendChild(
+      message
+    );
+
+    notice.appendChild(
+      libraryButton
+    );
+
+    insertNotice(notice);
+  }
+
+  /*
+  ==========================================
+  NORMAL AND TEST MODES
+  ==========================================
+  */
+
+  function loadScheduledLesson() {
     const testMode =
       readTestMode();
 
@@ -841,6 +1337,10 @@ function selectLesson(
             "Today’s lesson could not be loaded."
           );
 
+          delete window[
+            callbackName
+          ];
+
           return;
         }
 
@@ -854,6 +1354,10 @@ function selectLesson(
           showNoLesson(
             "No lesson is saved for this class today."
           );
+
+          delete window[
+            callbackName
+          ];
 
           return;
         }
@@ -890,6 +1394,10 @@ function selectLesson(
         showNoLesson(
           "Patriot Command could not reach the Lesson Library."
         );
+
+        delete window[
+          callbackName
+        ];
       };
 
     document.body.appendChild(
@@ -897,9 +1405,28 @@ function selectLesson(
     );
   }
 
+  /*
+  ==========================================
+  MAIN LOADER
+  ==========================================
+  */
+
+  function loadTeachPage() {
+    const mode =
+      readPageMode();
+
+    if (mode === "preview") {
+      loadPreviewLesson();
+
+      return;
+    }
+
+    loadScheduledLesson();
+  }
+
   function startTeachLoader() {
     setTimeout(
-      loadTodayLesson,
+      loadTeachPage,
       300
     );
   }
