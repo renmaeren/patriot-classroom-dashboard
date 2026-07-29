@@ -18,8 +18,8 @@ Lesson Library with Calendar
   const EDIT_LESSON_KEY =
     "patriotEditLesson";
 
-  const PREVIEW_LESSON_KEY =
-    "patriotPreviewLesson";
+  const TEACH_LESSON_KEY =
+    "patriotTeachLesson";
 
   let allLessons = [];
 
@@ -305,14 +305,14 @@ Lesson Library with Calendar
   ==========================================
   */
 
-  function previewLesson(lesson) {
+  function teachLesson(lesson) {
     localStorage.setItem(
-      PREVIEW_LESSON_KEY,
+      TEACH_LESSON_KEY,
       JSON.stringify(lesson)
     );
 
     window.location.href =
-      "classroom.html?mode=preview";
+      "classroom.html?mode=teach";
   }
 
   function editLesson(lesson) {
@@ -411,17 +411,17 @@ Lesson Library with Calendar
 
         <div class="lesson-card-actions">
           <button
+            class="lesson-teach-button"
+            type="button"
+          >
+            Teach
+          </button>
+
+          <button
             class="lesson-details-button"
             type="button"
           >
             View Lesson
-          </button>
-
-          <button
-            class="lesson-preview-button"
-            type="button"
-          >
-            Teach Preview
           </button>
 
           <button
@@ -571,9 +571,9 @@ Lesson Library with Calendar
         ".lesson-details-button"
       );
 
-    const previewButton =
+    const teachButton =
       card.querySelector(
-        ".lesson-preview-button"
+        ".lesson-teach-button"
       );
 
     const editButton =
@@ -606,10 +606,10 @@ Lesson Library with Calendar
       }
     );
 
-    previewButton.addEventListener(
+    teachButton.addEventListener(
       "click",
       function () {
-        previewLesson(lesson);
+        teachLesson(lesson);
       }
     );
 
