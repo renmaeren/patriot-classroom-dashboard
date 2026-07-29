@@ -66,14 +66,13 @@ widgets on the Teach page.
       selector: ".timer-card",
       defaultEnabled: true
     },
-    {
-      id: "agenda",
-      name: "Today’s Agenda",
-      icon: "📝",
-      selector: "#agenda-display",
-      cardSelector: "#agenda-display",
-      defaultEnabled: true
-    },
+   {
+  id: "announcements",
+  name: "Announcements",
+  icon: "📣",
+  selector: "#announcement-bar",
+  defaultEnabled: false
+},
     {
       id: "picker",
       name: "Student Picker",
