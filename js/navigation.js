@@ -152,6 +152,10 @@ Shared Navigation Bar
         href: "library.html"
       },
       {
+        label: "Students",
+        href: "students.html"
+      },
+      {
         label: "Settings",
         href: "settings.html"
       },
