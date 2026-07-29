@@ -19,6 +19,7 @@
       --gray: #657184;
       --border: #d7dce3;
       --cream: #f7f2e8;
+      --background: #e9edf2;
       --shadow: rgba(0, 0, 0, 0.13);
     }
 
@@ -31,7 +32,7 @@
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--navy);
-      background: #e9edf2;
+      background: var(--background);
     }
 
     button {
@@ -62,6 +63,12 @@
       margin: 28px auto 50px;
     }
 
+    /*
+    ==========================================
+    LIBRARY INTRODUCTION
+    ==========================================
+    */
+
     .library-toolbar {
       margin-bottom: 22px;
       padding: 22px;
@@ -78,6 +85,237 @@
     .library-toolbar p {
       margin: 0;
       color: var(--gray);
+    }
+
+    /*
+    ==========================================
+    CALENDAR
+    ==========================================
+    */
+
+    .lesson-calendar-panel {
+      margin-bottom: 24px;
+      padding: 22px;
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 6px 18px var(--shadow);
+    }
+
+    .calendar-heading-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 20px;
+    }
+
+    .calendar-title-group h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1.45rem;
+    }
+
+    .calendar-title-group p {
+      margin: 6px 0 0;
+      color: var(--gray);
+      line-height: 1.4;
+    }
+
+    .calendar-controls {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .calendar-control-button {
+      min-height: 42px;
+      padding: 9px 13px;
+      color: var(--navy);
+      font-weight: bold;
+      background: var(--white);
+      border: 2px solid var(--navy);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .calendar-control-button:hover {
+      color: var(--white);
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .calendar-control-button.primary {
+      color: var(--white);
+      background: var(--navy);
+    }
+
+    .calendar-control-button.primary:hover {
+      background: var(--red);
+      border-color: var(--red);
+    }
+
+    .calendar-month-navigation {
+      display: grid;
+      grid-template-columns: 48px 1fr 48px;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .calendar-month-label {
+      margin: 0;
+      text-align: center;
+      color: var(--red);
+      font-size: clamp(1.35rem, 4vw, 1.85rem);
+    }
+
+    .calendar-arrow-button {
+      width: 48px;
+      height: 44px;
+      color: var(--white);
+      font-size: 1.3rem;
+      font-weight: bold;
+      background: var(--navy);
+      border: 0;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .calendar-arrow-button:hover {
+      background: var(--red);
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 7px;
+      margin-bottom: 7px;
+    }
+
+    .calendar-weekday {
+      padding: 8px 4px;
+      color: var(--gray);
+      font-size: 0.84rem;
+      font-weight: bold;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .lesson-calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 7px;
+    }
+
+    .calendar-day {
+      position: relative;
+      min-height: 105px;
+      padding: 9px;
+      color: var(--navy);
+      text-align: left;
+      background: var(--white);
+      border: 2px solid var(--border);
+      border-radius: 9px;
+      cursor: pointer;
+      overflow: hidden;
+    }
+
+    .calendar-day:hover {
+      border-color: var(--gold);
+      box-shadow: 0 3px 10px var(--shadow);
+    }
+
+    .calendar-day.outside-month {
+      color: #9ba3ae;
+      background: #f4f5f7;
+    }
+
+    .calendar-day.has-lessons {
+      background: var(--cream);
+      border-color: var(--gold);
+    }
+
+    .calendar-day.selected {
+      color: var(--white);
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .calendar-day.today {
+      outline: 3px solid var(--red);
+      outline-offset: -3px;
+    }
+
+    .calendar-day-number {
+      display: block;
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .calendar-day-lesson-count {
+      display: block;
+      margin-top: 12px;
+      padding: 5px 7px;
+      color: var(--white);
+      font-size: 0.78rem;
+      font-weight: bold;
+      text-align: center;
+      background: var(--red);
+      border-radius: 6px;
+    }
+
+    .calendar-day.selected
+    .calendar-day-lesson-count {
+      color: var(--navy);
+      background: var(--gold);
+    }
+
+    .calendar-day-dots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: 8px;
+    }
+
+    .calendar-day-dot {
+      width: 7px;
+      height: 7px;
+      background: var(--red);
+      border-radius: 50%;
+    }
+
+    .calendar-day.selected
+    .calendar-day-dot {
+      background: var(--gold);
+    }
+
+    /*
+    ==========================================
+    LESSON RESULTS
+    ==========================================
+    */
+
+    .lesson-results-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      margin: 4px 0 16px;
+      padding: 0 4px;
+    }
+
+    .lesson-results-heading h2 {
+      margin: 0;
+      color: var(--navy);
+      font-size: 1.35rem;
+    }
+
+    .lesson-results-count {
+      margin: 0;
+      color: var(--gray);
+      font-weight: bold;
     }
 
     .library-message {
@@ -98,6 +336,12 @@
       display: grid;
       gap: 18px;
     }
+
+    /*
+    ==========================================
+    LESSON CARDS
+    ==========================================
+    */
 
     .lesson-card {
       padding: 22px;
@@ -125,19 +369,58 @@
       color: var(--gray);
     }
 
-    .lesson-details-button {
+    .lesson-card-actions {
+      display: flex;
       flex: 0 0 auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 9px;
+    }
+
+    .lesson-details-button,
+    .lesson-preview-button,
+    .lesson-edit-button,
+    .lesson-duplicate-button {
       padding: 11px 15px;
-      color: var(--white);
       font-weight: bold;
-      background: var(--navy);
-      border: 0;
       border-radius: 8px;
       cursor: pointer;
     }
 
-    .lesson-details-button:hover {
+    .lesson-details-button,
+    .lesson-preview-button {
+      color: var(--white);
+      background: var(--navy);
+      border: 2px solid var(--navy);
+    }
+
+    .lesson-details-button:hover,
+    .lesson-preview-button:hover {
       background: var(--red);
+      border-color: var(--red);
+    }
+
+    .lesson-edit-button {
+      color: var(--white);
+      background: #4d8256;
+      border: 2px solid #4d8256;
+    }
+
+    .lesson-edit-button:hover {
+      background: #376640;
+      border-color: #376640;
+    }
+
+    .lesson-duplicate-button {
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--navy);
+    }
+
+    .lesson-duplicate-button:hover {
+      color: var(--white);
+      background: var(--red);
+      border-color: var(--red);
     }
 
     .lesson-details {
@@ -194,14 +477,99 @@
       font-style: italic;
     }
 
+    /*
+    ==========================================
+    RESPONSIVE LAYOUT
+    ==========================================
+    */
+
+    @media (max-width: 760px) {
+      .calendar-heading-row {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .calendar-controls {
+        justify-content: flex-start;
+      }
+
+      .calendar-day {
+        min-height: 82px;
+        padding: 7px;
+      }
+
+      .calendar-day-lesson-count {
+        margin-top: 8px;
+        padding: 4px;
+        font-size: 0.68rem;
+      }
+
+      .lesson-results-heading {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+
     @media (max-width: 650px) {
       .lesson-card-heading {
         align-items: stretch;
         flex-direction: column;
       }
 
-      .lesson-details-button {
+      .lesson-card-actions {
         width: 100%;
+        flex-direction: column;
+      }
+
+      .lesson-card-actions button {
+        width: 100%;
+      }
+
+      .calendar-weekday {
+        font-size: 0.7rem;
+      }
+
+      .calendar-day {
+        min-height: 67px;
+      }
+
+      .calendar-day-dots {
+        display: none;
+      }
+
+      .calendar-day-lesson-count {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+    }
+
+    @media (max-width: 430px) {
+      main {
+        width: min(96%, 1100px);
+      }
+
+      .lesson-calendar-panel {
+        padding: 15px 10px;
+      }
+
+      .lesson-calendar-grid,
+      .calendar-weekdays {
+        gap: 4px;
+      }
+
+      .calendar-day {
+        min-height: 58px;
+        padding: 6px 4px;
+      }
+
+      .calendar-day-lesson-count {
+        font-size: 0;
+      }
+
+      .calendar-day-lesson-count::after {
+        content: "●";
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -221,9 +589,105 @@
       <h2>Your Saved Lessons</h2>
 
       <p>
-        Your newest archived lessons appear first.
+        Select a calendar date to see its lessons, or choose
+        All Lessons to view your complete archive.
       </p>
     </section>
+
+    <section
+      class="lesson-calendar-panel"
+      aria-labelledby="lesson-calendar-heading"
+    >
+      <div class="calendar-heading-row">
+        <div class="calendar-title-group">
+          <h2 id="lesson-calendar-heading">
+            Lesson Calendar
+          </h2>
+
+          <p>
+            Dates containing saved lessons are marked below.
+          </p>
+        </div>
+
+        <div class="calendar-controls">
+          <button
+            id="calendar-today-button"
+            class="calendar-control-button"
+            type="button"
+          >
+            Today
+          </button>
+
+          <button
+            id="calendar-all-lessons-button"
+            class="calendar-control-button primary"
+            type="button"
+          >
+            All Lessons
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-month-navigation">
+        <button
+          id="calendar-previous-month"
+          class="calendar-arrow-button"
+          type="button"
+          aria-label="Previous month"
+        >
+          ‹
+        </button>
+
+        <h3
+          id="calendar-month-label"
+          class="calendar-month-label"
+          aria-live="polite"
+        >
+          Month
+        </h3>
+
+        <button
+          id="calendar-next-month"
+          class="calendar-arrow-button"
+          type="button"
+          aria-label="Next month"
+        >
+          ›
+        </button>
+      </div>
+
+      <div
+        class="calendar-weekdays"
+        aria-hidden="true"
+      >
+        <div class="calendar-weekday">Sun</div>
+        <div class="calendar-weekday">Mon</div>
+        <div class="calendar-weekday">Tue</div>
+        <div class="calendar-weekday">Wed</div>
+        <div class="calendar-weekday">Thu</div>
+        <div class="calendar-weekday">Fri</div>
+        <div class="calendar-weekday">Sat</div>
+      </div>
+
+      <div
+        id="lesson-calendar-grid"
+        class="lesson-calendar-grid"
+        role="grid"
+        aria-label="Saved lesson calendar"
+      ></div>
+    </section>
+
+    <div class="lesson-results-heading">
+      <h2 id="lesson-results-title">
+        All Saved Lessons
+      </h2>
+
+      <p
+        id="lesson-results-count"
+        class="lesson-results-count"
+        aria-live="polite"
+      ></p>
+    </div>
 
     <div
       id="library-message"
@@ -236,6 +700,7 @@
       id="lesson-library-list"
       class="lesson-library-list"
       aria-live="polite"
+      aria-labelledby="lesson-results-title"
     ></section>
   </main>
 
