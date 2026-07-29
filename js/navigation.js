@@ -168,6 +168,10 @@ Shared Navigation Bar
         href: "points.html"
       },
       {
+        label: "Sub Folder",
+        href: "substitute.html"
+      },
+      {
         label: "Settings",
         href: "settings.html"
       },
