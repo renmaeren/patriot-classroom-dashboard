@@ -156,6 +156,10 @@ Shared Navigation Bar
         href: "students.html"
       },
       {
+        label: "Seating",
+        href: "seating.html"
+      },
+      {
         label: "Settings",
         href: "settings.html"
       },
