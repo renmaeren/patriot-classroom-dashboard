@@ -6,6 +6,8 @@ Shared Navigation Bar
 */
 
 (function () {
+  "use strict";
+
   function addNavigationStyles() {
     if (
       document.getElementById(
@@ -148,28 +150,12 @@ Shared Navigation Bar
         href: "classroom.html"
       },
       {
-        label: "Library",
-        href: "library.html"
-      },
-      {
         label: "Students",
         href: "students.html"
       },
       {
-        label: "Seating",
-        href: "seating.html"
-      },
-      {
-        label: "Picker",
-        href: "picker.html"
-      },
-      {
-        label: "Points",
-        href: "points.html"
-      },
-      {
-        label: "Sub Folder",
-        href: "substitute.html"
+        label: "Library",
+        href: "library.html"
       },
       {
         label: "Settings",
