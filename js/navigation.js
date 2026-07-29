@@ -154,6 +154,10 @@ Shared Navigation Bar
       {
         label: "Settings",
         href: "settings.html"
+      },
+      {
+        label: "About",
+        href: "about.html"
       }
     ];
 
