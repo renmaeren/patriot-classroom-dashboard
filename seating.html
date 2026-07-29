@@ -1,0 +1,1606 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Seating Charts | Patriot Command</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #b3262e;
+      --gold: #d3a84f;
+      --green: #2f7d4a;
+      --cream: #f7f2e8;
+      --white: #ffffff;
+      --light-blue: #e8edf3;
+      --gray: #d7dce3;
+      --dark-gray: #657184;
+      --shadow: rgba(0, 0, 0, 0.16);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--navy);
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--light-blue);
+    }
+
+    button,
+    input,
+    select {
+      font: inherit;
+    }
+
+    header {
+      padding: 24px 30px;
+      color: var(--white);
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .header-inner {
+      width: min(1200px, 94%);
+      margin: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+    }
+
+    .subtitle {
+      margin: 8px 0 0;
+      color: var(--gold);
+      font-weight: bold;
+      line-height: 1.5;
+    }
+
+    main {
+      width: min(1200px, 94%);
+      margin: 26px auto;
+    }
+
+    .card {
+      margin-bottom: 22px;
+      padding: 24px;
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 7px 20px var(--shadow);
+    }
+
+    .card h2 {
+      margin: 0 0 18px;
+      padding-bottom: 10px;
+      color: var(--red);
+      border-bottom: 3px solid var(--gold);
+    }
+
+    .instructions {
+      margin: 0 0 20px;
+      padding: 14px;
+      line-height: 1.5;
+      background: var(--cream);
+      border-left: 5px solid var(--gold);
+      border-radius: 8px;
+    }
+
+    .warning {
+      display: none;
+      margin-bottom: 18px;
+      padding: 14px;
+      color: #713b00;
+      line-height: 1.5;
+      background: #fff0cf;
+      border: 2px solid #d6a23d;
+      border-radius: 9px;
+    }
+
+    .warning.show {
+      display: block;
+    }
+
+    .controls-grid {
+      display: grid;
+      grid-template-columns:
+        minmax(220px, 2fr)
+        minmax(120px, 1fr)
+        minmax(120px, 1fr)
+        auto;
+      gap: 14px;
+      align-items: end;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 11px;
+      color: var(--navy);
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: 3px solid rgba(211, 168, 79, 0.35);
+      border-color: var(--gold);
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 17px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      text-decoration: none;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+
+    .button:hover {
+      filter: brightness(1.08);
+    }
+
+    .button-primary {
+      background: var(--navy);
+    }
+
+    .button-save {
+      background: var(--green);
+    }
+
+    .button-danger {
+      background: var(--red);
+    }
+
+    .button-secondary {
+      color: var(--navy);
+      background: var(--gray);
+    }
+
+    .button:disabled {
+      color: #666666;
+      background: #dddddd;
+      cursor: not-allowed;
+      filter: none;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(210px, 260px) 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .student-panel {
+      position: sticky;
+      top: 95px;
+      max-height: calc(100vh - 120px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--cream);
+      border-radius: 12px;
+    }
+
+    .student-panel h3 {
+      margin: 0 0 10px;
+    }
+
+    .student-count {
+      margin: 0 0 14px;
+      color: var(--dark-gray);
+      font-size: 0.92rem;
+    }
+
+    .student-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .student-button {
+      width: 100%;
+      padding: 10px;
+      color: var(--navy);
+      text-align: left;
+      background: var(--white);
+      border: 2px solid var(--gray);
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .student-button:hover {
+      border-color: var(--gold);
+    }
+
+    .student-button.selected {
+      color: var(--white);
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .student-button.assigned {
+      opacity: 0.48;
+      cursor: not-allowed;
+    }
+
+    .chart-area {
+      min-width: 0;
+    }
+
+    .front-label {
+      margin-bottom: 16px;
+      padding: 10px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      letter-spacing: 0.08em;
+      background: var(--navy);
+      border-radius: 8px;
+    }
+
+    .desk-grid {
+      display: grid;
+      gap: 12px;
+      padding: 18px;
+      overflow-x: auto;
+      background: var(--light-blue);
+      border: 3px solid var(--navy);
+      border-radius: 14px;
+    }
+
+    .desk {
+      min-width: 110px;
+      min-height: 82px;
+      padding: 10px;
+      color: var(--navy);
+      text-align: center;
+      background: var(--white);
+      border: 3px solid var(--gray);
+      border-radius: 10px;
+      cursor: pointer;
+      transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+    }
+
+    .desk:hover {
+      transform: translateY(-2px);
+      border-color: var(--gold);
+    }
+
+    .desk.occupied {
+      background: #fffaf0;
+      border-color: var(--gold);
+    }
+
+    .desk-number {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--dark-gray);
+      font-size: 0.78rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .desk-name {
+      display: block;
+      font-weight: bold;
+      line-height: 1.3;
+    }
+
+    .desk-empty {
+      display: block;
+      color: var(--dark-gray);
+      font-size: 0.88rem;
+      line-height: 1.3;
+    }
+
+    .chart-actions {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .empty-state {
+      padding: 28px 15px;
+      color: var(--dark-gray);
+      text-align: center;
+      line-height: 1.5;
+      background: var(--cream);
+      border-radius: 10px;
+    }
+
+    .status-message {
+      display: none;
+      margin-top: 16px;
+      padding: 13px;
+      color: var(--white);
+      text-align: center;
+      font-weight: bold;
+      background: var(--green);
+      border-radius: 8px;
+    }
+
+    .status-message.show {
+      display: block;
+    }
+
+    .small-note {
+      margin: 14px 0 0;
+      color: var(--dark-gray);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 850px) {
+      .controls-grid,
+      .chart-actions {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .student-panel {
+        position: static;
+        max-height: none;
+      }
+
+      .student-list {
+        grid-template-columns:
+          repeat(auto-fit, minmax(170px, 1fr));
+      }
+    }
+
+    @media (max-width: 560px) {
+      .controls-grid,
+      .chart-actions {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media print {
+      body {
+        background: var(--white);
+      }
+
+      .patriot-nav,
+      header,
+      .setup-card,
+      .student-panel,
+      .chart-actions,
+      .status-message,
+      .small-note {
+        display: none !important;
+      }
+
+      main {
+        width: 100%;
+        margin: 0;
+      }
+
+      .card {
+        padding: 0;
+        box-shadow: none;
+      }
+
+      .workspace {
+        display: block;
+      }
+
+      .chart-area {
+        width: 100%;
+      }
+
+      .desk-grid {
+        gap: 8px;
+        padding: 10px;
+        overflow: visible;
+        background: var(--white);
+        border: 2px solid #000000;
+      }
+
+      .desk {
+        min-width: 0;
+        min-height: 70px;
+        padding: 7px;
+        border: 2px solid #000000;
+        break-inside: avoid;
+      }
+
+      .front-label {
+        color: #000000;
+        background: var(--white);
+        border: 2px solid #000000;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="header-inner">
+      <h1>Seating Charts</h1>
+
+      <p class="subtitle">
+        Build and save a classroom seating chart from an imported roster.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section class="card setup-card">
+      <h2>Chart Setup</h2>
+
+      <p class="instructions">
+        Select a class, choose the number of desk rows and columns,
+        and create the chart. Then select a student and click an empty
+        desk to assign that student.
+      </p>
+
+      <div
+        id="class-warning"
+        class="warning"
+      >
+        No classes were found. Add your classes in Teacher Settings first.
+      </div>
+
+      <div
+        id="roster-warning"
+        class="warning"
+      >
+        This class does not have a saved roster. Import its CSV roster
+        on the Students page before creating a seating chart.
+      </div>
+
+      <div class="controls-grid">
+        <div class="form-group">
+          <label for="class-selector">
+            Class
+          </label>
+
+          <select id="class-selector">
+            <option value="">
+              Select a class
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="row-count">
+            Desk Rows
+          </label>
+
+          <input
+            id="row-count"
+            type="number"
+            min="1"
+            max="10"
+            value="5"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="column-count">
+            Desk Columns
+          </label>
+
+          <input
+            id="column-count"
+            type="number"
+            min="1"
+            max="10"
+            value="6"
+          >
+        </div>
+
+        <button
+          id="create-chart-button"
+          class="button button-primary"
+          type="button"
+          disabled
+        >
+          Create Chart
+        </button>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2 id="chart-heading">
+        Classroom Layout
+      </h2>
+
+      <div
+        id="empty-state"
+        class="empty-state"
+      >
+        Select a class to begin.
+      </div>
+
+      <div
+        id="workspace"
+        class="workspace"
+        hidden
+      >
+        <aside class="student-panel">
+          <h3>Students</h3>
+
+          <p
+            id="student-count"
+            class="student-count"
+          ></p>
+
+          <div
+            id="student-list"
+            class="student-list"
+          ></div>
+        </aside>
+
+        <div class="chart-area">
+          <div class="front-label">
+            FRONT OF ROOM
+          </div>
+
+          <div
+            id="desk-grid"
+            class="desk-grid"
+          ></div>
+
+          <div class="chart-actions">
+            <button
+              id="save-chart-button"
+              class="button button-save"
+              type="button"
+            >
+              Save Seating Chart
+            </button>
+
+            <button
+              id="clear-assignments-button"
+              class="button button-danger"
+              type="button"
+            >
+              Clear Students
+            </button>
+
+            <button
+              id="print-chart-button"
+              class="button button-secondary"
+              type="button"
+            >
+              Print Chart
+            </button>
+          </div>
+
+          <div
+            id="status-message"
+            class="status-message"
+            aria-live="polite"
+          >
+            Seating chart saved!
+          </div>
+
+          <p class="small-note">
+            To move a student, click the occupied desk to remove them,
+            then select the student again and click a different desk.
+          </p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const PROFILE_STORAGE_KEY =
+      "patriotTeacherProfile";
+
+    const ROSTER_STORAGE_KEY =
+      "patriotStudentRosters";
+
+    const SEATING_STORAGE_KEY =
+      "patriotSeatingCharts";
+
+    const classSelector =
+      document.getElementById(
+        "class-selector"
+      );
+
+    const rowCountInput =
+      document.getElementById(
+        "row-count"
+      );
+
+    const columnCountInput =
+      document.getElementById(
+        "column-count"
+      );
+
+    const createChartButton =
+      document.getElementById(
+        "create-chart-button"
+      );
+
+    const saveChartButton =
+      document.getElementById(
+        "save-chart-button"
+      );
+
+    const clearAssignmentsButton =
+      document.getElementById(
+        "clear-assignments-button"
+      );
+
+    const printChartButton =
+      document.getElementById(
+        "print-chart-button"
+      );
+
+    const classWarning =
+      document.getElementById(
+        "class-warning"
+      );
+
+    const rosterWarning =
+      document.getElementById(
+        "roster-warning"
+      );
+
+    const emptyState =
+      document.getElementById(
+        "empty-state"
+      );
+
+    const workspace =
+      document.getElementById(
+        "workspace"
+      );
+
+    const studentList =
+      document.getElementById(
+        "student-list"
+      );
+
+    const studentCount =
+      document.getElementById(
+        "student-count"
+      );
+
+    const deskGrid =
+      document.getElementById(
+        "desk-grid"
+      );
+
+    const chartHeading =
+      document.getElementById(
+        "chart-heading"
+      );
+
+    const statusMessage =
+      document.getElementById(
+        "status-message"
+      );
+
+    let selectedClassKey = "";
+    let selectedClassLabel = "";
+    let roster = [];
+    let deskAssignments = [];
+    let selectedStudentId = "";
+    let currentRows = 5;
+    let currentColumns = 6;
+    let hasUnsavedChanges = false;
+
+    function readStorage(
+      storageKey,
+      fallbackValue
+    ) {
+      const saved =
+        localStorage.getItem(
+          storageKey
+        );
+
+      if (!saved) {
+        return fallbackValue;
+      }
+
+      try {
+        const parsed =
+          JSON.parse(saved);
+
+        return parsed ?? fallbackValue;
+      } catch (error) {
+        console.error(
+          `Could not read ${storageKey}.`,
+          error
+        );
+
+        return fallbackValue;
+      }
+    }
+
+    function readTeacherProfile() {
+      return readStorage(
+        PROFILE_STORAGE_KEY,
+        null
+      );
+    }
+
+    function readRosters() {
+      return readStorage(
+        ROSTER_STORAGE_KEY,
+        {}
+      );
+    }
+
+    function readSeatingCharts() {
+      return readStorage(
+        SEATING_STORAGE_KEY,
+        {}
+      );
+    }
+
+    function saveSeatingCharts(
+      charts
+    ) {
+      localStorage.setItem(
+        SEATING_STORAGE_KEY,
+        JSON.stringify(charts)
+      );
+    }
+
+    function getClassOptions() {
+      const profile =
+        readTeacherProfile();
+
+      if (
+        !profile ||
+        !profile.classes
+      ) {
+        return [];
+      }
+
+      return Object.entries(
+        profile.classes
+      )
+        .filter(
+          ([periodName, courseName]) =>
+            periodName &&
+            String(
+              courseName || ""
+            ).trim()
+        )
+        .map(
+          ([periodName, courseName]) => ({
+            key: periodName,
+            label:
+              `${periodName} — ` +
+              String(courseName).trim()
+          })
+        );
+    }
+
+    function populateClassSelector() {
+      const classes =
+        getClassOptions();
+
+      classSelector.innerHTML = `
+        <option value="">
+          Select a class
+        </option>
+      `;
+
+      classes.forEach(classInfo => {
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          classInfo.key;
+
+        option.textContent =
+          classInfo.label;
+
+        classSelector.appendChild(
+          option
+        );
+      });
+
+      classWarning.classList.toggle(
+        "show",
+        classes.length === 0
+      );
+
+      classSelector.disabled =
+        classes.length === 0;
+    }
+
+    function getStudentDisplayName(
+      student
+    ) {
+      const preferredName =
+        String(
+          student.preferredName || ""
+        ).trim();
+
+      const firstName =
+        preferredName ||
+        String(
+          student.firstName || ""
+        ).trim();
+
+      const lastName =
+        String(
+          student.lastName || ""
+        ).trim();
+
+      return [
+        firstName,
+        lastName
+      ]
+        .filter(Boolean)
+        .join(" ");
+    }
+
+    function getSelectedClassLabel() {
+      const selectedOption =
+        classSelector.options[
+          classSelector.selectedIndex
+        ];
+
+      return selectedOption
+        ? selectedOption.textContent.trim()
+        : "";
+    }
+
+    function getSavedChart() {
+      const charts =
+        readSeatingCharts();
+
+      return (
+        charts[selectedClassKey] ||
+        null
+      );
+    }
+
+    function loadClass() {
+      selectedClassKey =
+        classSelector.value;
+
+      selectedClassLabel =
+        getSelectedClassLabel();
+
+      selectedStudentId = "";
+      hasUnsavedChanges = false;
+
+      if (!selectedClassKey) {
+        roster = [];
+        deskAssignments = [];
+
+        createChartButton.disabled =
+          true;
+
+        rosterWarning.classList.remove(
+          "show"
+        );
+
+        showEmptyState(
+          "Select a class to begin."
+        );
+
+        return;
+      }
+
+      const rosters =
+        readRosters();
+
+      roster =
+        Array.isArray(
+          rosters[selectedClassKey]
+        )
+          ? rosters[
+              selectedClassKey
+            ].filter(
+              student =>
+                student &&
+                student.active !== false
+            )
+          : [];
+
+      const hasRoster =
+        roster.length > 0;
+
+      rosterWarning.classList.toggle(
+        "show",
+        !hasRoster
+      );
+
+      createChartButton.disabled =
+        !hasRoster;
+
+      if (!hasRoster) {
+        deskAssignments = [];
+
+        showEmptyState(
+          "This class does not have a saved roster."
+        );
+
+        return;
+      }
+
+      const savedChart =
+        getSavedChart();
+
+      if (savedChart) {
+        currentRows =
+          normalizeDimension(
+            savedChart.rows,
+            5
+          );
+
+        currentColumns =
+          normalizeDimension(
+            savedChart.columns,
+            6
+          );
+
+        rowCountInput.value =
+          currentRows;
+
+        columnCountInput.value =
+          currentColumns;
+
+        const expectedDeskCount =
+          currentRows *
+          currentColumns;
+
+        deskAssignments =
+          Array.isArray(
+            savedChart.assignments
+          )
+            ? savedChart.assignments
+                .slice(
+                  0,
+                  expectedDeskCount
+                )
+            : [];
+
+        while (
+          deskAssignments.length <
+          expectedDeskCount
+        ) {
+          deskAssignments.push(
+            null
+          );
+        }
+
+        removeMissingStudents();
+
+        renderWorkspace();
+
+        return;
+      }
+
+      currentRows =
+        normalizeDimension(
+          rowCountInput.value,
+          5
+        );
+
+      currentColumns =
+        normalizeDimension(
+          columnCountInput.value,
+          6
+        );
+
+      deskAssignments =
+        new Array(
+          currentRows *
+          currentColumns
+        ).fill(null);
+
+      renderWorkspace();
+    }
+
+    function normalizeDimension(
+      value,
+      fallback
+    ) {
+      const parsed =
+        Number.parseInt(
+          value,
+          10
+        );
+
+      if (
+        Number.isNaN(parsed)
+      ) {
+        return fallback;
+      }
+
+      return Math.min(
+        10,
+        Math.max(1, parsed)
+      );
+    }
+
+    function removeMissingStudents() {
+      const validIds =
+        new Set(
+          roster.map(
+            student => student.id
+          )
+        );
+
+      deskAssignments =
+        deskAssignments.map(
+          studentId =>
+            validIds.has(studentId)
+              ? studentId
+              : null
+        );
+    }
+
+    function showEmptyState(message) {
+      emptyState.textContent =
+        message;
+
+      emptyState.hidden = false;
+      workspace.hidden = true;
+
+      chartHeading.textContent =
+        "Classroom Layout";
+    }
+
+    function renderWorkspace() {
+      emptyState.hidden = true;
+      workspace.hidden = false;
+
+      chartHeading.textContent =
+        selectedClassLabel ||
+        "Classroom Layout";
+
+      renderStudentList();
+      renderDeskGrid();
+    }
+
+    function getAssignedStudentIds() {
+      return new Set(
+        deskAssignments.filter(Boolean)
+      );
+    }
+
+    function renderStudentList() {
+      studentList.innerHTML = "";
+
+      const assignedIds =
+        getAssignedStudentIds();
+
+      const assignedCount =
+        assignedIds.size;
+
+      studentCount.textContent =
+        `${assignedCount} of ` +
+        `${roster.length} students assigned`;
+
+      const sortedRoster =
+        [...roster].sort(
+          (studentA, studentB) => {
+            const nameA =
+              getStudentDisplayName(
+                studentA
+              ).toLowerCase();
+
+            const nameB =
+              getStudentDisplayName(
+                studentB
+              ).toLowerCase();
+
+            return nameA.localeCompare(
+              nameB
+            );
+          }
+        );
+
+      sortedRoster.forEach(
+        student => {
+          const button =
+            document.createElement(
+              "button"
+            );
+
+          button.type =
+            "button";
+
+          button.className =
+            "student-button";
+
+          button.textContent =
+            getStudentDisplayName(
+              student
+            ) ||
+            "Unnamed student";
+
+          const isAssigned =
+            assignedIds.has(
+              student.id
+            );
+
+          if (isAssigned) {
+            button.classList.add(
+              "assigned"
+            );
+
+            button.disabled = true;
+          }
+
+          if (
+            selectedStudentId ===
+            student.id
+          ) {
+            button.classList.add(
+              "selected"
+            );
+          }
+
+          button.addEventListener(
+            "click",
+            () => {
+              selectStudent(
+                student.id
+              );
+            }
+          );
+
+          studentList.appendChild(
+            button
+          );
+        }
+      );
+    }
+
+    function renderDeskGrid() {
+      deskGrid.innerHTML = "";
+
+      deskGrid.style.gridTemplateColumns =
+        `repeat(${currentColumns}, minmax(110px, 1fr))`;
+
+      deskAssignments.forEach(
+        (
+          studentId,
+          deskIndex
+        ) => {
+          const desk =
+            document.createElement(
+              "button"
+            );
+
+          desk.type =
+            "button";
+
+          desk.className =
+            "desk";
+
+          desk.setAttribute(
+            "aria-label",
+            `Desk ${deskIndex + 1}`
+          );
+
+          const number =
+            document.createElement(
+              "span"
+            );
+
+          number.className =
+            "desk-number";
+
+          number.textContent =
+            `Desk ${deskIndex + 1}`;
+
+          desk.appendChild(number);
+
+          if (studentId) {
+            const student =
+              roster.find(
+                item =>
+                  item.id === studentId
+              );
+
+            desk.classList.add(
+              "occupied"
+            );
+
+            const name =
+              document.createElement(
+                "span"
+              );
+
+            name.className =
+              "desk-name";
+
+            name.textContent =
+              student
+                ? getStudentDisplayName(
+                    student
+                  )
+                : "Student unavailable";
+
+            desk.appendChild(name);
+          } else {
+            const empty =
+              document.createElement(
+                "span"
+              );
+
+            empty.className =
+              "desk-empty";
+
+            empty.textContent =
+              selectedStudentId
+                ? "Click to assign"
+                : "Empty desk";
+
+            desk.appendChild(empty);
+          }
+
+          desk.addEventListener(
+            "click",
+            () => {
+              handleDeskClick(
+                deskIndex
+              );
+            }
+          );
+
+          deskGrid.appendChild(
+            desk
+          );
+        }
+      );
+    }
+
+    function selectStudent(
+      studentId
+    ) {
+      selectedStudentId =
+        selectedStudentId === studentId
+          ? ""
+          : studentId;
+
+      renderStudentList();
+      renderDeskGrid();
+    }
+
+    function handleDeskClick(
+      deskIndex
+    ) {
+      const existingStudentId =
+        deskAssignments[deskIndex];
+
+      if (existingStudentId) {
+        const student =
+          roster.find(
+            item =>
+              item.id ===
+              existingStudentId
+          );
+
+        const studentName =
+          student
+            ? getStudentDisplayName(
+                student
+              )
+            : "this student";
+
+        const confirmed =
+          window.confirm(
+            `Remove ${studentName} from this desk?`
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        deskAssignments[
+          deskIndex
+        ] = null;
+
+        selectedStudentId =
+          existingStudentId;
+
+        hasUnsavedChanges =
+          true;
+
+        renderWorkspace();
+
+        return;
+      }
+
+      if (!selectedStudentId) {
+        window.alert(
+          "Select a student from the list first."
+        );
+
+        return;
+      }
+
+      deskAssignments[
+        deskIndex
+      ] = selectedStudentId;
+
+      selectedStudentId = "";
+      hasUnsavedChanges = true;
+
+      renderWorkspace();
+    }
+
+    function createChart() {
+      if (
+        !selectedClassKey ||
+        roster.length === 0
+      ) {
+        return;
+      }
+
+      const rows =
+        normalizeDimension(
+          rowCountInput.value,
+          5
+        );
+
+      const columns =
+        normalizeDimension(
+          columnCountInput.value,
+          6
+        );
+
+      const newDeskCount =
+        rows * columns;
+
+      const hasAssignments =
+        deskAssignments.some(
+          Boolean
+        );
+
+      if (
+        hasAssignments &&
+        (
+          rows !== currentRows ||
+          columns !== currentColumns
+        )
+      ) {
+        const confirmed =
+          window.confirm(
+            "Changing the number of desks may remove some current assignments. Continue?"
+          );
+
+        if (!confirmed) {
+          rowCountInput.value =
+            currentRows;
+
+          columnCountInput.value =
+            currentColumns;
+
+          return;
+        }
+      }
+
+      const existingAssignments =
+        [...deskAssignments];
+
+      deskAssignments =
+        new Array(
+          newDeskCount
+        ).fill(null);
+
+      existingAssignments
+        .slice(
+          0,
+          newDeskCount
+        )
+        .forEach(
+          (
+            studentId,
+            index
+          ) => {
+            deskAssignments[
+              index
+            ] = studentId;
+          }
+        );
+
+      currentRows = rows;
+      currentColumns =
+        columns;
+
+      rowCountInput.value =
+        currentRows;
+
+      columnCountInput.value =
+        currentColumns;
+
+      selectedStudentId = "";
+      hasUnsavedChanges =
+        true;
+
+      renderWorkspace();
+    }
+
+    function saveChart() {
+      if (!selectedClassKey) {
+        return;
+      }
+
+      const charts =
+        readSeatingCharts();
+
+      charts[selectedClassKey] = {
+        rows:
+          currentRows,
+
+        columns:
+          currentColumns,
+
+        assignments:
+          [...deskAssignments],
+
+        updatedAt:
+          new Date().toISOString()
+      };
+
+      saveSeatingCharts(
+        charts
+      );
+
+      hasUnsavedChanges =
+        false;
+
+      showStatusMessage(
+        "Seating chart saved!"
+      );
+    }
+
+    function clearAssignments() {
+      if (
+        !deskAssignments.some(
+          Boolean
+        )
+      ) {
+        return;
+      }
+
+      const confirmed =
+        window.confirm(
+          "Remove every student from the seating chart?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      deskAssignments =
+        deskAssignments.map(
+          () => null
+        );
+
+      selectedStudentId = "";
+      hasUnsavedChanges =
+        true;
+
+      renderWorkspace();
+    }
+
+    function showStatusMessage(
+      message
+    ) {
+      statusMessage.textContent =
+        message;
+
+      statusMessage.classList.add(
+        "show"
+      );
+
+      setTimeout(() => {
+        statusMessage.classList.remove(
+          "show"
+        );
+      }, 1800);
+    }
+
+    function confirmUnsavedChanges() {
+      if (!hasUnsavedChanges) {
+        return true;
+      }
+
+      return window.confirm(
+        "You have unsaved seating-chart changes. Leave without saving them?"
+      );
+    }
+
+    let previousClassValue = "";
+
+    classSelector.addEventListener(
+      "focus",
+      () => {
+        previousClassValue =
+          classSelector.value;
+      }
+    );
+
+    classSelector.addEventListener(
+      "change",
+      () => {
+        if (
+          !confirmUnsavedChanges()
+        ) {
+          classSelector.value =
+            previousClassValue;
+
+          return;
+        }
+
+        previousClassValue =
+          classSelector.value;
+
+        loadClass();
+      }
+    );
+
+    createChartButton.addEventListener(
+      "click",
+      createChart
+    );
+
+    saveChartButton.addEventListener(
+      "click",
+      saveChart
+    );
+
+    clearAssignmentsButton.addEventListener(
+      "click",
+      clearAssignments
+    );
+
+    printChartButton.addEventListener(
+      "click",
+      () => {
+        window.print();
+      }
+    );
+
+    window.addEventListener(
+      "beforeunload",
+      event => {
+        if (!hasUnsavedChanges) {
+          return;
+        }
+
+        event.preventDefault();
+        event.returnValue = "";
+      }
+    );
+
+    populateClassSelector();
+  </script>
+
+  <script src="js/navigation.js"></script>
+</body>
+</html>
