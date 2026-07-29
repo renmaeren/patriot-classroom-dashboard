@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>About | Patriot Command</title>
+
+  <style>
+    :root {
+      --navy: #11284a;
+      --red: #aa3235;
+      --gold: #d3a84f;
+      --white: #ffffff;
+      --cream: #f7f2e8;
+      --gray: #657184;
+      --border: #d7dce3;
+      --background: #e9edf2;
+      --green: #2f7d4a;
+      --shadow: rgba(0, 0, 0, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--navy);
+      background: var(--background);
+    }
+
+    .about-header {
+      padding: 38px 24px;
+      color: var(--white);
+      text-align: center;
+      background: var(--navy);
+      border-bottom: 7px solid var(--red);
+    }
+
+    .about-header h1 {
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 4rem);
+    }
+
+    .about-header p {
+      margin: 10px 0 0;
+      color: var(--gold);
+      font-size: 1.08rem;
+      font-weight: bold;
+    }
+
+    main {
+      width: min(950px, 94%);
+      margin: 30px auto 50px;
+    }
+
+    .about-hero {
+      margin-bottom: 22px;
+      padding: 32px;
+      text-align: center;
+      background: var(--cream);
+      border: 4px solid var(--white);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px var(--shadow);
+    }
+
+    .about-hero h2 {
+      margin: 0;
+      color: var(--red);
+      font-size: clamp(1.8rem, 5vw, 2.8rem);
+    }
+
+    .about-tagline {
+      margin: 10px 0 18px;
+      color: var(--navy);
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .about-description {
+      max-width: 720px;
+      margin: 0 auto;
+      color: var(--gray);
+      font-size: 1.05rem;
+      line-height: 1.65;
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: repeat(
+        2,
+        minmax(0, 1fr)
+      );
+      gap: 20px;
+    }
+
+    .about-card {
+      padding: 24px;
+      background: var(--white);
+      border-radius: 14px;
+      box-shadow: 0 6px 18px var(--shadow);
+    }
+
+    .about-card.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .about-card h2 {
+      margin: 0 0 12px;
+      color: var(--red);
+      font-size: 1.4rem;
+    }
+
+    .about-card p {
+      margin: 0;
+      color: var(--gray);
+      line-height: 1.6;
+    }
+
+    .feature-list,
+    .roadmap-list,
+    .version-list {
+      margin: 0;
+      padding-left: 22px;
+      color: var(--gray);
+      line-height: 1.7;
+    }
+
+    .feature-list li,
+    .roadmap-list li,
+    .version-list li {
+      margin-bottom: 7px;
+    }
+
+    .version-badge {
+      display: inline-block;
+      margin-bottom: 14px;
+      padding: 7px 12px;
+      color: var(--white);
+      font-weight: bold;
+      background: var(--green);
+      border-radius: 999px;
+    }
+
+    .creator-card {
+      border-left: 7px solid var(--gold);
+    }
+
+    .about-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 25px;
+    }
+
+    .about-button {
+      display: inline-block;
+      padding: 13px 18px;
+      color: var(--white);
+      font-weight: bold;
+      text-decoration: none;
+      background: var(--navy);
+      border-radius: 9px;
+    }
+
+    .about-button.primary {
+      background: var(--red);
+    }
+
+    .about-button:hover {
+      filter: brightness(1.08);
+    }
+
+    .about-footer-note {
+      margin: 28px 0 0;
+      color: var(--gray);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+
+    @media (max-width: 720px) {
+      .about-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .about-card.full-width {
+        grid-column: auto;
+      }
+
+      .about-hero {
+        padding: 25px 20px;
+      }
+
+      .about-actions {
+        flex-direction: column;
+      }
+
+      .about-button {
+        width: 100%;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="about-header">
+    <h1>About Patriot Command</h1>
+
+    <p>
+      Your daily command center.
+    </p>
+  </header>
+
+  <main>
+    <section class="about-hero">
+      <h2>Plan Once. Save It. Launch It.</h2>
+
+      <p class="about-tagline">
+        Everything you need. One place.
+      </p>
+
+      <p class="about-description">
+        Patriot Command is a teacher-focused planning and
+        instructional tool designed to make the daily classroom
+        workflow simpler. Teachers can plan lessons, save them
+        to a personal library, reuse previous work, and launch
+        lessons directly into a classroom-ready teaching view.
+      </p>
+    </section>
+
+    <div class="about-grid">
+      <section class="about-card">
+        <h2>Our Purpose</h2>
+
+        <p>
+          Patriot Command was created to reduce repeated work
+          and help teachers move smoothly from planning to
+          instruction. It keeps lesson information organized,
+          accessible, and ready when the school day begins.
+        </p>
+      </section>
+
+      <section class="about-card">
+        <h2>Our Philosophy</h2>
+
+        <p>
+          Useful technology should support teachers rather than
+          create more work. Patriot Command follows a simple
+          principle: keep the tools practical, keep the process
+          clear, and keep the teacher in control.
+        </p>
+      </section>
+
+      <section class="about-card full-width">
+        <h2>What Patriot Command Includes</h2>
+
+        <ul class="feature-list">
+          <li>
+            A dashboard that identifies the current or next
+            class using the school bell schedule.
+          </li>
+
+          <li>
+            A lesson planner for creating, saving, editing, and
+            duplicating lessons.
+          </li>
+
+          <li>
+            A searchable lesson library with calendar and class
+            filters.
+          </li>
+
+          <li>
+            A classroom teaching view for today’s scheduled
+            lesson.
+          </li>
+
+          <li>
+            The ability to launch any saved lesson directly
+            from the Library.
+          </li>
+
+          <li>
+            Teacher settings for identifying classes and
+            personalizing the daily experience.
+          </li>
+        </ul>
+      </section>
+
+      <section class="about-card">
+        <h2>Current Version</h2>
+
+        <span class="version-badge">
+          Version 1.0
+        </span>
+
+        <ul class="version-list">
+          <li>Core planning workflow complete</li>
+          <li>Lesson Library complete</li>
+          <li>Teach from Library complete</li>
+          <li>Dashboard schedule tools active</li>
+        </ul>
+      </section>
+
+      <section class="about-card">
+        <h2>Future Roadmap</h2>
+
+        <ul class="roadmap-list">
+          <li>Expanded teacher and school settings</li>
+          <li>Dashboard information widgets</li>
+          <li>Planner autosave and save-status tools</li>
+          <li>Additional personalization options</li>
+          <li>Safe lesson archiving and recovery</li>
+        </ul>
+      </section>
+
+      <section class="about-card creator-card full-width">
+        <h2>Created for Teachers</h2>
+
+        <p>
+          Patriot Command was designed and developed by
+          Maegan Renick as a practical tool for the daily needs
+          of teachers at Allen County-Scottsville High School.
+          It continues to grow through real classroom use,
+          teacher feedback, and a commitment to keeping the
+          experience simple.
+        </p>
+      </section>
+    </div>
+
+    <div class="about-actions">
+      <a
+        class="about-button primary"
+        href="index.html"
+      >
+        Return to Dashboard
+      </a>
+
+      <a
+        class="about-button"
+        href="planner.html"
+      >
+        Open Planner
+      </a>
+
+      <a
+        class="about-button"
+        href="library.html"
+      >
+        Open Library
+      </a>
+    </div>
+
+    <p class="about-footer-note">
+      Patriot Command · Version 1.0
+    </p>
+  </main>
+
+  <script src="js/navigation.js"></script>
+</body>
+</html>
