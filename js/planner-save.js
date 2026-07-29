@@ -12,6 +12,12 @@ Full-Page Lesson Planner Saving
   const TEACHER_PROFILE_KEY =
     "patriotTeacherProfile";
 
+  const EDIT_LESSON_KEY =
+    "patriotEditLesson";
+
+  const DUPLICATE_LESSON_KEY =
+    "patriotDuplicateLesson";
+
   function readTeacherProfile() {
     const saved =
       localStorage.getItem(
@@ -44,6 +50,70 @@ Full-Page Lesson Planner Saving
     }
   }
 
+  function readStoredLesson(key) {
+    const saved =
+      localStorage.getItem(key);
+
+    if (!saved) {
+      return null;
+    }
+
+    try {
+      return JSON.parse(saved);
+    } catch (error) {
+      console.error(
+        "The stored lesson could not be read.",
+        error
+      );
+
+      return null;
+    }
+  }
+
+  function getPlannerMode() {
+    const parameters =
+      new URLSearchParams(
+        window.location.search
+      );
+
+    const mode =
+      parameters.get("mode");
+
+    if (
+      mode === "edit" ||
+      mode === "duplicate"
+    ) {
+      return mode;
+    }
+
+    return "new";
+  }
+
+  function getLessonIdForSave() {
+    const mode =
+      getPlannerMode();
+
+    if (mode === "edit") {
+      const originalLesson =
+        readStoredLesson(
+          EDIT_LESSON_KEY
+        );
+
+      if (
+        originalLesson &&
+        originalLesson.lessonId
+      ) {
+        return originalLesson.lessonId;
+      }
+
+      throw new Error(
+        "The original lesson ID could not be found. Return to the Library and open the lesson again."
+      );
+    }
+
+    return createLessonId();
+  }
+
   function createLessonId() {
     if (
       window.crypto &&
@@ -64,17 +134,21 @@ Full-Page Lesson Planner Saving
   }
 
   function getTodayText() {
-    const today = new Date();
+    const today =
+      new Date();
 
-    const year = today.getFullYear();
+    const year =
+      today.getFullYear();
 
-    const month = String(
-      today.getMonth() + 1
-    ).padStart(2, "0");
+    const month =
+      String(
+        today.getMonth() + 1
+      ).padStart(2, "0");
 
-    const day = String(
-      today.getDate()
-    ).padStart(2, "0");
+    const day =
+      String(
+        today.getDate()
+      ).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   }
@@ -85,9 +159,12 @@ Full-Page Lesson Planner Saving
         'input[name="planner-class"]:checked'
       )
     ).map(checkbox => ({
-      period: checkbox.value,
+      period:
+        checkbox.value,
+
       course:
-        checkbox.dataset.course || ""
+        checkbox.dataset.course ||
+        ""
     }));
   }
 
@@ -120,12 +197,15 @@ Full-Page Lesson Planner Saving
               : ""
         };
       })
-      .filter(resource => resource.url);
+      .filter(resource => {
+        return resource.url;
+      });
   }
 
   function isCompleteWebAddress(url) {
     try {
-      const parsed = new URL(url);
+      const parsed =
+        new URL(url);
 
       return (
         parsed.protocol === "https:" ||
@@ -138,7 +218,9 @@ Full-Page Lesson Planner Saving
 
   function getSelectedText(selectId) {
     const select =
-      document.getElementById(selectId);
+      document.getElementById(
+        selectId
+      );
 
     if (
       !select ||
@@ -152,33 +234,44 @@ Full-Page Lesson Planner Saving
     ].textContent.trim();
   }
 
+  function getFieldValue(id) {
+    const field =
+      document.getElementById(id);
+
+    if (!field) {
+      return "";
+    }
+
+    return field.value.trim();
+  }
+
   function collectLesson() {
     const selectedClasses =
       collectSelectedClasses();
 
-    const profileComponent =
-      document
-        .getElementById(
-          "profile-component"
-        )
-        .value;
+    const profileComponentField =
+      document.getElementById(
+        "profile-component"
+      );
+
+    const profileFocusField =
+      document.getElementById(
+        "profile-focus"
+      );
 
     return {
-      lessonId: createLessonId(),
+      lessonId:
+        getLessonIdForSave(),
 
       lessonDate:
-        document
-          .getElementById(
-            "lesson-date"
-          )
-          .value,
+        getFieldValue(
+          "lesson-date"
+        ),
 
       lessonTitle:
-        document
-          .getElementById(
-            "lesson-title"
-          )
-          .value.trim(),
+        getFieldValue(
+          "lesson-title"
+        ),
 
       assignedPeriods:
         selectedClasses.map(
@@ -191,28 +284,24 @@ Full-Page Lesson Planner Saving
         ),
 
       bellRinger:
-        document
-          .getElementById(
-            "bell-ringer"
-          )
-          .value.trim(),
+        getFieldValue(
+          "bell-ringer"
+        ),
 
       agenda:
-        document
-          .getElementById(
-            "agenda"
-          )
-          .value.trim(),
+        getFieldValue(
+          "agenda"
+        ),
 
       learningTarget:
-        document
-          .getElementById(
-            "learning-target"
-          )
-          .value.trim(),
+        getFieldValue(
+          "learning-target"
+        ),
 
       profileId:
-        profileComponent,
+        profileComponentField
+          ? profileComponentField.value
+          : "",
 
       profileComponent:
         getSelectedText(
@@ -220,49 +309,37 @@ Full-Page Lesson Planner Saving
         ),
 
       profileFocus:
-        document
-          .getElementById(
-            "profile-focus"
-          )
-          .value,
+        profileFocusField
+          ? profileFocusField.value
+          : "",
 
       standards:
-        document
-          .getElementById(
-            "standards"
-          )
-          .value.trim(),
+        getFieldValue(
+          "standards"
+        ),
 
       resources:
         collectResources(),
 
       successCriteria:
-        document
-          .getElementById(
-            "success-criteria"
-          )
-          .value.trim(),
+        getFieldValue(
+          "success-criteria"
+        ),
 
       whyLearning:
-        document
-          .getElementById(
-            "why-learning"
-          )
-          .value.trim(),
+        getFieldValue(
+          "why-learning"
+        ),
 
       materials:
-        document
-          .getElementById(
-            "materials"
-          )
-          .value.trim(),
+        getFieldValue(
+          "materials"
+        ),
 
       teacherNotes:
-        document
-          .getElementById(
-            "teacher-notes"
-          )
-          .value.trim()
+        getFieldValue(
+          "teacher-notes"
+        )
     };
   }
 
@@ -270,7 +347,9 @@ Full-Page Lesson Planner Saving
     const missing = [];
 
     if (!lesson.lessonDate) {
-      missing.push("Lesson Date");
+      missing.push(
+        "Lesson Date"
+      );
     }
 
     if (
@@ -282,11 +361,15 @@ Full-Page Lesson Planner Saving
     }
 
     if (!lesson.bellRinger) {
-      missing.push("Bell Ringer");
+      missing.push(
+        "Bell Ringer"
+      );
     }
 
     if (!lesson.agenda) {
-      missing.push("Agenda");
+      missing.push(
+        "Agenda"
+      );
     }
 
     if (!lesson.learningTarget) {
@@ -302,15 +385,18 @@ Full-Page Lesson Planner Saving
     }
 
     if (!lesson.standards) {
-      missing.push("Standards");
+      missing.push(
+        "Standards"
+      );
     }
 
     const invalidResource =
       lesson.resources.find(
-        resource =>
-          !isCompleteWebAddress(
+        resource => {
+          return !isCompleteWebAddress(
             resource.url
-          )
+          );
+        }
       );
 
     if (invalidResource) {
@@ -336,21 +422,33 @@ Full-Page Lesson Planner Saving
       )
     ];
 
+    const defaultTitle =
+      uniqueCourses.length > 0
+        ? `${uniqueCourses.join(
+            " / "
+          )} Lesson`
+        : "Lesson";
+
     const archiveData =
       new URLSearchParams({
-        lessonId: lesson.lessonId,
+        lessonId:
+          lesson.lessonId,
 
         lessonDate:
           lesson.lessonDate,
 
         teacherEmail:
-          teacher.teacherEmail || "",
+          teacher.teacherEmail ||
+          "",
 
         teacherName:
-          teacher.teacherName || "",
+          teacher.teacherName ||
+          "",
 
         course:
-          uniqueCourses.join(" / "),
+          uniqueCourses.join(
+            " / "
+          ),
 
         periods:
           lesson.assignedPeriods.join(
@@ -359,10 +457,7 @@ Full-Page Lesson Planner Saving
 
         lessonTitle:
           lesson.lessonTitle ||
-          `${uniqueCourses.join(
-            " / "
-          )} Lesson` ||
-          "Lesson",
+          defaultTitle,
 
         bellRinger:
           lesson.bellRinger,
@@ -400,23 +495,27 @@ Full-Page Lesson Planner Saving
           lesson.teacherNotes
       });
 
-    await fetch(ARCHIVE_URL, {
-      method: "POST",
-      mode: "no-cors",
-      body: archiveData
-    });
+    await fetch(
+      ARCHIVE_URL,
+      {
+        method: "POST",
+        mode: "no-cors",
+        body: archiveData
+      }
+    );
   }
 
-  function saveLessonLocally(lesson) {
+  function saveLessonLocally(
+    lesson
+  ) {
     localStorage.setItem(
       "patriotLastPlannedLesson",
       JSON.stringify(lesson)
     );
 
     /*
-      Keep the current Teach page compatible.
-      Only today's lesson becomes the active
-      classroom lesson automatically.
+      Only today's lesson becomes the
+      active classroom lesson automatically.
     */
     if (
       lesson.lessonDate ===
@@ -425,7 +524,9 @@ Full-Page Lesson Planner Saving
       localStorage.setItem(
         "patriotDailyLesson",
         JSON.stringify({
-          lessonId: lesson.lessonId,
+          lessonId:
+            lesson.lessonId,
+
           lessonDate:
             lesson.lessonDate,
 
@@ -470,8 +571,11 @@ Full-Page Lesson Planner Saving
       return;
     }
 
-    status.textContent = message;
-    status.style.display = "block";
+    status.textContent =
+      message;
+
+    status.style.display =
+      "block";
 
     status.scrollIntoView({
       behavior: "smooth",
@@ -479,10 +583,75 @@ Full-Page Lesson Planner Saving
     });
   }
 
+  function cleanUpPlannerMode(
+    mode
+  ) {
+    if (mode === "edit") {
+      localStorage.removeItem(
+        EDIT_LESSON_KEY
+      );
+    }
+
+    if (mode === "duplicate") {
+      localStorage.removeItem(
+        DUPLICATE_LESSON_KEY
+      );
+    }
+
+    const cleanUrl =
+      window.location.pathname;
+
+    window.history.replaceState(
+      {},
+      document.title,
+      cleanUrl
+    );
+  }
+
+  function updatePageAfterSave(
+    mode
+  ) {
+    const banner =
+      document.getElementById(
+        "planner-mode-banner"
+      );
+
+    if (banner) {
+      banner.remove();
+    }
+
+    const saveButton =
+      document.querySelector(
+        ".save-button"
+      );
+
+    if (saveButton) {
+      saveButton.textContent =
+        "Save Lesson";
+    }
+
+    cleanUpPlannerMode(mode);
+  }
+
   async function handleSave(event) {
     event.preventDefault();
 
-    const lesson = collectLesson();
+    const mode =
+      getPlannerMode();
+
+    let lesson;
+
+    try {
+      lesson =
+        collectLesson();
+    } catch (error) {
+      window.alert(
+        error.message
+      );
+
+      return;
+    }
+
     const missing =
       validateLesson(lesson);
 
@@ -500,27 +669,53 @@ Full-Page Lesson Planner Saving
         ".save-button"
       );
 
+    if (!saveButton) {
+      return;
+    }
+
     const originalText =
       saveButton.textContent;
 
-    saveButton.disabled = true;
-    saveButton.textContent =
-      "Saving Lesson...";
+    saveButton.disabled =
+      true;
 
-    saveLessonLocally(lesson);
+    saveButton.textContent =
+      mode === "edit"
+        ? "Updating Lesson..."
+        : "Saving Lesson...";
 
     try {
       await sendLessonToArchive(
         lesson
       );
 
-      showStatus(
-        "✓ Lesson saved and archived! You may now plan another class or return to the Dashboard."
+      saveLessonLocally(
+        lesson
       );
+
+      if (mode === "edit") {
+        showStatus(
+          "✓ Lesson updated successfully. Return to the Library to view the changes."
+        );
+      } else if (
+        mode === "duplicate"
+      ) {
+        showStatus(
+          "✓ Duplicated lesson saved as a new lesson. You may return to the Library or continue planning."
+        );
+      } else {
+        showStatus(
+          "✓ Lesson saved and archived! You may now plan another class or return to the Dashboard."
+        );
+      }
 
       localStorage.setItem(
         "patriotPlannerLastSaved",
         "true"
+      );
+
+      updatePageAfterSave(
+        mode
       );
     } catch (error) {
       console.error(
@@ -529,12 +724,14 @@ Full-Page Lesson Planner Saving
       );
 
       window.alert(
-        "The lesson was saved on this computer, but the Google archive could not be reached. Check your internet connection and try again."
+        "The Google lesson archive could not be reached. Check your internet connection and try again."
       );
-    } finally {
-      saveButton.disabled = false;
+
       saveButton.textContent =
         originalText;
+    } finally {
+      saveButton.disabled =
+        false;
     }
   }
 
@@ -555,7 +752,8 @@ Full-Page Lesson Planner Saving
   }
 
   if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ) {
     document.addEventListener(
       "DOMContentLoaded",
