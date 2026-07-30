@@ -1,20 +1,38 @@
 (function () {
   "use strict";
 
-  const STORAGE_KEY = "patriotStudentPickerRoster";
-  const WIDGET_ID = "student-picker-widget";
-  const MODAL_ID = "student-picker-modal";
+  const STORAGE_KEY =
+    "patriotStudentPickerRoster";
+
+  const WIDGET_ID =
+    "student-picker-widget";
+
+  const MODAL_ID =
+    "student-picker-modal";
 
   let roster = [];
 
+  /*
+  ==========================================
+  STORAGE
+  ==========================================
+  */
+
   function readRoster() {
     try {
-      const savedRoster = JSON.parse(
-        localStorage.getItem(STORAGE_KEY) || "[]"
-      );
+      const savedRoster =
+        JSON.parse(
+          localStorage.getItem(
+            STORAGE_KEY
+          ) || "[]"
+        );
 
       return Array.isArray(savedRoster)
-        ? savedRoster.filter(Boolean)
+        ? savedRoster
+            .map(name =>
+              String(name || "").trim()
+            )
+            .filter(Boolean)
         : [];
     } catch (error) {
       console.error(
@@ -35,6 +53,12 @@
     );
   }
 
+  /*
+  ==========================================
+  STYLES
+  ==========================================
+  */
+
   function addStyles() {
     if (
       document.getElementById(
@@ -47,7 +71,8 @@
     const styles =
       document.createElement("style");
 
-    styles.id = "student-picker-styles";
+    styles.id =
+      "student-picker-styles";
 
     styles.textContent = `
       #${WIDGET_ID} {
@@ -66,10 +91,18 @@
         margin: 14px 0;
         padding: 16px;
         color: var(--navy, #11284a);
-        font-size: clamp(1.4rem, 2.6vw, 2.2rem);
+        font-size: clamp(
+          1.4rem,
+          2.6vw,
+          2.2rem
+        );
         font-weight: bold;
-        background: var(--cream, #f7f2e8);
-        border: 3px solid var(--gold, #d3a84f);
+        overflow-wrap: anywhere;
+        background:
+          var(--cream, #f7f2e8);
+        border:
+          3px solid
+          var(--gold, #d3a84f);
         border-radius: 12px;
       }
 
@@ -90,17 +123,28 @@
         padding: 11px 14px;
         color: #ffffff;
         font-weight: bold;
-        background: var(--red, #b3262e);
+        background:
+          var(--red, #b3262e);
         border: 0;
         border-radius: 8px;
+        cursor: pointer;
       }
 
       .student-picker-button.secondary {
-        background: var(--navy, #11284a);
+        background:
+          var(--navy, #11284a);
       }
 
       .student-picker-button:hover {
         filter: brightness(1.07);
+      }
+
+      .student-picker-button:
+      focus-visible {
+        outline:
+          3px solid
+          var(--gold, #d3a84f);
+        outline-offset: 2px;
       }
 
       .student-picker-count {
@@ -112,12 +156,13 @@
       .student-picker-modal {
         position: fixed;
         inset: 0;
-        z-index: 1600;
+        z-index: 5000;
         display: none;
         justify-content: center;
         align-items: center;
         padding: 20px;
-        background: rgba(0, 0, 0, 0.58);
+        background:
+          rgba(0, 0, 0, 0.58);
       }
 
       .student-picker-modal.open {
@@ -129,25 +174,36 @@
         max-height: 90vh;
         padding: 24px;
         overflow-y: auto;
-        color: var(--navy, #11284a);
-        background: var(--cream, #f7f2e8);
+        color:
+          var(--navy, #11284a);
+        background:
+          var(--cream, #f7f2e8);
+        border:
+          3px solid
+          var(--gold, #d3a84f);
         border-radius: 14px;
-        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.3);
+        box-shadow:
+          0 12px 35px
+          rgba(0, 0, 0, 0.3);
       }
 
       .student-picker-dialog-header {
         display: flex;
-        justify-content: space-between;
+        justify-content:
+          space-between;
         align-items: center;
         gap: 15px;
         margin-bottom: 16px;
         padding-bottom: 12px;
-        border-bottom: 3px solid var(--gold, #d3a84f);
+        border-bottom:
+          3px solid
+          var(--gold, #d3a84f);
       }
 
       .student-picker-dialog-header h2 {
         margin: 0;
-        color: var(--red, #b3262e);
+        color:
+          var(--red, #b3262e);
       }
 
       .student-picker-close {
@@ -156,9 +212,11 @@
         padding: 0;
         color: #ffffff;
         font-size: 1.4rem;
-        background: var(--navy, #11284a);
+        background:
+          var(--navy, #11284a);
         border: 0;
         border-radius: 50%;
+        cursor: pointer;
       }
 
       .student-picker-instructions {
@@ -170,49 +228,90 @@
         width: 100%;
         min-height: 300px;
         padding: 12px;
-        color: var(--navy, #11284a);
+        color:
+          var(--navy, #11284a);
+        font: inherit;
         background: #ffffff;
-        border: 2px solid #d8d8d8;
+        border:
+          2px solid #d8d8d8;
         border-radius: 8px;
         resize: vertical;
+        box-sizing: border-box;
+      }
+
+      .student-picker-textarea:
+      focus {
+        outline: none;
+        border-color:
+          var(--navy, #11284a);
+        box-shadow:
+          0 0 0 3px
+          rgba(17, 40, 74, 0.14);
       }
 
       .student-picker-modal-buttons {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns:
+          1fr 1fr;
         gap: 10px;
         margin-top: 15px;
       }
 
-      .student-picker-save {
-        padding: 12px;
-        color: #ffffff;
-        font-weight: bold;
-        background: var(--green, #2f7d4a);
-        border: 0;
-        border-radius: 8px;
-      }
-
+      .student-picker-save,
       .student-picker-cancel {
         padding: 12px;
         color: #ffffff;
         font-weight: bold;
-        background: var(--navy, #11284a);
         border: 0;
         border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .student-picker-save {
+        background:
+          var(--green, #2f7d4a);
+      }
+
+      .student-picker-cancel {
+        background:
+          var(--navy, #11284a);
+      }
+
+      @media (max-width: 520px) {
+        .student-picker-dialog {
+          padding: 18px;
+        }
+
+        .student-picker-modal-buttons {
+          grid-template-columns: 1fr;
+        }
       }
     `;
 
-    document.head.appendChild(styles);
+    document.head.appendChild(
+      styles
+    );
   }
 
+  /*
+  ==========================================
+  WIDGET
+  ==========================================
+  */
+
   function createWidget() {
-    if (document.getElementById(WIDGET_ID)) {
+    if (
+      document.getElementById(
+        WIDGET_ID
+      )
+    ) {
       return;
     }
 
     const rightColumn =
-      document.querySelector(".right-column");
+      document.querySelector(
+        ".right-column"
+      );
 
     if (!rightColumn) {
       console.warn(
@@ -223,7 +322,9 @@
     }
 
     const widget =
-      document.createElement("section");
+      document.createElement(
+        "section"
+      );
 
     widget.id = WIDGET_ID;
     widget.className = "card";
@@ -240,7 +341,9 @@
         No student selected
       </div>
 
-      <div class="student-picker-buttons">
+      <div
+        class="student-picker-buttons"
+      >
         <button
           id="student-picker-pick-button"
           class="student-picker-button"
@@ -264,21 +367,43 @@
       ></p>
     `;
 
-    rightColumn.appendChild(widget);
+    rightColumn.appendChild(
+      widget
+    );
 
     document
-      .getElementById("student-picker-pick-button")
-      .addEventListener("click", pickStudent);
+      .getElementById(
+        "student-picker-pick-button"
+      )
+      .addEventListener(
+        "click",
+        pickStudent
+      );
 
     document
-      .getElementById("student-picker-edit-button")
-      .addEventListener("click", openRosterEditor);
+      .getElementById(
+        "student-picker-edit-button"
+      )
+      .addEventListener(
+        "click",
+        openRosterEditor
+      );
 
     updateRosterCount();
   }
 
+  /*
+  ==========================================
+  ROSTER EDITOR
+  ==========================================
+  */
+
   function createModal() {
-    if (document.getElementById(MODAL_ID)) {
+    if (
+      document.getElementById(
+        MODAL_ID
+      )
+    ) {
       return;
     }
 
@@ -286,7 +411,8 @@
       document.createElement("div");
 
     modal.id = MODAL_ID;
-    modal.className = "student-picker-modal";
+    modal.className =
+      "student-picker-modal";
 
     modal.innerHTML = `
       <div
@@ -295,8 +421,12 @@
         aria-modal="true"
         aria-labelledby="student-picker-modal-title"
       >
-        <div class="student-picker-dialog-header">
-          <h2 id="student-picker-modal-title">
+        <div
+          class="student-picker-dialog-header"
+        >
+          <h2
+            id="student-picker-modal-title"
+          >
             Edit Student Roster
           </h2>
 
@@ -310,8 +440,11 @@
           </button>
         </div>
 
-        <p class="student-picker-instructions">
-          Enter or paste one student name on each line.
+        <p
+          class="student-picker-instructions"
+        >
+          Enter or paste one student
+          name on each line.
         </p>
 
         <textarea
@@ -320,7 +453,9 @@
           placeholder="Abby Smith&#10;Ben Jones&#10;Claire Wilson"
         ></textarea>
 
-        <div class="student-picker-modal-buttons">
+        <div
+          class="student-picker-modal-buttons"
+        >
           <button
             id="student-picker-save-button"
             class="student-picker-save"
@@ -340,26 +475,147 @@
       </div>
     `;
 
-    document.body.appendChild(modal);
+    document.body.appendChild(
+      modal
+    );
 
     document
-      .getElementById("student-picker-save-button")
-      .addEventListener("click", saveRosterFromEditor);
+      .getElementById(
+        "student-picker-save-button"
+      )
+      .addEventListener(
+        "click",
+        saveRosterFromEditor
+      );
 
     document
-      .getElementById("student-picker-cancel-button")
-      .addEventListener("click", closeRosterEditor);
+      .getElementById(
+        "student-picker-cancel-button"
+      )
+      .addEventListener(
+        "click",
+        closeRosterEditor
+      );
 
     document
-      .getElementById("student-picker-close-button")
-      .addEventListener("click", closeRosterEditor);
+      .getElementById(
+        "student-picker-close-button"
+      )
+      .addEventListener(
+        "click",
+        closeRosterEditor
+      );
 
-    modal.addEventListener("click", event => {
-      if (event.target === modal) {
-        closeRosterEditor();
+    modal.addEventListener(
+      "click",
+      function (event) {
+        if (
+          event.target === modal
+        ) {
+          closeRosterEditor();
+        }
       }
-    });
+    );
   }
+
+  function openRosterEditor() {
+    createModal();
+
+    const modal =
+      document.getElementById(
+        MODAL_ID
+      );
+
+    const rosterInput =
+      document.getElementById(
+        "student-picker-roster-input"
+      );
+
+    if (
+      !modal ||
+      !rosterInput
+    ) {
+      return;
+    }
+
+    rosterInput.value =
+      roster.join("\n");
+
+    modal.classList.add("open");
+
+    document.body.style.overflow =
+      "hidden";
+
+    window.setTimeout(
+      function () {
+        rosterInput.focus();
+      },
+      50
+    );
+  }
+
+  function closeRosterEditor() {
+    const modal =
+      document.getElementById(
+        MODAL_ID
+      );
+
+    if (!modal) {
+      return;
+    }
+
+    modal.classList.remove("open");
+
+    document.body.style.overflow =
+      "";
+  }
+
+  function saveRosterFromEditor() {
+    const rosterInput =
+      document.getElementById(
+        "student-picker-roster-input"
+      );
+
+    if (!rosterInput) {
+      return;
+    }
+
+    const names =
+      rosterInput.value
+        .split("\n")
+        .map(name =>
+          name.trim()
+        )
+        .filter(Boolean);
+
+    saveRoster(names);
+    updateRosterCount();
+    closeRosterEditor();
+
+    const result =
+      document.getElementById(
+        "student-picker-result"
+      );
+
+    if (!result) {
+      return;
+    }
+
+    result.textContent =
+      names.length > 0
+        ? "Roster ready"
+        : "No student selected";
+
+    result.classList.add(
+      "empty"
+    );
+  }
+
+  /*
+  ==========================================
+  PICKER
+  ==========================================
+  */
 
   function updateRosterCount() {
     const countDisplay =
@@ -374,6 +630,7 @@
     if (roster.length === 0) {
       countDisplay.textContent =
         "No roster saved";
+
       return;
     }
 
@@ -392,77 +649,48 @@
         "student-picker-result"
       );
 
+    if (!result) {
+      return;
+    }
+
     if (roster.length === 0) {
       result.textContent =
         "Add a roster first";
 
-      result.classList.add("empty");
+      result.classList.add(
+        "empty"
+      );
+
       openRosterEditor();
+
       return;
     }
 
     const randomIndex =
-      Math.floor(Math.random() * roster.length);
+      Math.floor(
+        Math.random() *
+        roster.length
+      );
 
     result.textContent =
       roster[randomIndex];
 
-    result.classList.remove("empty");
+    result.classList.remove(
+      "empty"
+    );
   }
 
-  function openRosterEditor() {
-    const modal =
-      document.getElementById(MODAL_ID);
-
-    const rosterInput =
-      document.getElementById(
-        "student-picker-roster-input"
-      );
-
-    rosterInput.value =
-      roster.join("\n");
-
-    modal.classList.add("open");
-    rosterInput.focus();
-  }
-
-  function closeRosterEditor() {
-    document
-      .getElementById(MODAL_ID)
-      .classList.remove("open");
-  }
-
-  function saveRosterFromEditor() {
-    const rosterText =
-      document.getElementById(
-        "student-picker-roster-input"
-      ).value;
-
-    const names = rosterText
-      .split("\n")
-      .map(name => name.trim())
-      .filter(Boolean);
-
-    saveRoster(names);
-    updateRosterCount();
-    closeRosterEditor();
-
-    const result =
-      document.getElementById(
-        "student-picker-result"
-      );
-
-    result.textContent =
-      names.length > 0
-        ? "Roster ready"
-        : "No student selected";
-
-    result.classList.add("empty");
-  }
+  /*
+  ==========================================
+  VISIBILITY
+  ==========================================
+  */
 
   function showWidget() {
     const widget =
-      document.getElementById(WIDGET_ID);
+      document.getElementById(
+        WIDGET_ID
+      );
 
     if (widget) {
       widget.hidden = false;
@@ -471,56 +699,114 @@
 
   function hideWidget() {
     const widget =
-      document.getElementById(WIDGET_ID);
+      document.getElementById(
+        WIDGET_ID
+      );
 
     if (widget) {
       widget.hidden = true;
     }
   }
 
-  function toggleWidget(forceState) {
-    const widget =
-      document.getElementById(WIDGET_ID);
-
-    if (!widget) {
-      return;
+  function setWidgetVisibility(
+    enabled
+  ) {
+    if (enabled) {
+      showWidget();
+    } else {
+      hideWidget();
     }
-
-    if (typeof forceState === "boolean") {
-      widget.hidden = !forceState;
-      return;
-    }
-
-    widget.hidden = !widget.hidden;
   }
 
-  function handleWidgetEvent(event) {
-    const detail = event.detail || {};
+  /*
+  ==========================================
+  EVENT CONNECTION
+  ==========================================
+  */
 
-    const widgetName =
-      detail.widget ||
-      detail.widgetId ||
-      detail.name;
+  function handlePickerChange(
+    event
+  ) {
+    const enabled =
+      Boolean(
+        event.detail &&
+        event.detail.enabled
+      );
 
-    if (
-      widgetName !== "student-picker" &&
-      widgetName !== "picker"
-    ) {
-      return;
-    }
-
-    if (typeof detail.enabled === "boolean") {
-      toggleWidget(detail.enabled);
-      return;
-    }
-
-    if (typeof detail.visible === "boolean") {
-      toggleWidget(detail.visible);
-      return;
-    }
-
-    toggleWidget();
+    setWidgetVisibility(
+      enabled
+    );
   }
+
+  /*
+  ==========================================
+  KEYBOARD CONTROLS
+  ==========================================
+  */
+
+  function addKeyboardControls() {
+    document.addEventListener(
+      "keydown",
+      function (event) {
+        if (
+          event.key !== "Escape"
+        ) {
+          return;
+        }
+
+        const modal =
+          document.getElementById(
+            MODAL_ID
+          );
+
+        if (
+          modal &&
+          modal.classList.contains(
+            "open"
+          )
+        ) {
+          closeRosterEditor();
+        }
+      }
+    );
+  }
+
+  /*
+  ==========================================
+  PUBLIC ACCESS
+  ==========================================
+  */
+
+  window.PatriotStudentPicker = {
+    show: showWidget,
+    hide: hideWidget,
+
+    toggle:
+      function () {
+        const widget =
+          document.getElementById(
+            WIDGET_ID
+          );
+
+        if (!widget) {
+          return;
+        }
+
+        widget.hidden =
+          !widget.hidden;
+      },
+
+    pick: pickStudent,
+
+    editRoster:
+      openRosterEditor
+  };
+
+  /*
+  ==========================================
+  START
+  ==========================================
+  */
 
   function initialize() {
     roster = readRoster();
@@ -528,27 +814,18 @@
     addStyles();
     createWidget();
     createModal();
+    addKeyboardControls();
 
     document.addEventListener(
-      "patriot:widget-change",
-      handleWidgetEvent
+      "patriotPickerChange",
+      handlePickerChange
     );
-
-    document.addEventListener(
-      "patriot:student-picker",
-      () => toggleWidget()
-    );
-
-    window.PatriotStudentPicker = {
-      show: showWidget,
-      hide: hideWidget,
-      toggle: toggleWidget,
-      pick: pickStudent,
-      editRoster: openRosterEditor
-    };
   }
 
-  if (document.readyState === "loading") {
+  if (
+    document.readyState ===
+    "loading"
+  ) {
     document.addEventListener(
       "DOMContentLoaded",
       initialize
