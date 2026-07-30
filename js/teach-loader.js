@@ -1,102 +1,62 @@
-from pathlib import Path
-p = Path("/mnt/data/teach-loader.js")
-text = p.read_text(encoding="utf-8")
+/*
+  PATRIOT COMMAND
+  Teach Loader v4
 
-# Replace single lesson key with priority list.
-text = text.replace(
-    '  const LESSON_KEY = "patriotDailyLesson";\n',
-    '''  const LESSON_KEY = "patriotDailyLesson";
+  Loads the active lesson from Library or Planner and displays:
+  - Bell Ringer
+  - I Can
+  - Success Criteria
+  - Profile of a Patriot
+  - Multiple lesson resources
+*/
+
+(function () {
+  "use strict";
+
   const TEACH_LESSON_KEY = "patriotTeachLesson";
-  const LAST_PLANNED_LESSON_KEY = "patriotLastPlannedLesson";
-'''
-)
+  const DAILY_LESSON_KEY = "patriotDailyLesson";
+  const LAST_PLANNED_KEY = "patriotLastPlannedLesson";
 
-# Replace getSavedLesson function with robust active lesson resolver.
-start = text.index('  function getSavedLesson() {')
-end = text.index('\n  function addPlannerStyles()', start)
-new_func = r'''  function normalizeResources(rawLesson) {
-    if (!rawLesson || typeof rawLesson !== "object") {
-      return [];
+  window.PATRIOT_TEACH_LOADER_VERSION = "4";
+
+  function readJson(key) {
+    const saved = localStorage.getItem(key);
+
+    if (!saved) {
+      return null;
     }
 
-    const possibleValues = [
-      rawLesson.resources,
-      rawLesson.lessonResources,
-      rawLesson.resourceLinks,
-      rawLesson.links
-    ];
-
-    let resources = possibleValues.find(value => {
-      return Array.isArray(value) || typeof value === "string";
-    });
-
-    if (typeof resources === "string") {
-      try {
-        resources = JSON.parse(resources);
-      } catch (error) {
-        resources = [];
-      }
+    try {
+      return JSON.parse(saved);
+    } catch (error) {
+      console.error(`Could not read ${key}.`, error);
+      return null;
     }
+  }
 
-    if (!Array.isArray(resources)) {
-      resources = [];
-    }
+  function getActiveLesson() {
+    return (
+      readJson(TEACH_LESSON_KEY) ||
+      readJson(DAILY_LESSON_KEY) ||
+      readJson(LAST_PLANNED_KEY) ||
+      null
+    );
+  }
 
-    const normalized = resources
-      .map((resource, index) => {
-        if (typeof resource === "string") {
-          return {
-            type: guessResourceType(resource),
-            url: resource,
-            label: `Resource ${index + 1}`
-          };
-        }
+  function getDefaultResourceLabel(type) {
+    const labels = {
+      slides: "Google Slides",
+      video: "Video",
+      youtube: "YouTube",
+      studysync: "StudySync",
+      canva: "Canva",
+      pdf: "PDF",
+      website: "Website",
+      document: "Google Doc",
+      other: "Resource"
+    };
 
-        const url =
-          resource.url ||
-          resource.link ||
-          resource.href ||
-          resource.resourceUrl ||
-          "";
-
-        const type =
-          resource.type ||
-          resource.resourceType ||
-          guessResourceType(url);
-
-        const label =
-          resource.label ||
-          resource.title ||
-          resource.name ||
-          getDefaultResourceLabel(type);
-
-        return { type, url, label };
-      })
-      .filter(resource => resource.url);
-
-    if (normalized.length > 0) {
-      return normalized;
-    }
-
-    const oldSingleLink =
-      rawLesson.lessonLink ||
-      rawLesson.lessonUrl ||
-      rawLesson.resourceUrl ||
-      "";
-
-    if (oldSingleLink) {
-      return [
-        {
-          type: guessResourceType(oldSingleLink),
-          url: oldSingleLink,
-          label: getDefaultResourceLabel(
-            guessResourceType(oldSingleLink)
-          )
-        }
-      ];
-    }
-
-    return [];
+    return labels[type] || "Resource";
   }
 
   function guessResourceType(url) {
@@ -128,150 +88,659 @@ new_func = r'''  function normalizeResources(rawLesson) {
       return "document";
     }
 
-    if (value.includes(".pdf")) {
+    if (
+      value.includes(".pdf") ||
+      value.includes("drive.google.com") &&
+      value.includes("pdf")
+    ) {
       return "pdf";
     }
 
     return "website";
   }
 
-  function normalizeLesson(rawLesson) {
-    const fallback = {
-      lessonId: "",
-      lessonDate: getTodayText(),
-      assignedPeriods: [],
-      assignedCourses: [],
-      bellringer: "",
-      ican: "",
-      success: "",
-      profileId: "none",
-      profileStatement: "",
-      agenda: "",
-      resources: []
-    };
+  function normalizeResources(lesson) {
+    if (!lesson || typeof lesson !== "object") {
+      return [];
+    }
 
-    const lesson = {
-      ...fallback,
-      ...(rawLesson || {})
-    };
-
-    lesson.lessonDate =
-      lesson.lessonDate ||
-      lesson.date ||
-      getTodayText();
-
-    lesson.assignedPeriods =
-      lesson.assignedPeriods ||
-      lesson.periods ||
+    let resources =
+      lesson.resources ||
+      lesson.lessonResources ||
+      lesson.resourceLinks ||
+      lesson.links ||
       [];
 
-    lesson.assignedCourses =
-      lesson.assignedCourses ||
-      lesson.courses ||
-      [];
+    if (typeof resources === "string") {
+      try {
+        resources = JSON.parse(resources);
+      } catch (error) {
+        resources = [];
+      }
+    }
 
-    lesson.bellringer =
-      lesson.bellringer ||
-      lesson.bellRinger ||
+    if (!Array.isArray(resources)) {
+      resources = [];
+    }
+
+    const normalized = resources
+      .map((resource, index) => {
+        if (typeof resource === "string") {
+          const type = guessResourceType(resource);
+
+          return {
+            type,
+            url: resource,
+            label: getDefaultResourceLabel(type)
+          };
+        }
+
+        if (!resource || typeof resource !== "object") {
+          return null;
+        }
+
+        const url =
+          resource.url ||
+          resource.link ||
+          resource.href ||
+          resource.resourceUrl ||
+          "";
+
+        const type =
+          resource.type ||
+          resource.resourceType ||
+          guessResourceType(url);
+
+        const label =
+          resource.label ||
+          resource.title ||
+          resource.name ||
+          getDefaultResourceLabel(type) ||
+          `Resource ${index + 1}`;
+
+        return {
+          type,
+          url,
+          label
+        };
+      })
+      .filter(resource => {
+        return resource && resource.url;
+      });
+
+    if (normalized.length > 0) {
+      return normalized;
+    }
+
+    const oldSingleLink =
+      lesson.lessonLink ||
+      lesson.lessonUrl ||
+      lesson.resourceUrl ||
       "";
 
-    lesson.ican =
-      lesson.ican ||
-      lesson.learningTarget ||
-      "";
+    if (oldSingleLink) {
+      const type = guessResourceType(oldSingleLink);
 
-    lesson.success =
-      lesson.success ||
-      lesson.successCriteria ||
-      "";
+      return [
+        {
+          type,
+          url: oldSingleLink,
+          label: getDefaultResourceLabel(type)
+        }
+      ];
+    }
 
-    lesson.profileId =
-      lesson.profileId ||
-      lesson.profileComponent ||
-      "none";
-
-    lesson.profileStatement =
-      lesson.profileStatement ||
-      lesson.profileFocus ||
-      "";
-
-    lesson.resources = normalizeResources(lesson);
-
-    return lesson;
+    return [];
   }
 
-  function readLessonKey(key) {
-    const saved = localStorage.getItem(key);
+  function setText(elementId, value, emptyMessage) {
+    const element = document.getElementById(elementId);
 
-    if (!saved) {
+    if (!element) {
+      return;
+    }
+
+    const cleanValue = String(value || "").trim();
+
+    if (cleanValue) {
+      element.textContent = cleanValue;
+      element.classList.remove("empty-text");
+    } else {
+      element.textContent = emptyMessage;
+      element.classList.add("empty-text");
+    }
+  }
+
+  function normalizeLesson(lesson) {
+    if (!lesson) {
       return null;
     }
 
+    return {
+      ...lesson,
+
+      bellringer:
+        lesson.bellringer ||
+        lesson.bellRinger ||
+        "",
+
+      ican:
+        lesson.ican ||
+        lesson.learningTarget ||
+        lesson.iCan ||
+        "",
+
+      success:
+        lesson.success ||
+        lesson.successCriteria ||
+        "",
+
+      profileId:
+        lesson.profileId ||
+        lesson.profileComponent ||
+        "none",
+
+      profileStatement:
+        lesson.profileStatement ||
+        lesson.profileFocus ||
+        "",
+
+      resources: normalizeResources(lesson)
+    };
+  }
+
+  function createResourceStyles() {
+    if (document.getElementById("patriot-resource-styles")) {
+      return;
+    }
+
+    const style = document.createElement("style");
+    style.id = "patriot-resource-styles";
+
+    style.textContent = `
+      .resource-tabs {
+        display: none;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 14px;
+        background: #e8ebef;
+        border-bottom: 1px solid #ccd2da;
+      }
+
+      .resource-tabs.show {
+        display: flex;
+      }
+
+      .resource-tab {
+        padding: 8px 13px;
+        color: #ffffff;
+        font-family: inherit;
+        font-size: 0.95rem;
+        font-weight: 700;
+        background: #192e52;
+        border: 0;
+        border-radius: 7px;
+        cursor: pointer;
+      }
+
+      .resource-tab:hover {
+        background: #28446f;
+      }
+
+      .resource-tab.active {
+        background: #ad3437;
+      }
+
+      .resource-open-placeholder {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 14px;
+        padding: 30px;
+        text-align: center;
+        background: #ffffff;
+      }
+
+      .resource-open-placeholder.show {
+        display: flex;
+      }
+
+      .resource-open-placeholder h3 {
+        margin: 0;
+        color: #192e52;
+        font-size: 1.6rem;
+      }
+
+      .resource-open-placeholder p {
+        margin: 0;
+        color: #5f6875;
+      }
+
+      .resource-open-placeholder a {
+        padding: 12px 18px;
+        color: #ffffff;
+        font-weight: 700;
+        text-decoration: none;
+        background: #ad3437;
+        border-radius: 8px;
+      }
+    `;
+
+    document.head.appendChild(style);
+  }
+
+  function createResourceDisplay() {
+    let tabs = document.getElementById("resource-tabs");
+
+    if (tabs) {
+      return tabs;
+    }
+
+    const lessonWindow =
+      document.querySelector(".lesson-window");
+
+    const lessonHeader =
+      document.querySelector(".lesson-window-header");
+
+    if (!lessonWindow || !lessonHeader) {
+      console.warn(
+        "Teach Loader could not find the lesson window."
+      );
+
+      return null;
+    }
+
+    tabs = document.createElement("div");
+    tabs.id = "resource-tabs";
+    tabs.className = "resource-tabs";
+
+    lessonHeader.insertAdjacentElement("afterend", tabs);
+
+    const openPlaceholder = document.createElement("div");
+    openPlaceholder.id = "resource-open-placeholder";
+    openPlaceholder.className = "resource-open-placeholder";
+
+    openPlaceholder.innerHTML = `
+      <h3 id="resource-open-title">
+        Open Lesson Resource
+      </h3>
+
+      <p>
+        This resource opens in a separate browser tab.
+      </p>
+
+      <a
+        id="resource-open-button"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open Resource
+      </a>
+    `;
+
+    lessonWindow.appendChild(openPlaceholder);
+
+    return tabs;
+  }
+
+  function isValidUrl(url) {
     try {
-      return normalizeLesson(JSON.parse(saved));
+      const parsed = new URL(url);
+
+      return (
+        parsed.protocol === "https:" ||
+        parsed.protocol === "http:"
+      );
     } catch (error) {
-      console.error(`Could not read ${key}.`, error);
-      return null;
+      return false;
     }
   }
 
-  function getSavedLesson() {
-    const teachLesson = readLessonKey(TEACH_LESSON_KEY);
-
-    if (teachLesson) {
-      return teachLesson;
-    }
-
-    const dailyLesson = readLessonKey(LESSON_KEY);
-
-    if (dailyLesson) {
-      return dailyLesson;
-    }
-
-    const lastPlannedLesson =
-      readLessonKey(LAST_PLANNED_LESSON_KEY);
-
-    if (lastPlannedLesson) {
-      return lastPlannedLesson;
-    }
-
-    return normalizeLesson(null);
+  function canEmbed(resource) {
+    return [
+      "slides",
+      "video",
+      "youtube",
+      "canva",
+      "pdf"
+    ].includes(resource.type);
   }
-'''
-text = text[:start] + new_func + text[end:]
 
-# Ensure saves update both active keys, not only daily.
-text = text.replace(
-    '''    localStorage.setItem(
-      LESSON_KEY,
-      JSON.stringify(lesson)
+  function createEmbedUrl(resource) {
+    const url = resource.url;
+
+    if (
+      resource.type === "slides" &&
+      url.includes("docs.google.com/presentation")
+    ) {
+      const baseUrl = url.split("?")[0];
+
+      if (baseUrl.includes("/edit")) {
+        return baseUrl.replace("/edit", "/embed");
+      }
+
+      if (baseUrl.includes("/present")) {
+        return baseUrl.replace("/present", "/embed");
+      }
+
+      return baseUrl;
+    }
+
+    if (
+      resource.type === "video" ||
+      resource.type === "youtube"
+    ) {
+      try {
+        const parsed = new URL(url);
+
+        if (parsed.hostname.includes("youtu.be")) {
+          const videoId = parsed.pathname
+            .replace("/", "")
+            .split("?")[0];
+
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        if (parsed.hostname.includes("youtube.com")) {
+          const videoId =
+            parsed.searchParams.get("v");
+
+          if (videoId) {
+            return `https://www.youtube.com/embed/${videoId}`;
+          }
+
+          if (parsed.pathname.includes("/embed/")) {
+            return url;
+          }
+
+          if (parsed.pathname.includes("/shorts/")) {
+            const shortId =
+              parsed.pathname.split("/shorts/")[1];
+
+            return `https://www.youtube.com/embed/${shortId}`;
+          }
+        }
+      } catch (error) {
+        console.error(
+          "Could not prepare YouTube link.",
+          error
+        );
+      }
+    }
+
+    return url;
+  }
+
+  function selectResource(resource, selectedButton) {
+    document
+      .querySelectorAll(".resource-tab")
+      .forEach(button => {
+        button.classList.remove("active");
+      });
+
+    selectedButton.classList.add("active");
+
+    const frame =
+      document.getElementById("lesson-frame");
+
+    const originalPlaceholder =
+      document.getElementById("lesson-placeholder");
+
+    const openPlaceholder =
+      document.getElementById(
+        "resource-open-placeholder"
+      );
+
+    const openTitle =
+      document.getElementById("resource-open-title");
+
+    const openButton =
+      document.getElementById("resource-open-button");
+
+    const headerOpenLink =
+      document.getElementById("open-lesson-link");
+
+    if (originalPlaceholder) {
+      originalPlaceholder.style.display = "none";
+    }
+
+    if (headerOpenLink) {
+      headerOpenLink.href = resource.url;
+      headerOpenLink.style.display = "inline-block";
+    }
+
+    if (canEmbed(resource) && frame) {
+      if (openPlaceholder) {
+        openPlaceholder.classList.remove("show");
+      }
+
+      frame.src = createEmbedUrl(resource);
+      frame.style.display = "block";
+
+      return;
+    }
+
+    if (frame) {
+      frame.style.display = "none";
+      frame.removeAttribute("src");
+    }
+
+    if (openTitle) {
+      openTitle.textContent =
+        resource.label ||
+        getDefaultResourceLabel(resource.type);
+    }
+
+    if (openButton) {
+      openButton.href = resource.url;
+      openButton.textContent =
+        `Open ${
+          resource.label ||
+          getDefaultResourceLabel(resource.type)
+        }`;
+    }
+
+    if (openPlaceholder) {
+      openPlaceholder.classList.add("show");
+    }
+  }
+
+  function displayLessonResources(resources) {
+    const tabs = createResourceDisplay();
+
+    if (!tabs) {
+      return;
+    }
+
+    const frame =
+      document.getElementById("lesson-frame");
+
+    const originalPlaceholder =
+      document.getElementById("lesson-placeholder");
+
+    const openPlaceholder =
+      document.getElementById(
+        "resource-open-placeholder"
+      );
+
+    const headerOpenLink =
+      document.getElementById("open-lesson-link");
+
+    tabs.innerHTML = "";
+
+    const validResources = resources.filter(resource => {
+      return isValidUrl(resource.url);
+    });
+
+    if (validResources.length === 0) {
+      tabs.classList.remove("show");
+
+      if (frame) {
+        frame.style.display = "none";
+        frame.removeAttribute("src");
+      }
+
+      if (openPlaceholder) {
+        openPlaceholder.classList.remove("show");
+      }
+
+      if (originalPlaceholder) {
+        originalPlaceholder.style.display = "flex";
+      }
+
+      if (headerOpenLink) {
+        headerOpenLink.style.display = "none";
+      }
+
+      return;
+    }
+
+    tabs.classList.add("show");
+
+    validResources.forEach((resource, index) => {
+      const button = document.createElement("button");
+
+      button.type = "button";
+      button.className = "resource-tab";
+
+      button.textContent =
+        resource.label ||
+        getDefaultResourceLabel(resource.type);
+
+      button.addEventListener("click", function () {
+        selectResource(resource, button);
+      });
+
+      tabs.appendChild(button);
+
+      if (index === 0) {
+        selectResource(resource, button);
+      }
+    });
+  }
+
+  function applyLesson(rawLesson) {
+    const lesson = normalizeLesson(rawLesson);
+
+    if (!lesson) {
+      displayLessonResources([]);
+      return;
+    }
+
+    setText(
+      "bellringer-display",
+      lesson.bellringer,
+      "Add today’s bell ringer."
     );
-''',
-    '''    localStorage.setItem(
-      LESSON_KEY,
-      JSON.stringify(lesson)
+
+    setText(
+      "ican-display",
+      lesson.ican,
+      "Add today’s learning target."
     );
 
-    localStorage.setItem(
-      TEACH_LESSON_KEY,
-      JSON.stringify(lesson)
+    setText(
+      "success-display",
+      lesson.success,
+      "Add today’s success criteria."
     );
 
-    localStorage.setItem(
-      LAST_PLANNED_LESSON_KEY,
-      JSON.stringify(lesson)
+    const profileTitle =
+      document.getElementById("profile-title");
+
+    const profileDescription =
+      document.getElementById("profile-description");
+
+    if (profileTitle) {
+      let title =
+        lesson.profileTitle ||
+        lesson.profileComponent ||
+        lesson.profileId ||
+        "Choose a component";
+
+      if (
+        typeof window.findProfile === "function" &&
+        lesson.profileId
+      ) {
+        const profile =
+          window.findProfile(lesson.profileId);
+
+        if (profile && profile.title) {
+          title = profile.title;
+        }
+      }
+
+      profileTitle.textContent = title;
+    }
+
+    if (profileDescription) {
+      let description =
+        lesson.profileStatement ||
+        lesson.profileFocus ||
+        "";
+
+      if (
+        !description &&
+        typeof window.findProfile === "function" &&
+        lesson.profileId
+      ) {
+        const profile =
+          window.findProfile(lesson.profileId);
+
+        if (profile && profile.shortDescription) {
+          description = profile.shortDescription;
+        }
+      }
+
+      if (description) {
+        profileDescription.textContent = description;
+        profileDescription.classList.remove("empty-text");
+      } else {
+        profileDescription.textContent =
+          "Select a component during lesson setup.";
+
+        profileDescription.classList.add("empty-text");
+      }
+    }
+
+    displayLessonResources(lesson.resources);
+  }
+
+  function refreshTeachLesson() {
+    const lesson = getActiveLesson();
+    applyLesson(lesson);
+  }
+
+  window.applyLesson = applyLesson;
+  window.refreshTeachLesson = refreshTeachLesson;
+  window.getActiveTeachLesson = getActiveLesson;
+
+  function startTeachLoader() {
+    createResourceStyles();
+    createResourceDisplay();
+    refreshTeachLesson();
+
+    window.addEventListener("storage", function (event) {
+      if (
+        event.key === TEACH_LESSON_KEY ||
+        event.key === DAILY_LESSON_KEY ||
+        event.key === LAST_PLANNED_KEY
+      ) {
+        refreshTeachLesson();
+      }
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      startTeachLoader
     );
-'''
-)
-
-# add a version marker for easy console verification
-text = text.replace(
-    '  function startTeachLoader() {\n',
-    '''  function startTeachLoader() {
-    window.PATRIOT_TEACH_LOADER_VERSION = "4";
-'''
-)
-
-out = Path("/mnt/data/teach-loader-v4.js")
-out.write_text(text, encoding="utf-8")
-print(out)
+  } else {
+    startTeachLoader();
+  }
+})();
