@@ -1,43 +1,190 @@
 (function () {
   "use strict";
 
+  const PROFILE_STORAGE_KEY =
+    "patriotTeacherProfile";
+
   const ROSTER_STORAGE_KEY =
-    "patriotStudentPickerRoster";
+    "patriotStudentRosters";
+
+  const ACTIVE_CLASS_STORAGE_KEY =
+    "patriotActiveClass";
 
   const WIDGET_ID =
     "random-groups-widget";
 
   let generatedGroups = [];
 
-  function readRoster() {
-    try {
-      const savedRoster =
-        JSON.parse(
-          localStorage.getItem(
-            ROSTER_STORAGE_KEY
-          ) || "[]"
-        );
+  /*
+  ==========================================
+  STORAGE
+  ==========================================
+  */
 
-      return Array.isArray(savedRoster)
-        ? savedRoster
-            .map(function (name) {
-              return String(
-                name || ""
-              ).trim();
-            })
-            .filter(Boolean)
-        : [];
+  function readStorage(
+    storageKey,
+    fallbackValue
+  ) {
+    const savedValue =
+      localStorage.getItem(
+        storageKey
+      );
+
+    if (!savedValue) {
+      return fallbackValue;
+    }
+
+    try {
+      const parsedValue =
+        JSON.parse(savedValue);
+
+      return parsedValue ??
+        fallbackValue;
     } catch (error) {
       console.error(
-        "The saved student roster could not be read.",
+        `Could not read ${storageKey}.`,
         error
       );
 
-      return [];
+      return fallbackValue;
     }
   }
 
-  function shuffleNames(names) {
+  function readTeacherProfile() {
+    return readStorage(
+      PROFILE_STORAGE_KEY,
+      null
+    );
+  }
+
+  function readRosters() {
+    return readStorage(
+      ROSTER_STORAGE_KEY,
+      {}
+    );
+  }
+
+  function readActiveClass() {
+    return (
+      localStorage.getItem(
+        ACTIVE_CLASS_STORAGE_KEY
+      ) || ""
+    );
+  }
+
+  /*
+  ==========================================
+  CLASS AND ROSTER
+  ==========================================
+  */
+
+  function getClassLabel(
+    classKey
+  ) {
+    if (!classKey) {
+      return "No class selected";
+    }
+
+    const profile =
+      readTeacherProfile();
+
+    const courseName =
+      profile &&
+      profile.classes
+        ? String(
+            profile.classes[
+              classKey
+            ] || ""
+          ).trim()
+        : "";
+
+    if (!courseName) {
+      return classKey;
+    }
+
+    return (
+      `${classKey} — ` +
+      courseName
+    );
+  }
+
+  function getStudentDisplayName(
+    student
+  ) {
+    const preferredName =
+      String(
+        student.preferredName ||
+        ""
+      ).trim();
+
+    const firstName =
+      preferredName ||
+      String(
+        student.firstName ||
+        ""
+      ).trim();
+
+    const lastName =
+      String(
+        student.lastName ||
+        ""
+      ).trim();
+
+    return [
+      firstName,
+      lastName
+    ]
+      .filter(Boolean)
+      .join(" ");
+  }
+
+  function readActiveRoster() {
+    const activeClass =
+      readActiveClass();
+
+    if (!activeClass) {
+      return [];
+    }
+
+    const rosters =
+      readRosters();
+
+    const savedRoster =
+      Array.isArray(
+        rosters[
+          activeClass
+        ]
+      )
+        ? rosters[
+            activeClass
+          ]
+        : [];
+
+    return savedRoster
+      .filter(
+        function (student) {
+          return (
+            student &&
+            student.active !==
+              false
+          );
+        }
+      )
+      .map(
+        getStudentDisplayName
+      )
+      .filter(Boolean);
+  }
+
+  /*
+  ==========================================
+  GROUP CREATION
+  ==========================================
+  */
+
+  function shuffleNames(
+    names
+  ) {
     const shuffled =
       names.slice();
 
@@ -53,18 +200,191 @@
           (index + 1)
         );
 
-      const temporaryValue =
-        shuffled[index];
-
-      shuffled[index] =
-        shuffled[randomIndex];
-
-      shuffled[randomIndex] =
-        temporaryValue;
+      [
+        shuffled[index],
+        shuffled[randomIndex]
+      ] = [
+        shuffled[randomIndex],
+        shuffled[index]
+      ];
     }
 
     return shuffled;
   }
+
+  function divideByGroupSize(
+    names,
+    groupSize
+  ) {
+    const groups = [];
+
+    for (
+      let index = 0;
+      index < names.length;
+      index += groupSize
+    ) {
+      groups.push(
+        names.slice(
+          index,
+          index + groupSize
+        )
+      );
+    }
+
+    if (
+      groups.length > 1 &&
+      groups[
+        groups.length - 1
+      ].length === 1
+    ) {
+      const finalGroup =
+        groups[
+          groups.length - 1
+        ];
+
+      const previousGroup =
+        groups[
+          groups.length - 2
+        ];
+
+      previousGroup.push(
+        finalGroup[0]
+      );
+
+      groups.pop();
+    }
+
+    return groups;
+  }
+
+  function divideByGroupCount(
+    names,
+    requestedCount
+  ) {
+    const groupCount =
+      Math.min(
+        requestedCount,
+        names.length
+      );
+
+    const groups =
+      Array.from(
+        {
+          length: groupCount
+        },
+        function () {
+          return [];
+        }
+      );
+
+    names.forEach(
+      function (
+        name,
+        index
+      ) {
+        groups[
+          index % groupCount
+        ].push(name);
+      }
+    );
+
+    return groups;
+  }
+
+  function createGroups() {
+    const activeClass =
+      readActiveClass();
+
+    const roster =
+      readActiveRoster();
+
+    updateRosterInformation();
+    clearMessage();
+
+    if (!activeClass) {
+      generatedGroups = [];
+
+      renderGroups();
+
+      showMessage(
+        "Select a current class first."
+      );
+
+      return;
+    }
+
+    if (roster.length === 0) {
+      generatedGroups = [];
+
+      renderGroups();
+
+      showMessage(
+        "This class does not have a saved roster."
+      );
+
+      return;
+    }
+
+    if (roster.length === 1) {
+      generatedGroups = [
+        roster.slice()
+      ];
+
+      renderGroups();
+
+      return;
+    }
+
+    const methodSelect =
+      document.getElementById(
+        "random-groups-method"
+      );
+
+    const numberSelect =
+      document.getElementById(
+        "random-groups-number"
+      );
+
+    if (
+      !methodSelect ||
+      !numberSelect
+    ) {
+      return;
+    }
+
+    const method =
+      methodSelect.value;
+
+    const amount =
+      Number(
+        numberSelect.value
+      );
+
+    const shuffledRoster =
+      shuffleNames(roster);
+
+    if (method === "count") {
+      generatedGroups =
+        divideByGroupCount(
+          shuffledRoster,
+          amount
+        );
+    } else {
+      generatedGroups =
+        divideByGroupSize(
+          shuffledRoster,
+          amount
+        );
+    }
+
+    renderGroups();
+  }
+
+  /*
+  ==========================================
+  STYLES
+  ==========================================
+  */
 
   function addStyles() {
     if (
@@ -90,15 +410,21 @@
 
       .random-groups-header {
         display: flex;
-        justify-content:
-          space-between;
+        justify-content: space-between;
         align-items: center;
         gap: 12px;
-        margin-bottom: 14px;
+        margin-bottom: 8px;
       }
 
       .random-groups-header h2 {
         margin: 0;
+      }
+
+      .random-groups-class {
+        margin: 0 0 5px;
+        color: var(--navy, #11284a);
+        font-size: 0.9rem;
+        font-weight: bold;
       }
 
       .random-groups-roster-count {
@@ -109,8 +435,7 @@
 
       .random-groups-controls {
         display: grid;
-        grid-template-columns:
-          1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 9px;
       }
 
@@ -128,18 +453,15 @@
       .random-groups-field select {
         width: 100%;
         padding: 10px;
-        color:
-          var(--navy, #11284a);
+        color: var(--navy, #11284a);
         background: #ffffff;
-        border:
-          2px solid #d8d8d8;
+        border: 2px solid #d8d8d8;
         border-radius: 8px;
       }
 
       .random-groups-buttons {
         display: grid;
-        grid-template-columns:
-          1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         gap: 8px;
         margin-top: 11px;
       }
@@ -148,34 +470,33 @@
         padding: 11px;
         color: #ffffff;
         font-weight: bold;
-        background:
-          var(--red, #b3262e);
+        background: var(--red, #b3262e);
         border: 0;
         border-radius: 8px;
         cursor: pointer;
       }
 
       .random-groups-button.secondary {
-        background:
-          var(--navy, #11284a);
+        background: var(--navy, #11284a);
       }
 
       .random-groups-button:hover {
         filter: brightness(1.07);
       }
 
+      .random-groups-button:focus-visible {
+        outline: 3px solid var(--gold, #d3a84f);
+        outline-offset: 2px;
+      }
+
       .random-groups-message {
         display: none;
         margin-top: 12px;
         padding: 11px;
-        color:
-          var(--navy, #11284a);
+        color: var(--navy, #11284a);
         line-height: 1.4;
-        background:
-          var(--cream, #f7f2e8);
-        border-left:
-          5px solid
-          var(--gold, #d3a84f);
+        background: var(--cream, #f7f2e8);
+        border-left: 5px solid var(--gold, #d3a84f);
         border-radius: 7px;
       }
 
@@ -191,18 +512,14 @@
 
       .random-group-card {
         padding: 12px;
-        background:
-          var(--cream, #f7f2e8);
-        border:
-          2px solid
-          var(--gold, #d3a84f);
+        background: var(--cream, #f7f2e8);
+        border: 2px solid var(--gold, #d3a84f);
         border-radius: 10px;
       }
 
       .random-group-card h3 {
         margin: 0 0 8px;
-        color:
-          var(--red, #b3262e);
+        color: var(--red, #b3262e);
         font-size: 1rem;
       }
 
@@ -232,6 +549,12 @@
     );
   }
 
+  /*
+  ==========================================
+  WIDGET
+  ==========================================
+  */
+
   function createWidget() {
     if (
       document.getElementById(
@@ -259,14 +582,24 @@
         "section"
       );
 
-    widget.id = WIDGET_ID;
-    widget.className = "card";
-    widget.hidden = true;
+    widget.id =
+      WIDGET_ID;
+
+    widget.className =
+      "card";
+
+    widget.hidden =
+      true;
 
     widget.innerHTML = `
       <div class="random-groups-header">
         <h2>👥 Random Groups</h2>
       </div>
+
+      <p
+        id="random-groups-class"
+        class="random-groups-class"
+      ></p>
 
       <p
         id="random-groups-roster-count"
@@ -338,7 +671,7 @@
         aria-live="polite"
       >
         <p class="random-groups-empty">
-          Create groups from the saved Student Picker roster.
+          Create groups from the active class roster.
         </p>
       </div>
     `;
@@ -365,25 +698,48 @@
         createGroups
       );
 
-    updateRosterCount();
+    updateRosterInformation();
   }
 
-  function updateRosterCount() {
+  function updateRosterInformation() {
+    const classDisplay =
+      document.getElementById(
+        "random-groups-class"
+      );
+
     const countDisplay =
       document.getElementById(
         "random-groups-roster-count"
       );
 
-    if (!countDisplay) {
+    if (
+      !classDisplay ||
+      !countDisplay
+    ) {
       return;
     }
 
+    const activeClass =
+      readActiveClass();
+
     const roster =
-      readRoster();
+      readActiveRoster();
+
+    classDisplay.textContent =
+      getClassLabel(
+        activeClass
+      );
+
+    if (!activeClass) {
+      countDisplay.textContent =
+        "No class selected.";
+
+      return;
+    }
 
     if (roster.length === 0) {
       countDisplay.textContent =
-        "No Student Picker roster is saved.";
+        "No students are saved for this class.";
 
       return;
     }
@@ -397,7 +753,9 @@
       `${roster.length} ${studentWord} available`;
   }
 
-  function showMessage(message) {
+  function showMessage(
+    message
+  ) {
     const messageBox =
       document.getElementById(
         "random-groups-message"
@@ -432,143 +790,6 @@
     );
   }
 
-  function createGroups() {
-    const roster =
-      readRoster();
-
-    updateRosterCount();
-    clearMessage();
-
-    if (roster.length === 0) {
-      generatedGroups = [];
-
-      renderGroups();
-
-      showMessage(
-        "Add names through Student Picker before creating groups."
-      );
-
-      return;
-    }
-
-    if (roster.length === 1) {
-      generatedGroups = [
-        roster.slice()
-      ];
-
-      renderGroups();
-
-      return;
-    }
-
-    const method =
-      document.getElementById(
-        "random-groups-method"
-      ).value;
-
-    const amount =
-      Number(
-        document.getElementById(
-          "random-groups-number"
-        ).value
-      );
-
-    const shuffledRoster =
-      shuffleNames(roster);
-
-    if (method === "count") {
-      generatedGroups =
-        divideByGroupCount(
-          shuffledRoster,
-          amount
-        );
-    } else {
-      generatedGroups =
-        divideByGroupSize(
-          shuffledRoster,
-          amount
-        );
-    }
-
-    renderGroups();
-  }
-
-  function divideByGroupSize(
-    names,
-    groupSize
-  ) {
-    const groups = [];
-
-    for (
-      let index = 0;
-      index < names.length;
-      index += groupSize
-    ) {
-      groups.push(
-        names.slice(
-          index,
-          index + groupSize
-        )
-      );
-    }
-
-    if (
-      groups.length > 1 &&
-      groups[
-        groups.length - 1
-      ].length === 1
-    ) {
-      const finalGroup =
-        groups[
-          groups.length - 1
-        ];
-
-      const previousGroup =
-        groups[
-          groups.length - 2
-        ];
-
-      previousGroup.push(
-        finalGroup[0]
-      );
-
-      groups.pop();
-    }
-
-    return groups;
-  }
-
-  function divideByGroupCount(
-    names,
-    requestedCount
-  ) {
-    const groupCount =
-      Math.min(
-        requestedCount,
-        names.length
-      );
-
-    const groups =
-      Array.from(
-        {
-          length: groupCount
-        },
-        function () {
-          return [];
-        }
-      );
-
-    names.forEach(
-      function (name, index) {
-        groups[
-          index % groupCount
-        ].push(name);
-      }
-    );
-
-    return groups;
-  }
-
   function renderGroups() {
     const container =
       document.getElementById(
@@ -582,7 +803,8 @@
     container.innerHTML = "";
 
     if (
-      generatedGroups.length === 0
+      generatedGroups.length ===
+      0
     ) {
       const emptyMessage =
         document.createElement(
@@ -593,7 +815,7 @@
         "random-groups-empty";
 
       emptyMessage.textContent =
-        "Create groups from the saved Student Picker roster.";
+        "Create groups from the active class roster.";
 
       container.appendChild(
         emptyMessage
@@ -603,7 +825,10 @@
     }
 
     generatedGroups.forEach(
-      function (group, index) {
+      function (
+        group,
+        index
+      ) {
         const groupCard =
           document.createElement(
             "section"
@@ -626,7 +851,9 @@
           );
 
         group.forEach(
-          function (studentName) {
+          function (
+            studentName
+          ) {
             const listItem =
               document.createElement(
                 "li"
@@ -656,6 +883,12 @@
     );
   }
 
+  /*
+  ==========================================
+  VISIBILITY
+  ==========================================
+  */
+
   function showWidget() {
     const widget =
       document.getElementById(
@@ -663,9 +896,10 @@
       );
 
     if (widget) {
-      widget.hidden = false;
+      widget.hidden =
+        false;
 
-      updateRosterCount();
+      updateRosterInformation();
     }
   }
 
@@ -676,7 +910,8 @@
       );
 
     if (widget) {
-      widget.hidden = true;
+      widget.hidden =
+        true;
     }
   }
 
@@ -704,6 +939,20 @@
     );
   }
 
+  function handleActiveClassChange() {
+    generatedGroups = [];
+
+    updateRosterInformation();
+    clearMessage();
+    renderGroups();
+  }
+
+  /*
+  ==========================================
+  START
+  ==========================================
+  */
+
   function initialize() {
     addStyles();
     createWidget();
@@ -713,14 +962,21 @@
       handleGroupsChange
     );
 
+    document.addEventListener(
+      "patriotActiveClassChange",
+      handleActiveClassChange
+    );
+
     window.addEventListener(
       "storage",
       function (event) {
         if (
           event.key ===
-          ROSTER_STORAGE_KEY
+            ROSTER_STORAGE_KEY ||
+          event.key ===
+            ACTIVE_CLASS_STORAGE_KEY
         ) {
-          updateRosterCount();
+          handleActiveClassChange();
         }
       }
     );
@@ -730,7 +986,7 @@
       hide: hideWidget,
       create: createGroups,
       refreshRoster:
-        updateRosterCount
+        updateRosterInformation
     };
   }
 
