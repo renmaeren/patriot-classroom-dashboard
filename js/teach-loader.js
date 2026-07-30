@@ -1,616 +1,545 @@
-/*
-==========================================
-PATRIOT COMMAND
-Teach — Lesson Loader
+from pathlib import Path
 
-Supports:
-1. Normal Teaching Mode
-2. Developer Test Mode
-3. Library Preview Mode
-4. Teach from Library Mode
-==========================================
+code = r'''/*
+  PATRIOT COMMAND
+  Teach Lesson Loader
+
+  One source of truth for:
+  - lesson dates and class assignments;
+  - multiple lesson resources;
+  - resource tabs on the Teach screen;
+  - Save Draft / Teach Lesson / Cancel;
+  - Google archive saving.
 */
 
 (function () {
+  "use strict";
+
   const ARCHIVE_URL =
     "https://script.google.com/macros/s/AKfycbzGckJAit70HvekLOlIwNmaPVTv5-vb8o_orjRZDK0koTW-LTT4E6bgL1J9qiHBp_41/exec";
 
-  const TEACHER_PROFILE_KEY =
-    "patriotTeacherProfile";
+  const PROFILE_KEY = "patriotTeacherProfile";
+  const LESSON_KEY = "patriotDailyLesson";
 
-  const PREVIEW_LESSON_KEY =
-    "patriotPreviewLesson";
-
-  const TEACH_LESSON_KEY =
-    "patriotTeachLesson";
-
-  /*
-  ==========================================
-  SETTINGS
-  ==========================================
-  */
-
-  function readTeacherProfile() {
-    const saved =
-      localStorage.getItem(
-        TEACHER_PROFILE_KEY
-      );
+  function readStoredJson(key, fallback) {
+    const saved = localStorage.getItem(key);
 
     if (!saved) {
-      return {
-        teacherName: "",
-        teacherEmail: "",
-        room: ""
-      };
+      return structuredCloneSafe(fallback);
     }
 
     try {
-      return JSON.parse(saved);
-    } catch (error) {
-      console.error(
-        "Teacher settings could not be read.",
-        error
-      );
-
       return {
-        teacherName: "",
-        teacherEmail: "",
-        room: ""
+        ...structuredCloneSafe(fallback),
+        ...JSON.parse(saved)
       };
-    }
-  }
-
-  /*
-  ==========================================
-  MODE DETECTION
-  ==========================================
-  */
-
-  function readPageMode() {
-    const parameters =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const mode =
-      parameters.get("mode");
-
-    if (mode === "teach") {
-      return "teach";
-    }
-
-    if (mode === "preview") {
-      return "preview";
-    }
-
-    if (
-      parameters.get("test") ===
-      "true"
-    ) {
-      return "test";
-    }
-
-    return "normal";
-  }
-
-  function readStoredLesson(
-    storageKey,
-    errorMessage
-  ) {
-    const saved =
-      localStorage.getItem(
-        storageKey
-      );
-
-    if (!saved) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(saved);
     } catch (error) {
-      console.error(
-        errorMessage,
-        error
-      );
-
-      return null;
+      console.error("Saved information could not be read.", error);
+      return structuredCloneSafe(fallback);
     }
   }
 
-  function readPreviewLesson() {
-    return readStoredLesson(
-      PREVIEW_LESSON_KEY,
-      "The preview lesson could not be read."
-    );
+  function structuredCloneSafe(value) {
+    return JSON.parse(JSON.stringify(value));
   }
-
-  function readTeachLesson() {
-    return readStoredLesson(
-      TEACH_LESSON_KEY,
-      "The selected teaching lesson could not be read."
-    );
-  }
-
-  function readTestMode() {
-    const parameters =
-      new URLSearchParams(
-        window.location.search
-      );
-
-    const testEnabled =
-      parameters.get("test") ===
-      "true";
-
-    if (!testEnabled) {
-      return null;
-    }
-
-    const testDate =
-      parameters.get("date");
-
-    const testPeriod =
-      parameters.get("period");
-
-    if (
-      !testDate ||
-      !testPeriod
-    ) {
-      return null;
-    }
-
-    return {
-      date: testDate,
-      period: testPeriod
-    };
-  }
-
-  /*
-  ==========================================
-  DATE AND PERIOD HELPERS
-  ==========================================
-  */
 
   function getTodayText() {
-    const testMode =
-      readTestMode();
-
-    if (testMode) {
-      return testMode.date;
-    }
-
-    const today =
-      new Date();
-
-    const year =
-      today.getFullYear();
-
-    const month =
-      String(
-        today.getMonth() + 1
-      ).padStart(2, "0");
-
-    const day =
-      String(
-        today.getDate()
-      ).padStart(2, "0");
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, "0");
+    const day = String(today.getDate()).padStart(2, "0");
 
     return `${year}-${month}-${day}`;
   }
 
-  function getEffectiveDate() {
-    const dateText =
-      getTodayText();
-
-    const parts =
-      dateText
-        .split("-")
-        .map(Number);
-
-    if (parts.length !== 3) {
-      return new Date();
+  function createLessonId() {
+    if (
+      window.crypto &&
+      typeof window.crypto.randomUUID === "function"
+    ) {
+      return window.crypto.randomUUID();
     }
-
-    return new Date(
-      parts[0],
-      parts[1] - 1,
-      parts[2],
-      12,
-      0,
-      0,
-      0
-    );
-  }
-
-  function isWeekend() {
-    const day =
-      getEffectiveDate()
-        .getDay();
 
     return (
-      day === 0 ||
-      day === 6
+      "lesson-" +
+      Date.now() +
+      "-" +
+      Math.random().toString(16).slice(2)
     );
   }
 
-  function timeToDate(timeText) {
-    const [hours, minutes] =
-      String(timeText)
-        .split(":")
-        .map(Number);
-
-    const date =
-      new Date();
-
-    date.setHours(
-      hours,
-      minutes,
-      0,
-      0
-    );
-
-    return date;
+  function getTeacherProfile() {
+    return readStoredJson(PROFILE_KEY, {
+      teacherName: "",
+      teacherEmail: "",
+      room: "",
+      classes: {}
+    });
   }
 
-  function getPeriodSuffix(number) {
-    if (number === "1") {
-      return "st";
-    }
-
-    if (number === "2") {
-      return "nd";
-    }
-
-    if (number === "3") {
-      return "rd";
-    }
-
-    return "th";
+  function getSavedLesson() {
+    return readStoredJson(LESSON_KEY, {
+      lessonId: "",
+      lessonDate: getTodayText(),
+      assignedPeriods: [],
+      assignedCourses: [],
+      bellringer: "",
+      ican: "",
+      success: "",
+      profileId: "none",
+      profileStatement: "",
+      agenda: "",
+      resources: []
+    });
   }
 
-  function createTestPeriod(
-    periodValue
-  ) {
-    const normalized =
-      String(periodValue || "")
-        .trim()
-        .toLowerCase();
-
-    if (
-      normalized ===
-      "advisory"
-    ) {
-      return {
-        name: "Advisory",
-        start: "10:52",
-        end: "11:17",
-        type: "advisory"
-      };
-    }
-
-    const periodNumber =
-      normalized.match(/\d+/);
-
-    if (!periodNumber) {
-      return null;
-    }
-
-    const number =
-      periodNumber[0];
-
-    return {
-      name:
-        `${number}${getPeriodSuffix(
-          number
-        )} Period`,
-
-      start: "",
-      end: "",
-      type: "class"
-    };
-  }
-
-  function getCurrentPeriod() {
-    const testMode =
-      readTestMode();
-
-    if (testMode) {
-      return createTestPeriod(
-        testMode.period
-      );
-    }
-
-    if (
-      typeof bellSchedule ===
-        "undefined" ||
-      !Array.isArray(
-        bellSchedule
-      )
-    ) {
-      return null;
-    }
-
-    const now =
-      new Date();
-
-    return (
-      bellSchedule.find(period => {
-        const start =
-          timeToDate(
-            period.start
-          );
-
-        const end =
-          timeToDate(
-            period.end
-          );
-
-        return (
-          now >= start &&
-          now < end
-        );
-      }) || null
-    );
-  }
-
-  function createStoredLessonPeriod(
-    lesson,
-    fallbackName
-  ) {
-    const periods =
-      String(
-        lesson.periods || ""
-      ).trim();
-
-    if (!periods) {
-      return {
-        name: fallbackName,
-        start: "",
-        end: "",
-        type: "library"
-      };
-    }
-
-    const periodList =
-      periods
-        .split(",")
-        .map(period => {
-          return period.trim();
-        })
-        .filter(Boolean);
-
-    if (periodList.length === 1) {
-      const normalized =
-        periodList[0]
-          .toLowerCase();
-
-      if (
-        normalized ===
-        "advisory"
-      ) {
-        return {
-          name: "Advisory",
-          start: "",
-          end: "",
-          type: "library"
-        };
-      }
-
-      const number =
-        normalized.match(/\d+/);
-
-      if (number) {
-        return {
-          name:
-            `${number[0]}${getPeriodSuffix(
-              number[0]
-            )} Period`,
-
-          start: "",
-          end: "",
-          type: "library"
-        };
-      }
-    }
-
-    return {
-      name:
-        `Periods ${periods}`,
-
-      start: "",
-      end: "",
-      type: "library"
-    };
-  }
-
-  function createPreviewPeriod(
-    lesson
-  ) {
-    return createStoredLessonPeriod(
-      lesson,
-      "Lesson Preview"
-    );
-  }
-
-  function createTeachPeriod(
-    lesson
-  ) {
-    return createStoredLessonPeriod(
-      lesson,
-      "Teaching from Library"
-    );
-  }
-
-  function normalizePeriod(value) {
-    const text =
-      String(value || "")
-        .trim()
-        .toLowerCase();
-
-    const number =
-      text.match(/\d+/);
-
-    if (number) {
-      return number[0];
-    }
-
-    return text;
-  }
-
-  function lessonMatchesPeriod(
-    lesson,
-    activePeriod
-  ) {
-    if (
-      !lesson ||
-      !activePeriod
-    ) {
-      return false;
-    }
-
-    const activeValue =
-      normalizePeriod(
-        activePeriod.name
-      );
-
-    return String(
-      lesson.periods || ""
-    )
-      .split(",")
-      .map(normalizePeriod)
-      .includes(activeValue);
-  }
-
-  function normalizeLessonDate(
-    value
-  ) {
-    if (!value) {
-      return "";
-    }
-
-    const text =
-      String(value).trim();
-
-    if (
-      /^\d{4}-\d{2}-\d{2}$/.test(
-        text
-      )
-    ) {
-      return text;
-    }
-
-    const date =
-      new Date(text);
-
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return "";
-    }
-
-    const year =
-      date.getFullYear();
-
-    const month =
-      String(
-        date.getMonth() + 1
-      ).padStart(2, "0");
-
-    const day =
-      String(
-        date.getDate()
-      ).padStart(2, "0");
-
-    return `${year}-${month}-${day}`;
-  }
-
-  function formatLessonDate(
-    value
-  ) {
-    const normalized =
-      normalizeLessonDate(
-        value
-      );
-
-    if (!normalized) {
-      return "Date unavailable";
-    }
-
-    const parts =
-      normalized
-        .split("-")
-        .map(Number);
-
-    const date =
-      new Date(
-        parts[0],
-        parts[1] - 1,
-        parts[2],
-        12,
-        0,
-        0
-      );
-
-    return date.toLocaleDateString(
-      [],
-      {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-        year: "numeric"
-      }
-    );
-  }
-
-  /*
-  ==========================================
-  LESSON DISPLAY HELPERS
-  ==========================================
-  */
-
-  function setText(
-    elementId,
-    value,
-    emptyMessage
-  ) {
-    const element =
-      document.getElementById(
-        elementId
-      );
-
-    if (!element) {
+  function addPlannerStyles() {
+    if (document.getElementById("lesson-planner-upgrade-styles")) {
       return;
     }
 
-    if (
-      value &&
-      String(value).trim()
-    ) {
-      element.textContent =
-        String(value).trim();
+    const style = document.createElement("style");
+    style.id = "lesson-planner-upgrade-styles";
 
-      element.classList.remove(
-        "empty-text"
-      );
-    } else {
-      element.textContent =
-        emptyMessage;
+    style.textContent = `
+      .planner-class-options {
+        display: grid;
+        gap: 9px;
+      }
 
-      element.classList.add(
-        "empty-text"
-      );
-    }
+      .planner-class-choice {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        padding: 11px 12px;
+        background: #ffffff;
+        border: 2px solid #d8d8d8;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .planner-class-choice:hover {
+        border-color: #d3a84f;
+      }
+
+      .planner-class-choice input {
+        width: 20px;
+        height: 20px;
+        margin: 0;
+        flex: 0 0 auto;
+      }
+
+      .planner-class-period {
+        color: #11284a;
+        font-weight: bold;
+      }
+
+      .planner-class-course {
+        margin-left: 5px;
+        color: #626b78;
+      }
+
+      .planner-warning {
+        display: none;
+        margin: 9px 0 0;
+        padding: 10px;
+        color: #713b00;
+        background: #fff0cf;
+        border-radius: 7px;
+      }
+
+      .planner-warning.show {
+        display: block;
+      }
+
+      .resource-editor-list {
+        display: grid;
+        gap: 11px;
+      }
+
+      .resource-editor-row {
+        padding: 12px;
+        background: #ffffff;
+        border: 2px solid #d8d8d8;
+        border-radius: 9px;
+      }
+
+      .resource-editor-grid {
+        display: grid;
+        grid-template-columns: 150px 1fr;
+        gap: 9px;
+      }
+
+      .resource-editor-row select,
+      .resource-editor-row input {
+        width: 100%;
+        padding: 10px;
+        border: 2px solid #d8d8d8;
+        border-radius: 7px;
+      }
+
+      .resource-label-input {
+        margin-top: 9px;
+      }
+
+      .resource-remove-button,
+      .resource-add-button {
+        margin-top: 9px;
+        padding: 9px 12px;
+        color: #ffffff;
+        font-weight: bold;
+        border: 0;
+        border-radius: 7px;
+        cursor: pointer;
+      }
+
+      .resource-remove-button {
+        background: #b3262e;
+      }
+
+      .resource-add-button {
+        width: 100%;
+        background: #11284a;
+      }
+
+      .resource-tabs {
+        display: none;
+        flex-wrap: wrap;
+        gap: 8px;
+        padding: 10px 14px;
+        background: #e7ebf0;
+        border-bottom: 1px solid #cdd3dc;
+      }
+
+      .resource-tabs.show {
+        display: flex;
+      }
+
+      .resource-tab {
+        padding: 8px 12px;
+        color: #ffffff;
+        font-weight: bold;
+        background: #11284a;
+        border: 0;
+        border-radius: 8px;
+        cursor: pointer;
+      }
+
+      .resource-tab.active {
+        background: #b3262e;
+      }
+
+      .resource-open-placeholder {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        padding: 30px;
+        text-align: center;
+        background: #f7f7f7;
+      }
+
+      .resource-open-placeholder.show {
+        display: flex;
+      }
+
+      .resource-open-placeholder h3 {
+        margin: 0;
+        color: #11284a;
+        font-size: 1.6rem;
+      }
+
+      .resource-open-placeholder a {
+        padding: 13px 18px;
+        color: #ffffff;
+        font-weight: bold;
+        text-decoration: none;
+        background: #b3262e;
+        border-radius: 9px;
+      }
+
+      .lesson-action-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        grid-column: 1 / -1;
+      }
+
+      .lesson-action-button {
+        padding: 14px;
+        color: #ffffff;
+        font-weight: bold;
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+      }
+
+      .lesson-action-button.save-draft {
+        background: #11284a;
+      }
+
+      .lesson-action-button.teach-lesson {
+        background: #2f7d4a;
+      }
+
+      .lesson-action-button.cancel {
+        grid-column: 1 / -1;
+        color: #11284a;
+        background: #ffffff;
+        border: 2px solid #11284a;
+      }
+
+      @media (max-width: 650px) {
+        .resource-editor-grid,
+        .lesson-action-row {
+          grid-template-columns: 1fr;
+        }
+      }
+    `;
+
+    document.head.appendChild(style);
   }
 
-  function showAgenda(
-    agendaText
-  ) {
-    const list =
-      document.getElementById(
-        "agenda-display"
-      );
+  function createFormGroup(labelText) {
+    const group = document.createElement("div");
+    group.className = "form-group";
+
+    const label = document.createElement("label");
+    label.textContent = labelText;
+
+    group.appendChild(label);
+    return group;
+  }
+
+  function insertDateField() {
+    if (document.getElementById("lesson-date-input")) {
+      return;
+    }
+
+    const bellringer = document.getElementById("bellringer-input");
+    const bellringerGroup =
+      bellringer && bellringer.closest(".form-group");
+
+    if (!bellringerGroup) {
+      return;
+    }
+
+    const group = createFormGroup("Lesson Date");
+
+    const help = document.createElement("span");
+    help.className = "form-help";
+    help.textContent = "Choose today or any future planning date.";
+
+    const input = document.createElement("input");
+    input.id = "lesson-date-input";
+    input.type = "date";
+    input.value = getTodayText();
+
+    group.appendChild(help);
+    group.appendChild(input);
+
+    bellringerGroup.parentNode.insertBefore(group, bellringerGroup);
+  }
+
+  function insertClassChoices() {
+    if (document.getElementById("planner-class-group")) {
+      return;
+    }
+
+    const bellringer = document.getElementById("bellringer-input");
+    const bellringerGroup =
+      bellringer && bellringer.closest(".form-group");
+
+    if (!bellringerGroup) {
+      return;
+    }
+
+    const group = createFormGroup("Use This Lesson For");
+    group.id = "planner-class-group";
+
+    const help = document.createElement("span");
+    help.className = "form-help";
+    help.textContent = "Check every class that will use this lesson.";
+
+    const options = document.createElement("div");
+    options.id = "planner-class-options";
+    options.className = "planner-class-options";
+
+    const warning = document.createElement("p");
+    warning.id = "planner-class-warning";
+    warning.className = "planner-warning";
+    warning.textContent =
+      "Complete Teacher Settings before assigning classes.";
+
+    group.appendChild(help);
+    group.appendChild(options);
+    group.appendChild(warning);
+
+    bellringerGroup.parentNode.insertBefore(group, bellringerGroup);
+  }
+
+  function buildClassChoices(selectedPeriods = []) {
+    const options = document.getElementById("planner-class-options");
+    const warning = document.getElementById("planner-class-warning");
+
+    if (!options || !warning) {
+      return;
+    }
+
+    options.innerHTML = "";
+
+    const profile = getTeacherProfile();
+
+    const classes = Object.entries(profile.classes || {}).filter(
+      ([period, course]) =>
+        period &&
+        course &&
+        String(course).trim()
+    );
+
+    if (classes.length === 0) {
+      warning.classList.add("show");
+      return;
+    }
+
+    warning.classList.remove("show");
+
+    classes.forEach(([period, course]) => {
+      const label = document.createElement("label");
+      label.className = "planner-class-choice";
+
+      const checkbox = document.createElement("input");
+      checkbox.type = "checkbox";
+      checkbox.name = "planner-class";
+      checkbox.value = period;
+      checkbox.dataset.course = course;
+      checkbox.checked = selectedPeriods.includes(period);
+
+      const text = document.createElement("span");
+      text.innerHTML =
+        `<span class="planner-class-period">${escapeHtml(period)}</span>` +
+        `<span class="planner-class-course">— ${escapeHtml(course)}</span>`;
+
+      label.appendChild(checkbox);
+      label.appendChild(text);
+      options.appendChild(label);
+    });
+  }
+
+  function insertResourceEditor() {
+    if (document.getElementById("resource-planner-group")) {
+      return;
+    }
+
+    const oldLinkInput = document.getElementById("lesson-link-input");
+    const oldGroup =
+      oldLinkInput && oldLinkInput.closest(".form-group");
+
+    if (!oldGroup) {
+      return;
+    }
+
+    oldGroup.style.display = "none";
+
+    const group = createFormGroup("Lesson Resources");
+    group.id = "resource-planner-group";
+
+    const help = document.createElement("span");
+    help.className = "form-help";
+    help.textContent =
+      "Add Slides, videos, StudySync, PDFs, Canva, or websites.";
+
+    const list = document.createElement("div");
+    list.id = "resource-editor-list";
+    list.className = "resource-editor-list";
+
+    const addButton = document.createElement("button");
+    addButton.type = "button";
+    addButton.className = "resource-add-button";
+    addButton.textContent = "+ Add Another Resource";
+    addButton.addEventListener("click", () => addResourceRow());
+
+    group.appendChild(help);
+    group.appendChild(list);
+    group.appendChild(addButton);
+
+    oldGroup.parentNode.insertBefore(group, oldGroup);
+  }
+
+  function addResourceRow(resource = {}) {
+    const list = document.getElementById("resource-editor-list");
+
+    if (!list) {
+      return;
+    }
+
+    const row = document.createElement("div");
+    row.className = "resource-editor-row";
+    row.dataset.resourceRow = "true";
+
+    row.innerHTML = `
+      <div class="resource-editor-grid">
+        <select class="resource-type-input">
+          <option value="slides">Google Slides</option>
+          <option value="video">Video / YouTube</option>
+          <option value="studysync">StudySync</option>
+          <option value="canva">Canva</option>
+          <option value="pdf">PDF</option>
+          <option value="website">Website</option>
+          <option value="document">Google Doc</option>
+          <option value="other">Other</option>
+        </select>
+
+        <input
+          class="resource-url-input"
+          type="url"
+          placeholder="Paste the complete https:// link"
+        >
+      </div>
+
+      <input
+        class="resource-label-input"
+        type="text"
+        placeholder="Optional button label"
+      >
+
+      <button
+        type="button"
+        class="resource-remove-button"
+      >
+        Remove Resource
+      </button>
+    `;
+
+    row.querySelector(".resource-type-input").value =
+      resource.type || "slides";
+
+    row.querySelector(".resource-url-input").value =
+      resource.url || "";
+
+    row.querySelector(".resource-label-input").value =
+      resource.label || "";
+
+    row
+      .querySelector(".resource-remove-button")
+      .addEventListener("click", () => {
+        row.remove();
+
+        if (
+          list.querySelectorAll('[data-resource-row="true"]').length === 0
+        ) {
+          addResourceRow();
+        }
+      });
+
+    list.appendChild(row);
+  }
+
+  function fillResourceRows(resources) {
+    const list = document.getElementById("resource-editor-list");
 
     if (!list) {
       return;
@@ -618,1087 +547,726 @@ Supports:
 
     list.innerHTML = "";
 
-    const items =
-      String(agendaText || "")
-        .split("\n")
-        .map(item => {
-          return item.trim();
-        })
-        .filter(Boolean);
+    const usableResources =
+      Array.isArray(resources) ? resources : [];
 
-    if (!items.length) {
-      const item =
-        document.createElement(
-          "li"
-        );
+    if (usableResources.length === 0) {
+      addResourceRow();
+      return;
+    }
 
-      item.textContent =
-        "No agenda has been entered.";
+    usableResources.forEach(resource => addResourceRow(resource));
+  }
 
-      item.className =
-        "empty-text";
+  function collectSelectedClasses() {
+    return Array.from(
+      document.querySelectorAll(
+        'input[name="planner-class"]:checked'
+      )
+    ).map(checkbox => ({
+      period: checkbox.value,
+      course: checkbox.dataset.course || ""
+    }));
+  }
 
-      list.appendChild(item);
+  function collectResources() {
+    return Array.from(
+      document.querySelectorAll('[data-resource-row="true"]')
+    )
+      .map(row => {
+        const type =
+          row.querySelector(".resource-type-input").value;
+
+        const url =
+          row.querySelector(".resource-url-input").value.trim();
+
+        const customLabel =
+          row.querySelector(".resource-label-input").value.trim();
+
+        return {
+          type,
+          url,
+          label: customLabel || getDefaultResourceLabel(type)
+        };
+      })
+      .filter(resource => resource.url);
+  }
+
+  function getDefaultResourceLabel(type) {
+    const labels = {
+      slides: "Google Slides",
+      video: "Video",
+      studysync: "StudySync",
+      canva: "Canva",
+      pdf: "PDF",
+      website: "Website",
+      document: "Google Doc",
+      other: "Resource"
+    };
+
+    return labels[type] || "Resource";
+  }
+
+  function isCompleteWebAddress(url) {
+    try {
+      const parsed = new URL(url);
+
+      return (
+        parsed.protocol === "https:" ||
+        parsed.protocol === "http:"
+      );
+    } catch (error) {
+      return false;
+    }
+  }
+
+  function createResourceDisplay() {
+    if (document.getElementById("resource-tabs")) {
+      return;
+    }
+
+    const lessonWindow = document.querySelector(".lesson-window");
+    const lessonHeader = document.querySelector(".lesson-window-header");
+
+    if (!lessonWindow || !lessonHeader) {
+      return;
+    }
+
+    const tabs = document.createElement("div");
+    tabs.id = "resource-tabs";
+    tabs.className = "resource-tabs";
+
+    lessonHeader.insertAdjacentElement("afterend", tabs);
+
+    const placeholder = document.createElement("div");
+    placeholder.id = "resource-open-placeholder";
+    placeholder.className = "resource-open-placeholder";
+
+    placeholder.innerHTML = `
+      <h3 id="resource-open-title">Open Lesson Resource</h3>
+
+      <p>
+        This resource opens securely in a separate tab.
+      </p>
+
+      <a
+        id="resource-open-button"
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open Resource
+      </a>
+    `;
+
+    lessonWindow.appendChild(placeholder);
+  }
+
+  function displayLessonResources(resources = []) {
+    const tabs = document.getElementById("resource-tabs");
+    const frame = document.getElementById("lesson-frame");
+    const originalPlaceholder =
+      document.getElementById("lesson-placeholder");
+    const securePlaceholder =
+      document.getElementById("resource-open-placeholder");
+    const headerOpenLink =
+      document.getElementById("open-lesson-link");
+
+    if (
+      !tabs ||
+      !frame ||
+      !originalPlaceholder ||
+      !securePlaceholder
+    ) {
+      return;
+    }
+
+    tabs.innerHTML = "";
+
+    const validResources = resources.filter(resource =>
+      isCompleteWebAddress(resource.url)
+    );
+
+    if (validResources.length === 0) {
+      tabs.classList.remove("show");
+      frame.style.display = "none";
+      frame.removeAttribute("src");
+      securePlaceholder.classList.remove("show");
+      originalPlaceholder.style.display = "flex";
+
+      if (headerOpenLink) {
+        headerOpenLink.style.display = "none";
+      }
 
       return;
     }
 
-    items.forEach(itemText => {
-      const item =
-        document.createElement(
-          "li"
-        );
+    tabs.classList.add("show");
 
-      item.textContent =
-        itemText;
+    validResources.forEach((resource, index) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "resource-tab";
+      button.textContent =
+        resource.label ||
+        getDefaultResourceLabel(resource.type);
 
-      list.appendChild(item);
+      button.addEventListener("click", () => {
+        selectResource(resource, button);
+      });
+
+      tabs.appendChild(button);
+
+      if (index === 0) {
+        selectResource(resource, button);
+      }
     });
   }
 
-  function parseResources(value) {
-    if (!value) {
-      return [];
+  function selectResource(resource, selectedButton) {
+    document
+      .querySelectorAll(".resource-tab")
+      .forEach(button => button.classList.remove("active"));
+
+    selectedButton.classList.add("active");
+
+    const frame = document.getElementById("lesson-frame");
+    const originalPlaceholder =
+      document.getElementById("lesson-placeholder");
+    const securePlaceholder =
+      document.getElementById("resource-open-placeholder");
+    const secureTitle =
+      document.getElementById("resource-open-title");
+    const secureButton =
+      document.getElementById("resource-open-button");
+    const headerOpenLink =
+      document.getElementById("open-lesson-link");
+
+    originalPlaceholder.style.display = "none";
+
+    if (headerOpenLink) {
+      headerOpenLink.href = resource.url;
+      headerOpenLink.style.display = "inline-block";
     }
 
-    try {
-      const resources =
-        typeof value === "string"
-          ? JSON.parse(value)
-          : value;
+    if (canEmbedResource(resource)) {
+      securePlaceholder.classList.remove("show");
+      frame.src = prepareResourceEmbedUrl(resource);
+      frame.style.display = "block";
+    } else {
+      frame.style.display = "none";
+      frame.removeAttribute("src");
 
-      return Array.isArray(
-        resources
-      )
-        ? resources
-        : [];
-    } catch (error) {
-      return [];
+      const resourceName =
+        resource.label ||
+        getDefaultResourceLabel(resource.type);
+
+      secureTitle.textContent = resourceName;
+      secureButton.href = resource.url;
+      secureButton.textContent = `Open ${resourceName}`;
+      securePlaceholder.classList.add("show");
     }
   }
 
-  function convertYouTubeLink(
-    url
-  ) {
-    try {
-      const parsedUrl =
-        new URL(url);
+  function canEmbedResource(resource) {
+    return ["slides", "video", "canva", "pdf"].includes(resource.type);
+  }
 
-      if (
-        parsedUrl.hostname.includes(
-          "youtu.be"
-        )
-      ) {
-        const videoId =
-          parsedUrl.pathname
-            .replace("/", "");
+  function prepareResourceEmbedUrl(resource) {
+    const url = resource.url;
 
-        return videoId
-          ? `https://www.youtube.com/embed/${videoId}`
-          : url;
+    if (
+      resource.type === "slides" &&
+      url.includes("docs.google.com/presentation")
+    ) {
+      return url.replace("/edit", "/embed").split("?")[0];
+    }
+
+    if (resource.type === "video") {
+      try {
+        const parsed = new URL(url);
+
+        if (parsed.hostname.includes("youtu.be")) {
+          const id = parsed.pathname.replace("/", "");
+          return "https://www.youtube.com/embed/" + id;
+        }
+
+        if (parsed.hostname.includes("youtube.com")) {
+          const id = parsed.searchParams.get("v");
+
+          if (id) {
+            return "https://www.youtube.com/embed/" + id;
+          }
+        }
+      } catch (error) {
+        return url;
       }
-
-      if (
-        parsedUrl.hostname.includes(
-          "youtube.com"
-        )
-      ) {
-        const videoId =
-          parsedUrl.searchParams.get(
-            "v"
-          );
-
-        return videoId
-          ? `https://www.youtube.com/embed/${videoId}`
-          : url;
-      }
-    } catch (error) {
-      return url;
     }
 
     return url;
   }
 
-  function convertSlidesLink(
-    url
-  ) {
-    if (
-      url.includes(
-        "docs.google.com/presentation"
-      ) &&
-      url.includes("/edit")
-    ) {
-      return url
-        .replace(
-          "/edit",
-          "/embed"
-        )
-        .split("?")[0];
-    }
+  function setTextDisplay(elementId, value, emptyMessage) {
+    const element = document.getElementById(elementId);
 
-    return url;
-  }
-
-  function prepareEmbedLink(
-    url
-  ) {
-    let prepared =
-      String(url || "")
-        .trim();
-
-    prepared =
-      convertYouTubeLink(
-        prepared
-      );
-
-    prepared =
-      convertSlidesLink(
-        prepared
-      );
-
-    return prepared;
-  }
-
-  function showFirstResource(
-    resourceText
-  ) {
-    const resources =
-      parseResources(
-        resourceText
-      );
-
-    const firstResource =
-      resources.find(resource => {
-        return (
-          resource &&
-          resource.url
-        );
-      });
-
-    const frame =
-      document.getElementById(
-        "lesson-frame"
-      );
-
-    const placeholder =
-      document.getElementById(
-        "lesson-placeholder"
-      );
-
-    const openLink =
-      document.getElementById(
-        "open-lesson-link"
-      );
-
-    if (
-      !frame ||
-      !placeholder ||
-      !openLink
-    ) {
+    if (!element) {
       return;
     }
 
-    if (!firstResource) {
-      frame.style.display =
-        "none";
-
-      frame.removeAttribute(
-        "src"
-      );
-
-      placeholder.style.display =
-        "flex";
-
-      placeholder.innerHTML = `
-        <strong>
-          No lesson resource is attached.
-        </strong>
-
-        <span>
-          Add a Slides, Canva, YouTube,
-          PDF, or website link in the
-          Lesson Planner.
-        </span>
-      `;
-
-      openLink.style.display =
-        "none";
-
-      return;
+    if (value && String(value).trim()) {
+      element.textContent = String(value).trim();
+      element.classList.remove("empty-text");
+    } else {
+      element.textContent = emptyMessage;
+      element.classList.add("empty-text");
     }
-
-    frame.src =
-      prepareEmbedLink(
-        firstResource.url
-      );
-
-    frame.style.display =
-      "block";
-
-    placeholder.style.display =
-      "none";
-
-    openLink.href =
-      firstResource.url;
-
-    openLink.style.display =
-      "inline-block";
   }
 
-  function showLesson(
-    lesson,
-    activePeriod
-  ) {
+  function applyLessonToTeachScreen(lesson) {
+    setTextDisplay(
+      "bellringer-display",
+      lesson.bellringer,
+      "Add today’s bell ringer."
+    );
+
+    setTextDisplay(
+      "ican-display",
+      lesson.ican,
+      "Add today’s learning target."
+    );
+
+    setTextDisplay(
+      "success-display",
+      lesson.success,
+      "Add today’s success criteria."
+    );
+
+    const selectedProfile =
+      typeof window.findProfile === "function"
+        ? window.findProfile(lesson.profileId)
+        : {
+            title: lesson.profileId || "Choose a component",
+            shortDescription: ""
+          };
+
+    const profileTitle =
+      document.getElementById("profile-title");
+
+    if (profileTitle) {
+      profileTitle.textContent =
+        selectedProfile.title || "Choose a component";
+    }
+
+    setTextDisplay(
+      "profile-description",
+      lesson.profileStatement ||
+        selectedProfile.shortDescription ||
+        "",
+      "Select a component during lesson setup."
+    );
+
+    displayLessonResources(lesson.resources || []);
+  }
+
+  function fillPlanner(lesson) {
+    const dateInput =
+      document.getElementById("lesson-date-input");
+
+    if (dateInput) {
+      dateInput.value =
+        lesson.lessonDate || getTodayText();
+    }
+
+    const bellringer =
+      document.getElementById("bellringer-input");
+    const ican =
+      document.getElementById("ican-input");
+    const success =
+      document.getElementById("success-input");
     const profile =
-      readTeacherProfile();
+      document.getElementById("profile-input");
+    const agenda =
+      document.getElementById("agenda-input");
 
-    const periodDisplay =
-      document.getElementById(
-        "display-period"
-      );
-
-    const courseDisplay =
-      document.getElementById(
-        "display-course"
-      );
-
-    const roomDisplay =
-      document.getElementById(
-        "display-room"
-      );
-
-    if (periodDisplay) {
-      periodDisplay.textContent =
-        activePeriod
-          ? activePeriod.name
-          : "Current Period";
+    if (bellringer) {
+      bellringer.value = lesson.bellringer || "";
     }
 
-    if (courseDisplay) {
-      courseDisplay.textContent =
-        lesson.course ||
-        "Course";
+    if (ican) {
+      ican.value = lesson.ican || "";
     }
 
-    if (roomDisplay) {
-      roomDisplay.textContent =
-        profile.room || "";
+    if (success) {
+      success.value = lesson.success || "";
     }
 
-    setText(
-      "bellringer-display",
-      lesson.bellRinger,
-      "No bell ringer has been entered."
-    );
-
-    setText(
-      "ican-display",
-      lesson.learningTarget,
-      "No learning target has been entered."
-    );
-
-    setText(
-      "success-display",
-      lesson.successCriteria,
-      "No success criteria have been entered."
-    );
-
-    setText(
-      "profile-title",
-      lesson.profileComponent,
-      "Profile of a Patriot"
-    );
-
-    setText(
-      "profile-description",
-      lesson.profileFocus,
-      "No specific focus has been entered."
-    );
-
-    showAgenda(
-      lesson.agenda
-    );
-
-    showFirstResource(
-      lesson.lessonResources
-    );
-
-    const periodName =
-      document.getElementById(
-        "period-name"
-      );
+    if (profile) {
+      profile.value = lesson.profileId || "none";
+    }
 
     if (
-      activePeriod &&
-      periodName
+      typeof window.updateProfileStatementChoices === "function"
     ) {
-      periodName.textContent =
-        activePeriod.name;
-    }
-  }
-
-  function showNoLesson(
-    message
-  ) {
-    const courseDisplay =
-      document.getElementById(
-        "display-course"
+      window.updateProfileStatementChoices(
+        lesson.profileStatement || ""
       );
-
-    const periodDisplay =
-      document.getElementById(
-        "display-period"
-      );
-
-    if (courseDisplay) {
-      courseDisplay.textContent =
-        isWeekend()
-          ? "Weekend"
-          : "No Active Class";
     }
 
-    if (periodDisplay) {
-      periodDisplay.textContent =
-        isWeekend()
-          ? "No Classes Scheduled"
-          : "Outside Scheduled Class Time";
+    if (agenda) {
+      agenda.value = lesson.agenda || "";
     }
 
-    setText(
-      "bellringer-display",
-      "",
-      message
+    buildClassChoices(
+      Array.isArray(lesson.assignedPeriods)
+        ? lesson.assignedPeriods
+        : []
     );
 
-    setText(
-      "ican-display",
-      "",
-      "No lesson is scheduled right now."
-    );
-
-    setText(
-      "success-display",
-      "",
-      "No lesson is scheduled right now."
-    );
-
-    setText(
-      "profile-title",
-      "",
-      "Profile of a Patriot"
-    );
-
-    setText(
-      "profile-description",
-      "",
-      "No lesson is scheduled right now."
-    );
-
-    showAgenda("");
-
-    showFirstResource("");
-  }
-
-  /*
-  ==========================================
-  NOTICE BANNERS
-  ==========================================
-  */
-
-  function insertNotice(
-    notice
-  ) {
-    const scheduleStrip =
-      document.querySelector(
-        ".schedule-strip"
-      );
-
-    if (scheduleStrip) {
-      scheduleStrip.insertAdjacentElement(
-        "beforebegin",
-        notice
-      );
-
-      return;
-    }
-
-    document.body.insertAdjacentElement(
-      "afterbegin",
-      notice
+    fillResourceRows(
+      Array.isArray(lesson.resources)
+        ? lesson.resources
+        : []
     );
   }
 
-  function showTestModeNotice() {
-    const testMode =
-      readTestMode();
+  function createLessonFromForm() {
+    const selectedClasses = collectSelectedClasses();
+    const existingLesson = getSavedLesson();
 
-    if (!testMode) {
-      return;
-    }
+    return {
+      lessonId:
+        existingLesson.lessonId || createLessonId(),
 
-    const testPeriod =
-      createTestPeriod(
-        testMode.period
-      );
+      lessonDate:
+        document.getElementById("lesson-date-input")?.value ||
+        getTodayText(),
 
-    const existing =
-      document.getElementById(
-        "teach-test-mode-notice"
-      );
+      assignedPeriods:
+        selectedClasses.map(item => item.period),
 
-    if (existing) {
-      return;
-    }
+      assignedCourses:
+        selectedClasses.map(item => item.course),
 
-    const notice =
-      document.createElement(
-        "div"
-      );
+      bellringer:
+        document.getElementById("bellringer-input")?.value.trim() ||
+        "",
 
-    notice.id =
-      "teach-test-mode-notice";
+      ican:
+        document.getElementById("ican-input")?.value.trim() ||
+        "",
 
-    notice.textContent =
-      `Test Mode: ${testMode.date} · ${
-        testPeriod
-          ? testPeriod.name
-          : testMode.period
-      }`;
+      success:
+        document.getElementById("success-input")?.value.trim() ||
+        "",
 
-    notice.style.cssText = `
-      padding: 8px 14px;
-      color: #11284a;
-      font-weight: bold;
-      text-align: center;
-      background: #f6e3a7;
-      border-bottom: 2px solid #d3a84f;
-    `;
+      profileId:
+        document.getElementById("profile-input")?.value ||
+        "none",
 
-    insertNotice(notice);
+      profileStatement:
+        document.getElementById("profile-statement-input")?.value ||
+        "",
+
+      agenda:
+        document.getElementById("agenda-input")?.value.trim() ||
+        "",
+
+      resources: collectResources()
+    };
   }
 
-  function showPreviewModeNotice(
-    lesson
-  ) {
-    const existing =
-      document.getElementById(
-        "teach-preview-mode-notice"
-      );
+  function validateLesson(lesson) {
+    const missing = [];
 
-    if (existing) {
-      return;
+    if (!lesson.lessonDate) {
+      missing.push("Lesson Date");
     }
 
-    const notice =
-      document.createElement(
-        "div"
+    if (lesson.assignedPeriods.length === 0) {
+      missing.push("At least one class");
+    }
+
+    if (!lesson.bellringer) {
+      missing.push("Bell Ringer");
+    }
+
+    if (!lesson.agenda) {
+      missing.push("Agenda");
+    }
+
+    if (!lesson.ican) {
+      missing.push("I Can / Learning Target");
+    }
+
+    if (!lesson.profileId || lesson.profileId === "none") {
+      missing.push("Profile of a Patriot");
+    }
+
+    const invalidResource =
+      lesson.resources.find(
+        resource => !isCompleteWebAddress(resource.url)
       );
 
-    notice.id =
-      "teach-preview-mode-notice";
+    if (invalidResource) {
+      missing.push("Complete https:// resource links");
+    }
 
-    notice.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 10px 16px;
-      color: #11284a;
-      font-weight: bold;
-      text-align: center;
-      background: #f6e3a7;
-      border-bottom: 2px solid #d3a84f;
-    `;
+    return missing;
+  }
 
-    const title =
-      lesson.lessonTitle ||
-      lesson.course ||
-      "Untitled Lesson";
+  async function sendLessonToArchive(lesson) {
+    const teacher = getTeacherProfile();
 
+    const selectedProfile =
+      typeof window.findProfile === "function"
+        ? window.findProfile(lesson.profileId)
+        : { title: lesson.profileId };
+
+    const courses = [
+      ...new Set(lesson.assignedCourses.filter(Boolean))
+    ];
+
+    const archiveData = new URLSearchParams({
+      lessonId: lesson.lessonId,
+      lessonDate: lesson.lessonDate,
+      teacherEmail: teacher.teacherEmail || "",
+      teacherName: teacher.teacherName || "",
+      course: courses.join(" / "),
+      periods: lesson.assignedPeriods.join(", "),
+      lessonTitle: courses.length
+        ? `${courses.join(" / ")} Lesson`
+        : "Daily Lesson",
+      bellRinger: lesson.bellringer,
+      agenda: lesson.agenda,
+      learningTarget: lesson.ican,
+      whyLearning: "",
+      successCriteria: lesson.success || "",
+      standards: "",
+      profileComponent: selectedProfile.title || "",
+      profileFocus: lesson.profileStatement || "",
+      lessonResources: JSON.stringify(lesson.resources),
+      materials: "",
+      teacherNotes: ""
+    });
+
+    await fetch(ARCHIVE_URL, {
+      method: "POST",
+      mode: "no-cors",
+      body: archiveData
+    });
+  }
+
+  function showSaveMessage(text) {
     const message =
-      document.createElement(
-        "span"
-      );
+      document.getElementById("lesson-save-message");
 
-    message.textContent =
-      `Preview Mode: ${title} · ${formatLessonDate(
-        lesson.lessonDate
-      )}`;
-
-    const exitButton =
-      document.createElement(
-        "button"
-      );
-
-    exitButton.type =
-      "button";
-
-    exitButton.textContent =
-      "Exit Preview";
-
-    exitButton.style.cssText = `
-      padding: 7px 13px;
-      color: #ffffff;
-      font-weight: bold;
-      background: #aa3235;
-      border: 2px solid #aa3235;
-      border-radius: 7px;
-      cursor: pointer;
-    `;
-
-    exitButton.addEventListener(
-      "click",
-      exitPreviewMode
-    );
-
-    notice.appendChild(
-      message
-    );
-
-    notice.appendChild(
-      exitButton
-    );
-
-    insertNotice(notice);
-  }
-
-  function showTeachModeNotice(
-    lesson
-  ) {
-    const existing =
-      document.getElementById(
-        "teach-library-mode-notice"
-      );
-
-    if (existing) {
+    if (!message) {
       return;
     }
 
-    const notice =
-      document.createElement(
-        "div"
+    message.textContent = text;
+    message.classList.add("show");
+
+    window.setTimeout(() => {
+      message.classList.remove("show");
+    }, 2200);
+  }
+
+  async function saveLesson({ closeEditor }) {
+    const lesson = createLessonFromForm();
+    const missing = validateLesson(lesson);
+
+    if (missing.length > 0) {
+      window.alert(
+        "Please complete:\n\n" + missing.join("\n")
       );
+      return;
+    }
 
-    notice.id =
-      "teach-library-mode-notice";
+    const actionButtons = document.querySelectorAll(
+      ".lesson-action-button"
+    );
 
-    notice.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 10px 16px;
-      color: #ffffff;
-      font-weight: bold;
-      text-align: center;
-      background: #11284a;
-      border-bottom: 2px solid #07162b;
+    actionButtons.forEach(button => {
+      button.disabled = true;
+    });
+
+    localStorage.setItem(
+      LESSON_KEY,
+      JSON.stringify(lesson)
+    );
+
+    applyLessonToTeachScreen(lesson);
+
+    try {
+      await sendLessonToArchive(lesson);
+
+      showSaveMessage(
+        closeEditor
+          ? "Lesson saved. Ready to teach!"
+          : "Draft saved!"
+      );
+    } catch (error) {
+      console.error("Archive saving failed.", error);
+
+      showSaveMessage(
+        closeEditor
+          ? "Lesson saved on this computer."
+          : "Draft saved on this computer."
+      );
+    } finally {
+      actionButtons.forEach(button => {
+        button.disabled = false;
+      });
+    }
+
+    if (closeEditor) {
+      window.setTimeout(() => {
+        if (
+          typeof window.closeLessonSetup === "function"
+        ) {
+          window.closeLessonSetup();
+        }
+      }, 500);
+    }
+  }
+
+  function installLessonActions() {
+    const actions = document.querySelector(".panel-actions");
+
+    if (!actions) {
+      return;
+    }
+
+    actions.innerHTML = `
+      <div class="lesson-action-row">
+        <button
+          type="button"
+          class="lesson-action-button save-draft"
+          id="save-draft-button"
+        >
+          💾 Save Draft
+        </button>
+
+        <button
+          type="button"
+          class="lesson-action-button teach-lesson"
+          id="teach-lesson-button"
+        >
+          📺 Teach Lesson
+        </button>
+
+        <button
+          type="button"
+          class="lesson-action-button cancel"
+          id="cancel-lesson-button"
+        >
+          Cancel
+        </button>
+      </div>
     `;
 
-    const title =
-      lesson.lessonTitle ||
-      lesson.course ||
-      "Untitled Lesson";
-
-    const message =
-      document.createElement(
-        "span"
-      );
-
-    message.textContent =
-      `Teaching from Library: ${title} · ${formatLessonDate(
-        lesson.lessonDate
-      )}`;
-
-    const returnButton =
-      document.createElement(
-        "button"
-      );
-
-    returnButton.type =
-      "button";
-
-    returnButton.textContent =
-      "Return to Today's Lesson";
-
-    returnButton.style.cssText = `
-      padding: 7px 13px;
-      color: #11284a;
-      font-weight: bold;
-      background: #ffffff;
-      border: 2px solid #ffffff;
-      border-radius: 7px;
-      cursor: pointer;
-    `;
-
-    returnButton.addEventListener(
-      "click",
-      exitTeachMode
-    );
-
-    notice.appendChild(
-      message
-    );
-
-    notice.appendChild(
-      returnButton
-    );
-
-    insertNotice(notice);
-  }
-
-  function exitPreviewMode() {
-    localStorage.removeItem(
-      PREVIEW_LESSON_KEY
-    );
-
-    window.location.href =
-      "library.html";
-  }
-
-  function exitTeachMode() {
-    localStorage.removeItem(
-      TEACH_LESSON_KEY
-    );
-
-    window.location.href =
-      "classroom.html";
-  }
-
-  /*
-  ==========================================
-  LESSON SELECTION
-  ==========================================
-  */
-
-  function selectLesson(
-    lessons,
-    activePeriod
-  ) {
-    const today =
-      getTodayText();
-
-    const todayLessons =
-      lessons.filter(lesson => {
-        return (
-          normalizeLessonDate(
-            lesson.lessonDate
-          ) === today
-        );
+    document
+      .getElementById("save-draft-button")
+      .addEventListener("click", () => {
+        saveLesson({ closeEditor: false });
       });
 
-    return (
-      todayLessons.find(lesson => {
-        return lessonMatchesPeriod(
-          lesson,
-          activePeriod
-        );
-      }) || null
-    );
-  }
+    document
+      .getElementById("teach-lesson-button")
+      .addEventListener("click", () => {
+        saveLesson({ closeEditor: true });
+      });
 
-  /*
-  ==========================================
-  PREVIEW MODE
-  ==========================================
-  */
-
-  function loadPreviewLesson() {
-    const lesson =
-      readPreviewLesson();
-
-    if (!lesson) {
-      showNoLesson(
-        "The preview lesson could not be found. Return to the Library and select the lesson again."
-      );
-
-      showMissingPreviewNotice();
-
-      return;
-    }
-
-    const previewPeriod =
-      createPreviewPeriod(
-        lesson
-      );
-
-    showPreviewModeNotice(
-      lesson
-    );
-
-    showLesson(
-      lesson,
-      previewPeriod
-    );
-  }
-
-  function showMissingPreviewNotice() {
-    const existing =
-      document.getElementById(
-        "teach-preview-mode-notice"
-      );
-
-    if (existing) {
-      return;
-    }
-
-    const notice =
-      document.createElement(
-        "div"
-      );
-
-    notice.id =
-      "teach-preview-mode-notice";
-
-    notice.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 10px 16px;
-      color: #ffffff;
-      font-weight: bold;
-      text-align: center;
-      background: #aa3235;
-      border-bottom: 2px solid #7d2023;
-    `;
-
-    const message =
-      document.createElement(
-        "span"
-      );
-
-    message.textContent =
-      "Preview Mode: No preview lesson was found.";
-
-    const libraryButton =
-      document.createElement(
-        "button"
-      );
-
-    libraryButton.type =
-      "button";
-
-    libraryButton.textContent =
-      "Return to Library";
-
-    libraryButton.style.cssText = `
-      padding: 7px 13px;
-      color: #11284a;
-      font-weight: bold;
-      background: #ffffff;
-      border: 2px solid #ffffff;
-      border-radius: 7px;
-      cursor: pointer;
-    `;
-
-    libraryButton.addEventListener(
-      "click",
-      function () {
-        localStorage.removeItem(
-          PREVIEW_LESSON_KEY
-        );
-
-        window.location.href =
-          "library.html";
-      }
-    );
-
-    notice.appendChild(
-      message
-    );
-
-    notice.appendChild(
-      libraryButton
-    );
-
-    insertNotice(notice);
-  }
-
-  /*
-  ==========================================
-  TEACH FROM LIBRARY MODE
-  ==========================================
-  */
-
-  function loadLibraryTeachLesson() {
-    const lesson =
-      readTeachLesson();
-
-    if (!lesson) {
-      showNoLesson(
-        "The selected lesson could not be found. Return to the Library and select Teach again."
-      );
-
-      showMissingTeachNotice();
-
-      return;
-    }
-
-    const teachPeriod =
-      createTeachPeriod(
-        lesson
-      );
-
-    showTeachModeNotice(
-      lesson
-    );
-
-    showLesson(
-      lesson,
-      teachPeriod
-    );
-  }
-
-  function showMissingTeachNotice() {
-    const existing =
-      document.getElementById(
-        "teach-library-mode-notice"
-      );
-
-    if (existing) {
-      return;
-    }
-
-    const notice =
-      document.createElement(
-        "div"
-      );
-
-    notice.id =
-      "teach-library-mode-notice";
-
-    notice.style.cssText = `
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding: 10px 16px;
-      color: #ffffff;
-      font-weight: bold;
-      text-align: center;
-      background: #aa3235;
-      border-bottom: 2px solid #7d2023;
-    `;
-
-    const message =
-      document.createElement(
-        "span"
-      );
-
-    message.textContent =
-      "Teaching from Library: No lesson was found.";
-
-    const libraryButton =
-      document.createElement(
-        "button"
-      );
-
-    libraryButton.type =
-      "button";
-
-    libraryButton.textContent =
-      "Return to Library";
-
-    libraryButton.style.cssText = `
-      padding: 7px 13px;
-      color: #11284a;
-      font-weight: bold;
-      background: #ffffff;
-      border: 2px solid #ffffff;
-      border-radius: 7px;
-      cursor: pointer;
-    `;
-
-    libraryButton.addEventListener(
-      "click",
-      function () {
-        localStorage.removeItem(
-          TEACH_LESSON_KEY
-        );
-
-        window.location.href =
-          "library.html";
-      }
-    );
-
-    notice.appendChild(
-      message
-    );
-
-    notice.appendChild(
-      libraryButton
-    );
-
-    insertNotice(notice);
-  }
-
-  /*
-  ==========================================
-  NORMAL AND TEST MODES
-  ==========================================
-  */
-
-  function loadScheduledLesson() {
-    const testMode =
-      readTestMode();
-
-    showTestModeNotice();
-
-    if (
-      !testMode &&
-      isWeekend()
-    ) {
-      showNoLesson(
-        "Enjoy your weekend! No classes are scheduled today."
-      );
-
-      return;
-    }
-
-    const teacher =
-      readTeacherProfile();
-
-    if (!teacher.teacherEmail) {
-      showNoLesson(
-        "Complete Teacher Settings to load today’s lesson."
-      );
-
-      return;
-    }
-
-    const activePeriod =
-      getCurrentPeriod();
-
-    if (!activePeriod) {
-      showNoLesson(
-        "No class is currently in session."
-      );
-
-      return;
-    }
-
-    const callbackName =
-      "patriotTeachCallback";
-
-    window[callbackName] =
-      function (response) {
+    document
+      .getElementById("cancel-lesson-button")
+      .addEventListener("click", () => {
         if (
-          !response ||
-          response.success !== true
+          typeof window.closeLessonSetup === "function"
         ) {
-          showNoLesson(
-            "Today’s lesson could not be loaded."
-          );
-
-          delete window[
-            callbackName
-          ];
-
-          return;
+          window.closeLessonSetup();
         }
-
-        const lesson =
-          selectLesson(
-            response.lessons || [],
-            activePeriod
-          );
-
-        if (!lesson) {
-          showNoLesson(
-            "No lesson is saved for this class today."
-          );
-
-          delete window[
-            callbackName
-          ];
-
-          return;
-        }
-
-        showLesson(
-          lesson,
-          activePeriod
-        );
-
-        delete window[
-          callbackName
-        ];
-      };
-
-    const script =
-      document.createElement(
-        "script"
-      );
-
-    script.src =
-      ARCHIVE_URL +
-      "?action=listLessons" +
-      "&teacherEmail=" +
-      encodeURIComponent(
-        teacher.teacherEmail
-      ) +
-      "&callback=" +
-      callbackName +
-      "&time=" +
-      Date.now();
-
-    script.onerror =
-      function () {
-        showNoLesson(
-          "Patriot Command could not reach the Lesson Library."
-        );
-
-        delete window[
-          callbackName
-        ];
-      };
-
-    document.body.appendChild(
-      script
-    );
+      });
   }
 
-  /*
-  ==========================================
-  MAIN LOADER
-  ==========================================
-  */
+  function overrideLessonFunctions() {
+    window.applyLesson = applyLessonToTeachScreen;
 
-  function loadTeachPage() {
-    const mode =
-      readPageMode();
+    window.saveAndLaunchLesson = function () {
+      saveLesson({ closeEditor: true });
+    };
 
-    if (mode === "teach") {
-      loadLibraryTeachLesson();
+    const originalOpenLessonSetup =
+      typeof window.openLessonSetup === "function"
+        ? window.openLessonSetup
+        : null;
 
-      return;
-    }
+    window.openLessonSetup = function () {
+      if (originalOpenLessonSetup) {
+        originalOpenLessonSetup();
+      } else {
+        document
+          .getElementById("lesson-overlay")
+          ?.classList.add("open");
+      }
 
-    if (mode === "preview") {
-      loadPreviewLesson();
+      fillPlanner(getSavedLesson());
+    };
 
-      return;
-    }
+    window.loadPreviousLesson = function () {
+      fillPlanner(getSavedLesson());
+    };
 
-    loadScheduledLesson();
+    window.clearLessonForm = function () {
+      const confirmed = window.confirm(
+        "Clear the lesson setup boxes? Your saved lesson will remain until you save again."
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      fillPlanner({
+        lessonId: "",
+        lessonDate: getTodayText(),
+        assignedPeriods: [],
+        assignedCourses: [],
+        bellringer: "",
+        ican: "",
+        success: "",
+        profileId: "none",
+        profileStatement: "",
+        agenda: "",
+        resources: []
+      });
+    };
+  }
+
+  function escapeHtml(value) {
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   function startTeachLoader() {
-    setTimeout(
-      loadTeachPage,
-      300
-    );
+    addPlannerStyles();
+    insertDateField();
+    insertClassChoices();
+    insertResourceEditor();
+    createResourceDisplay();
+    installLessonActions();
+    overrideLessonFunctions();
+
+    const lesson = getSavedLesson();
+
+    fillPlanner(lesson);
+    applyLessonToTeachScreen(lesson);
   }
 
-  if (
-    document.readyState ===
-    "loading"
-  ) {
+  if (document.readyState === "loading") {
     document.addEventListener(
       "DOMContentLoaded",
       startTeachLoader
@@ -1707,3 +1275,8 @@ Supports:
     startTeachLoader();
   }
 })();
+'''
+
+path = Path("/mnt/data/teach-loader.js")
+path.write_text(code, encoding="utf-8")
+print(path)
