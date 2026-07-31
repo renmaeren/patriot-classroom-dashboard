@@ -1,0 +1,197 @@
+/*
+==========================================
+PATRIOT COMMAND WIDGET SYSTEM
+Shared styles for classroom widgets
+==========================================
+*/
+
+.pc-widget-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 16px;
+}
+
+.pc-widget-icon {
+  display: block;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  object-fit: contain;
+}
+
+.pc-widget-title {
+  margin: 0;
+  color: var(--navy, #11284a);
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.pc-widget-subtitle {
+  margin: -7px 0 14px;
+  color: #666666;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+/*
+==========================================
+BUTTONS
+==========================================
+*/
+
+.pc-widget-button {
+  min-height: 42px;
+  padding: 10px 14px;
+  color: #ffffff;
+  font: inherit;
+  font-weight: 700;
+  background: var(--red, #b3262e);
+  border: 0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition:
+    filter 0.15s ease,
+    transform 0.15s ease;
+}
+
+.pc-widget-button:hover {
+  filter: brightness(1.07);
+}
+
+.pc-widget-button:active {
+  transform: translateY(1px);
+}
+
+.pc-widget-button:focus-visible {
+  outline: 3px solid var(--gold, #d3a84f);
+  outline-offset: 2px;
+}
+
+.pc-widget-button:disabled {
+  color: #666666;
+  background: #dddddd;
+  cursor: not-allowed;
+  filter: none;
+  transform: none;
+}
+
+.pc-widget-button.secondary {
+  background: var(--navy, #11284a);
+}
+
+.pc-widget-button.success {
+  background: var(--green, #2f7d4a);
+}
+
+.pc-widget-button.danger {
+  background: var(--red, #b3262e);
+}
+
+/*
+==========================================
+BUTTON LAYOUTS
+==========================================
+*/
+
+.pc-widget-button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.pc-widget-button-row.single {
+  grid-template-columns: 1fr;
+}
+
+/*
+==========================================
+FIELDS
+==========================================
+*/
+
+.pc-widget-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pc-widget-field label {
+  color: var(--navy, #11284a);
+  font-size: 0.86rem;
+  font-weight: 700;
+}
+
+.pc-widget-input,
+.pc-widget-select {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 10px;
+  color: var(--navy, #11284a);
+  font: inherit;
+  background: #ffffff;
+  border: 2px solid #d7dce3;
+  border-radius: 8px;
+}
+
+.pc-widget-input:focus,
+.pc-widget-select:focus {
+  outline: 3px solid rgba(211, 168, 79, 0.35);
+  border-color: var(--gold, #d3a84f);
+}
+
+/*
+==========================================
+PANELS AND RESULTS
+==========================================
+*/
+
+.pc-widget-panel {
+  padding: 12px;
+  background: var(--cream, #f7f2e8);
+  border: 2px solid var(--gold, #d3a84f);
+  border-radius: 10px;
+}
+
+.pc-widget-message {
+  margin-top: 12px;
+  padding: 11px;
+  color: var(--navy, #11284a);
+  line-height: 1.4;
+  background: var(--cream, #f7f2e8);
+  border-left: 5px solid var(--gold, #d3a84f);
+  border-radius: 7px;
+}
+
+.pc-widget-muted {
+  color: #666666;
+  font-size: 0.85rem;
+  line-height: 1.4;
+}
+
+/*
+==========================================
+RESPONSIVE
+==========================================
+*/
+
+@media (max-width: 520px) {
+  .pc-widget-header {
+    gap: 8px;
+  }
+
+  .pc-widget-icon {
+    width: 28px;
+    height: 28px;
+    flex-basis: 28px;
+  }
+
+  .pc-widget-title {
+    font-size: 1.15rem;
+  }
+
+  .pc-widget-button-row {
+    grid-template-columns: 1fr;
+  }
+}
