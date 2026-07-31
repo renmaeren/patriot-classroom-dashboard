@@ -8,13 +8,6 @@
 
   const WIDGET_ID = "student-picker-widget";
 
-  /*
-   * Change only this line if your icon uses a different
-   * file extension or capitalization.
-   */
-  const ICON_PATH =
-    "Assets/Icons/student picker.png";
-
   let selectedClassKey = "";
   let roster = [];
   let remainingStudentIds = [];
@@ -490,24 +483,8 @@
         "section"
       );
 
-    widget.id = WIDGET_ID;
-    widget.className = "card";
-    widget.hidden = true;
-
-    widget.innerHTML = `
-      <div class="pc-widget-header">
-        <img
-          class="pc-widget-icon"
-          src="${ICON_PATH}"
-          alt=""
-          aria-hidden="true"
-        >
-
-        <h2 class="pc-widget-title">
-          Student Picker
-        </h2>
-      </div>
-
+   widget.innerHTML = `
+  <h2>🎲 Student Picker</h2>
       <div class="pc-widget-field">
         <label
           for="student-picker-class-select"
