@@ -570,18 +570,19 @@
     .teach-command-center {
       display: grid;
       grid-template-columns:
-        minmax(
-          225px,
-          270px
-        )
-        minmax(
-          520px,
-          1fr
-        )
-        minmax(
-          225px,
-          280px
-        );
+      minmax(
+        285px,
+        320px
+      )
+      minmax(
+        500px,
+        1fr
+      )
+      minmax(
+        210px,
+        250px
+      );
+      
       align-items: stretch;
       gap: 10px;
       width:
@@ -630,18 +631,18 @@
     }
 
     body.teaching-tools-collapsed
-      .teach-command-center {
-      grid-template-columns:
-        minmax(
-          225px,
-          270px
-        )
-        minmax(
-          520px,
-          1fr
-        )
-        50px;
-    }
+  .teach-command-center {
+  grid-template-columns:
+    minmax(
+      285px,
+      320px
+    )
+    minmax(
+      500px,
+      1fr
+    )
+    50px;
+}
 
     body.lesson-flow-collapsed
       .teach-command-center.teaching-tools-collapsed,
