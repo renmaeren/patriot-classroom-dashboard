@@ -28,21 +28,81 @@
   <style>
     /*
     ==========================================
-    PLANNER PAGE
+    PATRIOT COMMAND
+    PLANNER
     ==========================================
     */
 
     :root {
-      --planner-blue: var(--patriot-blue, #2a43a3);
-      --planner-red: var(--patriot-red, #cf1b13);
-      --planner-cream: var(--patriot-cream, #fffce9);
-      --planner-gold: var(--patriot-gold, #ffe269);
-      --planner-green: #39764d;
-      --planner-ink: var(--patriot-text, #20283a);
-      --planner-muted: var(--patriot-muted, #657087);
-      --planner-line: rgba(42, 67, 163, 0.13);
-      --planner-glass: rgba(255, 255, 255, 0.8);
-      --planner-shadow: 0 8px 25px rgba(42, 67, 163, 0.1);
+      --planner-blue:
+        var(
+          --patriot-blue,
+          #2a43a3
+        );
+
+      --planner-red:
+        var(
+          --patriot-red,
+          #cf1b13
+        );
+
+      --planner-cream:
+        var(
+          --patriot-cream,
+          #fffce9
+        );
+
+      --planner-gold:
+        var(
+          --patriot-gold,
+          #ffe269
+        );
+
+      --planner-green:
+        #39764d;
+
+      --planner-ink:
+        var(
+          --patriot-text,
+          #20283a
+        );
+
+      --planner-muted:
+        var(
+          --patriot-muted,
+          #657087
+        );
+
+      --planner-line:
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+
+      --planner-glass:
+        rgba(
+          255,
+          255,
+          255,
+          0.82
+        );
+
+      --planner-shadow:
+        0 9px 26px
+        rgba(
+          42,
+          67,
+          163,
+          0.10
+        );
+
+      --planner-radius:
+        16px;
+
+      --planner-small-radius:
+        9px;
     }
 
     * {
@@ -51,30 +111,59 @@
 
     html {
       min-height: 100%;
-      background: var(--planner-cream);
+      background:
+        var(--planner-cream);
     }
 
     body {
       min-height: 100vh;
       margin: 0;
-      color: var(--planner-ink);
-      font-family: "Inter", "Segoe UI", Arial, sans-serif;
+      overflow-x: hidden;
+      color:
+        var(--planner-ink);
+      font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
       background:
         radial-gradient(
           circle at 8% 2%,
-          rgba(42, 67, 163, 0.16),
-          transparent 27%
+          rgba(
+            42,
+            67,
+            163,
+            0.17
+          ),
+          transparent 28%
         ),
         radial-gradient(
           circle at 92% 3%,
-          rgba(255, 226, 105, 0.16),
+          rgba(
+            255,
+            226,
+            105,
+            0.17
+          ),
           transparent 28%
         ),
         linear-gradient(
           180deg,
-          rgba(255, 255, 255, 0.74),
-          rgba(255, 252, 233, 0.94)
+          rgba(
+            255,
+            255,
+            255,
+            0.74
+          ),
+          rgba(
+            255,
+            252,
+            233,
+            0.95
+          )
         );
+      background-attachment:
+        fixed;
     }
 
     button,
@@ -99,39 +188,82 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 24px;
-      width: min(1800px, calc(100% - 24px));
-      min-height: 92px;
-      margin: 12px auto;
-      padding: 16px 23px;
+      gap: 22px;
+      width:
+        min(
+          1800px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      min-height: 88px;
+      margin:
+        12px
+        auto;
+      padding:
+        14px
+        22px;
       overflow: hidden;
-      color: var(--planner-ink);
-      text-align: left;
+      color:
+        var(--planner-ink);
       background:
         linear-gradient(
           112deg,
-          rgba(42, 67, 163, 0.32) 0%,
-          rgba(255, 255, 255, 0.88) 54%,
-          rgba(42, 67, 163, 0.18) 100%
+          rgba(
+            42,
+            67,
+            163,
+            0.34
+          ) 0%,
+          rgba(
+            255,
+            255,
+            255,
+            0.90
+          ) 54%,
+          rgba(
+            42,
+            67,
+            163,
+            0.18
+          ) 100%
         );
-      border: 1px solid rgba(255, 255, 255, 0.88);
-      border-radius: 16px;
-      box-shadow: var(--planner-shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border-radius:
+        var(--planner-radius);
+      box-shadow:
+        var(--planner-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
       isolation: isolate;
     }
 
     .planner-header::before {
       content: "";
       position: absolute;
-      top: -80px;
-      right: -35px;
+      top: -84px;
+      right: -38px;
       z-index: -1;
       width: 220px;
       height: 220px;
       pointer-events: none;
-      background: rgba(42, 67, 163, 0.08);
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.09
+        );
       border-radius: 50%;
     }
 
@@ -140,9 +272,13 @@
     }
 
     .planner-eyebrow {
-      margin: 0 0 2px;
-      color: var(--planner-blue);
-      font-size: 0.62rem;
+      margin:
+        0
+        0
+        2px;
+      color:
+        var(--planner-blue);
+      font-size: 0.61rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.11em;
@@ -150,17 +286,30 @@
 
     .planner-header h1 {
       margin: 0;
-      color: var(--planner-ink);
-      font-family: "Literata", Georgia, serif;
-      font-size: clamp(1.55rem, 2.4vw, 2.15rem);
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      color:
+        var(--planner-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size:
+        clamp(
+          1.55rem,
+          2.4vw,
+          2.12rem
+        );
+      line-height: 1.06;
+      letter-spacing: -0.035em;
     }
 
     .planner-header p {
-      margin: 4px 0 0;
-      color: var(--planner-muted);
-      font-size: 0.78rem;
+      margin:
+        4px
+        0
+        0;
+      color:
+        var(--planner-muted);
+      font-size: 0.77rem;
       font-weight: 650;
     }
 
@@ -169,13 +318,33 @@
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      width: 48px;
-      height: 48px;
-      font-size: 1.65rem;
-      background: rgba(255, 255, 255, 0.62);
-      border: 1px solid rgba(255, 255, 255, 0.84);
+      width: 47px;
+      height: 47px;
+      font-size: 1.6rem;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.64
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.85
+        );
       border-radius: 13px;
-      box-shadow: 0 4px 14px rgba(42, 67, 163, 0.09);
+      box-shadow:
+        0 4px 14px
+        rgba(
+          42,
+          67,
+          163,
+          0.09
+        );
     }
 
     /*
@@ -185,18 +354,43 @@
     */
 
     .planner-main {
-      width: min(1500px, calc(100% - 24px));
-      margin: 0 auto 38px;
+      width:
+        min(
+          1500px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      margin:
+        0
+        auto
+        38px;
     }
 
     .planner-card {
-      padding: 16px 19px 19px;
-      background: var(--planner-glass);
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      border-radius: 16px;
-      box-shadow: var(--planner-shadow);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+      padding:
+        15px
+        19px
+        19px;
+      background:
+        var(--planner-glass);
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.90
+        );
+      border-radius:
+        var(--planner-radius);
+      box-shadow:
+        var(--planner-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
     }
 
     /*
@@ -207,8 +401,12 @@
 
     .section {
       margin: 0;
-      padding: 15px 0;
-      border-bottom: 1px solid var(--planner-line);
+      padding:
+        14px
+        0;
+      border-bottom:
+        1px solid
+        var(--planner-line);
     }
 
     .section:first-child {
@@ -221,9 +419,16 @@
     }
 
     .section h2 {
-      margin: 0 0 11px;
-      color: var(--planner-red);
-      font-family: "Literata", Georgia, serif;
+      margin:
+        0
+        0
+        10px;
+      color:
+        var(--planner-red);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
       font-size: 1rem;
       line-height: 1.2;
       letter-spacing: -0.015em;
@@ -243,13 +448,14 @@
 
     .section-heading-row p {
       margin: 0;
-      color: var(--planner-muted);
-      font-size: 0.68rem;
+      color:
+        var(--planner-muted);
+      font-size: 0.67rem;
     }
 
     /*
     ==========================================
-    LESSON FLOW HEADINGS
+    LESSON STAGES
     ==========================================
     */
 
@@ -265,24 +471,42 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin: 0 0 9px;
+      margin:
+        0
+        0
+        9px;
       padding-bottom: 6px;
-      color: var(--planner-blue);
-      font-size: 0.73rem;
+      color:
+        var(--planner-blue);
+      font-size: 0.72rem;
       font-weight: 850;
       text-transform: uppercase;
       letter-spacing: 0.08em;
-      border-bottom: 1px solid rgba(42, 67, 163, 0.1);
+      border-bottom:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.10
+        );
     }
 
     .lesson-stage-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
+      flex: 0 0 auto;
       width: 25px;
       height: 25px;
       font-size: 0.78rem;
-      background: rgba(42, 67, 163, 0.08);
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
       border-radius: 7px;
     }
 
@@ -295,13 +519,25 @@
     .form-grid,
     .lesson-components-grid {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 11px 14px;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap:
+        11px
+        14px;
     }
 
     .form-group {
       min-width: 0;
-      margin: 0 0 12px;
+      margin:
+        0
+        0
+        12px;
     }
 
     .form-group:last-child {
@@ -309,33 +545,38 @@
     }
 
     .form-group.full-width {
-      grid-column: 1 / -1;
+      grid-column:
+        1 /
+        -1;
     }
 
     label,
     .group-label {
       display: block;
-      margin: 0 0 5px;
-      color: var(--planner-ink);
-      font-size: 0.78rem;
+      margin:
+        0
+        0
+        5px;
+      color:
+        var(--planner-ink);
+      font-size: 0.77rem;
       font-weight: 750;
     }
 
     .required {
-      color: var(--planner-red);
-    }
-
-    .optional-label {
-      color: var(--planner-muted);
-      font-size: 0.65rem;
-      font-weight: 650;
+      color:
+        var(--planner-red);
     }
 
     .help-text {
       display: block;
-      margin: -1px 0 6px;
-      color: var(--planner-muted);
-      font-size: 0.68rem;
+      margin:
+        -1px
+        0
+        6px;
+      color:
+        var(--planner-muted);
+      font-size: 0.67rem;
       line-height: 1.35;
     }
 
@@ -344,24 +585,52 @@
     select {
       width: 100%;
       min-height: 37px;
-      padding: 7px 10px;
-      color: var(--planner-ink);
-      background: rgba(255, 255, 255, 0.88);
-      border: 1px solid rgba(42, 67, 163, 0.18);
-      border-radius: 9px;
+      padding:
+        7px
+        10px;
+      color:
+        var(--planner-ink);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.89
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
+      border-radius:
+        var(--planner-small-radius);
       outline: none;
       transition:
-        border-color 180ms ease,
-        box-shadow 180ms ease,
-        background 180ms ease;
+        border-color
+        180ms ease,
+        box-shadow
+        180ms ease,
+        background
+        180ms ease;
     }
 
     input:focus,
     textarea:focus,
     select:focus {
       background: #ffffff;
-      border-color: var(--planner-blue);
-      box-shadow: 0 0 0 3px rgba(42, 67, 163, 0.1);
+      border-color:
+        var(--planner-blue);
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          42,
+          67,
+          163,
+          0.10
+        );
     }
 
     textarea {
@@ -371,7 +640,7 @@
     }
 
     #agenda {
-      min-height: 94px;
+      min-height: 92px;
     }
 
     /*
@@ -382,14 +651,24 @@
 
     .class-options {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
+      grid-template-columns:
+        repeat(
+          4,
+          minmax(
+            0,
+            1fr
+          )
+        );
       gap: 8px;
     }
 
     .class-options > p {
-      grid-column: 1 / -1;
+      grid-column:
+        1 /
+        -1;
       margin: 0;
-      color: var(--planner-muted);
+      color:
+        var(--planner-muted);
       font-size: 0.72rem;
     }
 
@@ -398,94 +677,231 @@
       align-items: center;
       min-width: 0;
       min-height: 46px;
-    
       margin: 0;
-      padding: 8px 14px;
-    
-      color: var(--planner-ink);
-      font-size: .78rem;
+      padding:
+        8px
+        14px;
+      color:
+        var(--planner-ink);
+      font-size: 0.78rem;
       font-weight: 650;
       line-height: 1.35;
-    
       background:
-        rgba(255,252,233,.76);
-    
+        rgba(
+          255,
+          252,
+          233,
+          0.76
+        );
       border:
-        1px solid rgba(42,67,163,.16);
-    
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.16
+        );
       border-radius: 10px;
-    
       cursor: pointer;
-    
       transition:
-        background .18s ease,
-        border-color .18s ease,
-        transform .18s ease;
-  }
+        background
+        180ms ease,
+        border-color
+        180ms ease,
+        transform
+        180ms ease;
+    }
+
     .class-choice:hover {
-      background: rgba(255, 226, 105, 0.21);
-      border-color: rgba(42, 67, 163, 0.28);
-      transform: translateY(-1px);
+      background:
+        rgba(
+          255,
+          226,
+          105,
+          0.21
+        );
+      border-color:
+        rgba(
+          42,
+          67,
+          163,
+          0.28
+        );
+      transform:
+        translateY(-1px);
     }
 
     .class-choice input {
-      flex: 0 0 auto;
-    
+      flex:
+        0
+        0
+        auto;
       width: 18px;
       height: 18px;
-    
-      margin: 0 14px 0 2px;
-    
+      min-height: 0;
+      margin:
+        0
+        14px
+        0
+        2px;
       padding: 0;
-    
-      accent-color: var(--planner-blue);
-}
+      accent-color:
+        var(--planner-blue);
+    }
 
     /*
     ==========================================
-    OPTIONAL COMPONENT TOGGLES
+    OPTIONAL COMPONENTS
     ==========================================
     */
 
+    .optional-section-note {
+      margin:
+        -2px
+        0
+        10px;
+      color:
+        var(--planner-muted);
+      font-size: 0.67rem;
+      line-height: 1.4;
+    }
+
+    .optional-components-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap:
+        10px
+        12px;
+    }
+
     .optional-component {
-      padding: 10px;
-      background: rgba(255, 252, 233, 0.62);
-      border: 1px solid rgba(42, 67, 163, 0.11);
+      min-width: 0;
+      padding:
+        10px
+        11px;
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.64
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.12
+        );
       border-radius: 10px;
+      transition:
+        background
+        180ms ease,
+        border-color
+        180ms ease,
+        box-shadow
+        180ms ease;
+    }
+
+    .optional-component:hover {
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.84
+        );
+      border-color:
+        rgba(
+          42,
+          67,
+          163,
+          0.22
+        );
+    }
+
+    .optional-component.is-active {
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border-color:
+        rgba(
+          42,
+          67,
+          163,
+          0.24
+        );
+      box-shadow:
+        0 4px 13px
+        rgba(
+          42,
+          67,
+          163,
+          0.07
+        );
     }
 
     .optional-component.full-width {
-      grid-column: 1 / -1;
+      grid-column:
+        1 /
+        -1;
     }
 
     .optional-toggle {
       display: flex;
       align-items: center;
-      gap: 9px;
+      gap: 11px;
       min-height: 30px;
       margin: 0;
-      color: var(--planner-blue);
-      font-size: 0.75rem;
+      color:
+        var(--planner-blue);
+      font-size: 0.74rem;
       font-weight: 750;
       cursor: pointer;
     }
 
     .optional-toggle input {
-      flex: 0 0 auto;
-      width: 16px;
-      height: 16px;
+      flex:
+        0
+        0
+        auto;
+      width: 17px;
+      height: 17px;
       min-height: 0;
       margin: 0;
       padding: 0;
-      accent-color: var(--planner-blue);
+      accent-color:
+        var(--planner-blue);
     }
 
     .optional-component-field {
       display: none;
-      margin-top: 9px;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.10
+        );
     }
 
-    .optional-component.is-active .optional-component-field {
+    .optional-component.is-active
+    .optional-component-field {
       display: block;
     }
 
@@ -503,14 +919,33 @@
     .resource-row {
       display: grid;
       grid-template-columns:
-        minmax(135px, 180px)
-        minmax(0, 1fr)
+        minmax(
+          135px,
+          180px
+        )
+        minmax(
+          0,
+          1fr
+        )
         auto;
       align-items: center;
       gap: 8px;
       padding: 8px;
-      background: rgba(255, 252, 233, 0.68);
-      border: 1px solid rgba(42, 67, 163, 0.1);
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.68
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.10
+        );
       border-radius: 10px;
     }
 
@@ -521,70 +956,42 @@
 
     .remove-resource {
       min-height: 37px;
-      padding: 7px 11px;
+      padding:
+        7px
+        11px;
       color: #ffffff;
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       font-weight: 750;
-      background: var(--planner-red);
+      background:
+        var(--planner-red);
       border: 0;
       border-radius: 8px;
     }
 
     .remove-resource:hover {
-      filter: brightness(1.06);
+      filter:
+        brightness(1.06);
     }
 
     .add-resource {
       width: auto;
       min-height: 37px;
       margin-top: 8px;
-      padding: 8px 13px;
+      padding:
+        8px
+        13px;
       color: #ffffff;
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       font-weight: 750;
-      background: var(--planner-blue);
+      background:
+        var(--planner-blue);
       border: 0;
       border-radius: 8px;
     }
 
     .add-resource:hover {
-      background: var(--planner-red);
-    }
-
-    /*
-    ==========================================
-    Optional Lesson Components
-    ==========================================
-    */
-
-    details {
-      padding: 11px 13px;
-      background: rgba(255, 252, 233, 0.7);
-      border: 1px solid rgba(42, 67, 163, 0.12);
-      border-radius: 10px;
-    }
-
-    summary {
-      color: var(--planner-blue);
-      font-size: 0.79rem;
-      font-weight: 750;
-      cursor: pointer;
-      user-select: none;
-    }
-
-    summary::marker {
-      color: var(--planner-red);
-    }
-
-    .optional-fields {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 11px 14px;
-      margin-top: 13px;
-    }
-
-    .optional-fields .form-group {
-      margin: 0;
+      background:
+        var(--planner-red);
     }
 
     /*
@@ -596,9 +1003,18 @@
     .planner-actions {
       display: grid;
       grid-template-columns:
-        minmax(180px, 1.4fr)
-        minmax(150px, 0.8fr)
-        minmax(150px, 0.8fr);
+        minmax(
+          180px,
+          1.4fr
+        )
+        minmax(
+          150px,
+          0.8fr
+        )
+        minmax(
+          150px,
+          0.8fr
+        );
       gap: 9px;
       margin-top: 15px;
     }
@@ -608,9 +1024,11 @@
       align-items: center;
       justify-content: center;
       min-height: 41px;
-      padding: 8px 13px;
+      padding:
+        8px
+        13px;
       color: #ffffff;
-      font-size: 0.76rem;
+      font-size: 0.75rem;
       font-weight: 750;
       text-align: center;
       text-decoration: none;
@@ -618,48 +1036,78 @@
       border-radius: 9px;
       cursor: pointer;
       transition:
-        background 180ms ease,
-        color 180ms ease,
-        border-color 180ms ease,
-        box-shadow 180ms ease,
-        transform 180ms ease;
+        background
+        180ms ease,
+        color
+        180ms ease,
+        border-color
+        180ms ease,
+        box-shadow
+        180ms ease,
+        transform
+        180ms ease;
     }
 
     .action-button:hover {
-      box-shadow: 0 6px 15px rgba(42, 67, 163, 0.13);
-      transform: translateY(-1px);
+      box-shadow:
+        0 6px 15px
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+      transform:
+        translateY(-1px);
     }
 
     .save-button {
-      background: var(--planner-green);
+      background:
+        var(--planner-green);
     }
 
     .save-button:hover {
-      background: #2f6842;
+      background:
+        #2f6842;
     }
 
     .new-button {
-      color: var(--planner-blue);
-      background: rgba(255, 255, 255, 0.88);
-      border: 1px solid var(--planner-blue);
+      color:
+        var(--planner-blue);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border:
+        1px solid
+        var(--planner-blue);
     }
 
     .new-button:hover {
       color: #ffffff;
-      background: var(--planner-blue);
+      background:
+        var(--planner-blue);
     }
 
     .library-button,
     .library-button:visited {
       color: #ffffff;
-      background: var(--planner-blue);
-      border: 1px solid var(--planner-blue);
+      background:
+        var(--planner-blue);
+      border:
+        1px solid
+        var(--planner-blue);
     }
 
     .library-button:hover {
       color: #ffffff;
-      background: var(--planner-red);
-      border-color: var(--planner-red);
+      background:
+        var(--planner-red);
+      border-color:
+        var(--planner-red);
     }
 
     .status-message {
@@ -667,10 +1115,11 @@
       margin-top: 10px;
       padding: 9px;
       color: #ffffff;
-      font-size: 0.76rem;
-      text-align: center;
+      font-size: 0.75rem;
       font-weight: 750;
-      background: var(--planner-green);
+      text-align: center;
+      background:
+        var(--planner-green);
       border-radius: 8px;
     }
 
@@ -680,20 +1129,42 @@
     ==========================================
     */
 
-    @media (max-width: 1100px) {
+    @media (
+      max-width: 1100px
+    ) {
       .class-options {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns:
+          repeat(
+            3,
+            minmax(
+              0,
+              1fr
+            )
+          );
       }
     }
 
-    @media (max-width: 820px) {
+    @media (
+      max-width: 820px
+    ) {
       .class-options {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(
+              0,
+              1fr
+            )
+          );
       }
 
       .lesson-components-grid,
-      .optional-fields {
-        grid-template-columns: minmax(0, 1fr);
+      .optional-components-grid {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
       }
 
       .optional-component.full-width {
@@ -701,10 +1172,14 @@
       }
     }
 
-    @media (max-width: 700px) {
+    @media (
+      max-width: 700px
+    ) {
       .planner-header {
-        align-items: flex-start;
-        flex-direction: column;
+        align-items:
+          flex-start;
+        flex-direction:
+          column;
         gap: 10px;
       }
 
@@ -719,7 +1194,11 @@
       .form-grid,
       .resource-row,
       .planner-actions {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
       }
 
       .resource-row {
@@ -732,10 +1211,16 @@
       }
     }
 
-    @media (max-width: 500px) {
+    @media (
+      max-width: 500px
+    ) {
       .planner-header,
       .planner-main {
-        width: calc(100% - 16px);
+        width:
+          calc(
+            100% -
+            16px
+          );
       }
 
       .planner-card {
@@ -744,27 +1229,43 @@
       }
 
       .class-options {
-        grid-template-columns: minmax(0, 1fr);
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
       }
 
       .section-heading-row {
-        align-items: flex-start;
-        flex-direction: column;
+        align-items:
+          flex-start;
+        flex-direction:
+          column;
         gap: 2px;
       }
     }
 
-    @media (prefers-reduced-motion: reduce) {
+    @media (
+      prefers-reduced-motion:
+      reduce
+    ) {
       *,
       *::before,
       *::after {
-        transition: none !important;
+        transition:
+          none !important;
       }
     }
   </style>
 </head>
 
 <body class="patriot-page-plan">
+  <!--
+  ==========================================
+  PLANNER HEADER
+  ==========================================
+  -->
+
   <header class="planner-header">
     <div class="planner-header-copy">
       <p class="planner-eyebrow">
@@ -787,6 +1288,12 @@
       📝
     </div>
   </header>
+
+  <!--
+  ==========================================
+  PLANNER FORM
+  ==========================================
+  -->
 
   <main class="planner-main">
     <form
@@ -864,7 +1371,7 @@
 
       <!--
       ========================================
-      LESSON COMPONENTS
+      REQUIRED LESSON COMPONENTS
       ========================================
       -->
 
@@ -1006,39 +1513,6 @@
               ></textarea>
             </div>
 
-            <div
-              id="vocabulary-component"
-              class="optional-component full-width"
-            >
-              <label class="optional-toggle">
-                <input
-                  id="include-vocabulary"
-                  type="checkbox"
-                  data-optional-toggle="vocabulary-component"
-                >
-
-                Include Vocabulary
-              </label>
-
-              <div class="optional-component-field">
-                <label for="vocabulary">
-                  Vocabulary
-                  <span class="optional-label">
-                    Optional
-                  </span>
-                </label>
-
-                <span class="help-text">
-                  Enter important words, phrases, or definitions for this lesson.
-                </span>
-
-                <textarea
-                  id="vocabulary"
-                  placeholder="Term — Definition&#10;Term — Definition"
-                ></textarea>
-              </div>
-            </div>
-
             <div class="form-group full-width">
               <label for="standards">
                 Standards
@@ -1059,7 +1533,242 @@
 
       <!--
       ========================================
-      RESOURCES
+      OPTIONAL LESSON COMPONENTS
+      ========================================
+      -->
+
+      <section class="section">
+        <div class="section-heading-row">
+          <h2>
+            Optional Lesson Components
+          </h2>
+
+          <p>
+            Turn on only the pieces you need.
+          </p>
+        </div>
+
+        <p class="optional-section-note">
+          Each component will appear in Library and Teach only when it contains content.
+        </p>
+
+        <div class="optional-components-grid">
+          <!-- VOCABULARY -->
+
+          <div
+            id="vocabulary-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-vocabulary"
+                type="checkbox"
+                data-optional-toggle="vocabulary-component"
+                data-optional-field="vocabulary"
+              >
+
+              Include Vocabulary
+            </label>
+
+            <div class="optional-component-field">
+              <label for="vocabulary">
+                Vocabulary
+              </label>
+
+              <span class="help-text">
+                Enter important words, phrases, or definitions.
+              </span>
+
+              <textarea
+                id="vocabulary"
+                placeholder="Term — Definition&#10;Term — Definition"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- SUCCESS CRITERIA -->
+
+          <div
+            id="success-criteria-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-success-criteria"
+                type="checkbox"
+                data-optional-toggle="success-criteria-component"
+                data-optional-field="success-criteria"
+              >
+
+              Include Success Criteria
+            </label>
+
+            <div class="optional-component-field">
+              <label for="success-criteria">
+                Success Criteria
+              </label>
+
+              <textarea
+                id="success-criteria"
+                placeholder="How will students know they are successful?"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- WHY LEARNING -->
+
+          <div
+            id="why-learning-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-why-learning"
+                type="checkbox"
+                data-optional-toggle="why-learning-component"
+                data-optional-field="why-learning"
+              >
+
+              Include Why We Are Learning This
+            </label>
+
+            <div class="optional-component-field">
+              <label for="why-learning">
+                Why Are We Learning This?
+              </label>
+
+              <textarea
+                id="why-learning"
+                placeholder="Explain the relevance or purpose of the lesson."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- MATERIALS -->
+
+          <div
+            id="materials-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-materials"
+                type="checkbox"
+                data-optional-toggle="materials-component"
+                data-optional-field="materials"
+              >
+
+              Include Materials Needed
+            </label>
+
+            <div class="optional-component-field">
+              <label for="materials">
+                Materials Needed
+              </label>
+
+              <textarea
+                id="materials"
+                placeholder="Chromebook, notebook, handout..."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- EXIT TICKET -->
+
+          <div
+            id="exit-ticket-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-exit-ticket"
+                type="checkbox"
+                data-optional-toggle="exit-ticket-component"
+                data-optional-field="exit-ticket"
+              >
+
+              Include Exit Ticket
+            </label>
+
+            <div class="optional-component-field">
+              <label for="exit-ticket">
+                Exit Ticket
+              </label>
+
+              <textarea
+                id="exit-ticket"
+                placeholder="What should students complete before leaving?"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- HOMEWORK -->
+
+          <div
+            id="homework-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-homework"
+                type="checkbox"
+                data-optional-toggle="homework-component"
+                data-optional-field="homework"
+              >
+
+              Include Homework
+            </label>
+
+            <div class="optional-component-field">
+              <label for="homework">
+                Homework
+              </label>
+
+              <textarea
+                id="homework"
+                placeholder="What should students complete outside class?"
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- TEACHER NOTES -->
+
+          <div
+            id="teacher-notes-component"
+            class="optional-component full-width"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-teacher-notes"
+                type="checkbox"
+                data-optional-toggle="teacher-notes-component"
+                data-optional-field="teacher-notes"
+              >
+
+              Include Private Teacher Notes
+            </label>
+
+            <div class="optional-component-field">
+              <label for="teacher-notes">
+                Teacher Notes
+              </label>
+
+              <span class="help-text">
+                These notes will not appear in the student-facing Teach display.
+              </span>
+
+              <textarea
+                id="teacher-notes"
+                placeholder="Private reminders, adjustments, or follow-up notes..."
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!--
+      ========================================
+      LESSON RESOURCES
       ========================================
       -->
 
@@ -1144,144 +1853,6 @@
 
       <!--
       ========================================
-      CLOSING
-      ========================================
-      -->
-
-      <section class="section">
-        <div class="section-heading-row">
-          <h2>
-            Closing
-          </h2>
-
-          <p>
-            Add either component only when needed.
-          </p>
-        </div>
-
-        <div class="lesson-components-grid">
-          <div
-            id="exit-ticket-component"
-            class="optional-component"
-          >
-            <label class="optional-toggle">
-              <input
-                id="include-exit-ticket"
-                type="checkbox"
-                data-optional-toggle="exit-ticket-component"
-              >
-
-              Include Exit Ticket
-            </label>
-
-            <div class="optional-component-field">
-              <label for="exit-ticket">
-                Exit Ticket
-                <span class="optional-label">
-                  Optional
-                </span>
-              </label>
-
-              <textarea
-                id="exit-ticket"
-                placeholder="What should students complete before leaving?"
-              ></textarea>
-            </div>
-          </div>
-
-          <div
-            id="homework-component"
-            class="optional-component"
-          >
-            <label class="optional-toggle">
-              <input
-                id="include-homework"
-                type="checkbox"
-                data-optional-toggle="homework-component"
-              >
-
-              Include Homework
-            </label>
-
-            <div class="optional-component-field">
-              <label for="homework">
-                Homework
-                <span class="optional-label">
-                  Optional
-                </span>
-              </label>
-
-              <textarea
-                id="homework"
-                placeholder="What should students complete outside class?"
-              ></textarea>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!--
-      ========================================
-      MORE OPTIONS
-      ========================================
-      -->
-
-      <section class="section">
-        <details>
-          <summary>
-            More Options
-          </summary>
-
-          <div class="optional-fields">
-            <div class="form-group">
-              <label for="success-criteria">
-                Success Criteria
-              </label>
-
-              <textarea
-                id="success-criteria"
-                placeholder="How will students know they are successful?"
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="why-learning">
-                Why Are We Learning This?
-              </label>
-
-              <textarea
-                id="why-learning"
-                placeholder="Explain the relevance or purpose of the lesson."
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="materials">
-                Materials Needed
-              </label>
-
-              <textarea
-                id="materials"
-                placeholder="Chromebook, notebook, handout..."
-              ></textarea>
-            </div>
-
-            <div class="form-group">
-              <label for="teacher-notes">
-                Teacher Notes
-              </label>
-
-              <textarea
-                id="teacher-notes"
-                placeholder="Private notes that will not appear in Teach Mode."
-              ></textarea>
-            </div>
-          </div>
-        </details>
-      </section>
-
-      <!--
-      ========================================
       ACTIONS
       ========================================
       -->
@@ -1320,44 +1891,115 @@
     </form>
   </main>
 
+  <!--
+  ==========================================
+  OPTIONAL COMPONENT DISPLAY
+  ==========================================
+  -->
+
   <script>
-    /*
-    ==========================================
-    OPTIONAL COMPONENT DISPLAY
-    ==========================================
-    This controls only whether the optional
-    Planner fields are visible. Saving and
-    loading the new fields will be added to
-    the Planner JavaScript files next.
-    */
+    document.addEventListener(
+      "DOMContentLoaded",
+      function () {
+        const toggles =
+          document.querySelectorAll(
+            "[data-optional-toggle]"
+          );
 
-    document.addEventListener("DOMContentLoaded", () => {
-      const optionalToggles = document.querySelectorAll(
-        "[data-optional-toggle]"
-      );
+        function updateOptionalComponent(
+          toggle
+        ) {
+          const component =
+            document.getElementById(
+              toggle.dataset.optionalToggle
+            );
 
-      function updateOptionalComponent(toggle) {
-        const componentId = toggle.dataset.optionalToggle;
-        const component = document.getElementById(componentId);
+          if (!component) {
+            return;
+          }
 
-        if (!component) {
-          return;
+          component.classList.toggle(
+            "is-active",
+            toggle.checked
+          );
         }
 
-        component.classList.toggle(
-          "is-active",
-          toggle.checked
+        function revealPopulatedComponents() {
+          toggles.forEach(
+            function (toggle) {
+              const fieldId =
+                toggle.dataset.optionalField;
+
+              const field =
+                fieldId
+                  ? document.getElementById(
+                      fieldId
+                    )
+                  : null;
+
+              if (
+                field &&
+                String(
+                  field.value ||
+                  ""
+                ).trim()
+              ) {
+                toggle.checked =
+                  true;
+              }
+
+              updateOptionalComponent(
+                toggle
+              );
+            }
+          );
+        }
+
+        toggles.forEach(
+          function (toggle) {
+            updateOptionalComponent(
+              toggle
+            );
+
+            toggle.addEventListener(
+              "change",
+              function () {
+                updateOptionalComponent(
+                  toggle
+                );
+              }
+            );
+          }
         );
+
+        /*
+        Planner edit and duplicate scripts fill
+        fields shortly after page load. Briefly
+        rescan so populated optional components
+        reopen automatically.
+        */
+
+        let syncAttempts = 0;
+
+        const syncTimer =
+          window.setInterval(
+            function () {
+              revealPopulatedComponents();
+
+              syncAttempts += 1;
+
+              if (
+                syncAttempts >= 30
+              ) {
+                window.clearInterval(
+                  syncTimer
+                );
+              }
+            },
+            100
+          );
       }
-
-      optionalToggles.forEach((toggle) => {
-        updateOptionalComponent(toggle);
-
-        toggle.addEventListener("change", () => {
-          updateOptionalComponent(toggle);
-        });
-      });
-    });
+    );
   </script>
 
   <script src="data/profile-options.js?v=4"></script>
