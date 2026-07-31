@@ -1,35 +1,58 @@
 /*
-  PATRIOT COMMAND
-  Teach Loader v4
+==========================================
+PATRIOT COMMAND
+Teach Loader
+==========================================
 
-  Loads the active lesson from Library or Planner and displays:
-  - Bell Ringer
-  - I Can
-  - Success Criteria
-  - Profile of a Patriot
-  - Multiple lesson resources
+Loads the active lesson from Library,
+Planner, or the daily lesson setup.
+
+Displays:
+- Bell Ringer
+- I Can Statement
+- Success Criteria
+- Profile of a Patriot
+- Agenda
+- Multiple lesson resources
 */
 
 (function () {
   "use strict";
 
-  const TEACH_LESSON_KEY = "patriotTeachLesson";
-  const DAILY_LESSON_KEY = "patriotDailyLesson";
-  const LAST_PLANNED_KEY = "patriotLastPlannedLesson";
+  const TEACH_LESSON_KEY =
+    "patriotTeachLesson";
 
-  window.PATRIOT_TEACH_LOADER_VERSION = "4";
+  const DAILY_LESSON_KEY =
+    "patriotDailyLesson";
+
+  const LAST_PLANNED_KEY =
+    "patriotLastPlannedLesson";
+
+  window.PATRIOT_TEACH_LOADER_VERSION =
+    "5";
+
+  /*
+  ==========================================
+  STORAGE
+  ==========================================
+  */
 
   function readJson(key) {
-    const saved = localStorage.getItem(key);
+    const savedValue =
+      localStorage.getItem(key);
 
-    if (!saved) {
+    if (!savedValue) {
       return null;
     }
 
     try {
-      return JSON.parse(saved);
+      return JSON.parse(savedValue);
     } catch (error) {
-      console.error(`Could not read ${key}.`, error);
+      console.error(
+        `Could not read ${key}.`,
+        error
+      );
+
       return null;
     }
   }
@@ -43,7 +66,15 @@
     );
   }
 
-  function getDefaultResourceLabel(type) {
+  /*
+  ==========================================
+  RESOURCE NORMALIZATION
+  ==========================================
+  */
+
+  function getDefaultResourceLabel(
+    type
+  ) {
     const labels = {
       slides: "Google Slides",
       video: "Video",
@@ -53,45 +84,92 @@
       pdf: "PDF",
       website: "Website",
       document: "Google Doc",
+      spreadsheet: "Google Sheet",
+      form: "Google Form",
       other: "Resource"
     };
 
-    return labels[type] || "Resource";
+    return (
+      labels[type] ||
+      "Resource"
+    );
   }
 
   function guessResourceType(url) {
-    const value = String(url || "").toLowerCase();
+    const value =
+      String(url || "")
+        .toLowerCase();
 
     if (
-      value.includes("docs.google.com/presentation") ||
-      value.includes("slides.google.com")
+      value.includes(
+        "docs.google.com/presentation"
+      ) ||
+      value.includes(
+        "slides.google.com"
+      )
     ) {
       return "slides";
     }
 
     if (
-      value.includes("youtube.com") ||
-      value.includes("youtu.be")
+      value.includes(
+        "youtube.com"
+      ) ||
+      value.includes(
+        "youtu.be"
+      )
     ) {
       return "video";
     }
 
-    if (value.includes("canva.com")) {
+    if (
+      value.includes(
+        "canva.com"
+      )
+    ) {
       return "canva";
     }
 
-    if (value.includes("studysync")) {
+    if (
+      value.includes(
+        "studysync"
+      )
+    ) {
       return "studysync";
     }
 
-    if (value.includes("docs.google.com/document")) {
+    if (
+      value.includes(
+        "docs.google.com/document"
+      )
+    ) {
       return "document";
     }
 
     if (
+      value.includes(
+        "docs.google.com/spreadsheets"
+      )
+    ) {
+      return "spreadsheet";
+    }
+
+    if (
+      value.includes(
+        "docs.google.com/forms"
+      )
+    ) {
+      return "form";
+    }
+
+    if (
       value.includes(".pdf") ||
-      value.includes("drive.google.com") &&
-      value.includes("pdf")
+      (
+        value.includes(
+          "drive.google.com"
+        ) &&
+        value.includes("pdf")
+      )
     ) {
       return "pdf";
     }
@@ -99,8 +177,13 @@
     return "website";
   }
 
-  function normalizeResources(lesson) {
-    if (!lesson || typeof lesson !== "object") {
+  function normalizeResources(
+    lesson
+  ) {
+    if (
+      !lesson ||
+      typeof lesson !== "object"
+    ) {
       return [];
     }
 
@@ -111,65 +194,99 @@
       lesson.links ||
       [];
 
-    if (typeof resources === "string") {
+    if (
+      typeof resources ===
+      "string"
+    ) {
       try {
-        resources = JSON.parse(resources);
+        resources =
+          JSON.parse(resources);
       } catch (error) {
         resources = [];
       }
     }
 
-    if (!Array.isArray(resources)) {
+    if (
+      !Array.isArray(resources)
+    ) {
       resources = [];
     }
 
-    const normalized = resources
-      .map((resource, index) => {
-        if (typeof resource === "string") {
-          const type = guessResourceType(resource);
+    const normalizedResources =
+      resources
+        .map(
+          (
+            resource,
+            index
+          ) => {
+            if (
+              typeof resource ===
+              "string"
+            ) {
+              const type =
+                guessResourceType(
+                  resource
+                );
 
-          return {
-            type,
-            url: resource,
-            label: getDefaultResourceLabel(type)
-          };
-        }
+              return {
+                type,
+                url: resource,
+                label:
+                  getDefaultResourceLabel(
+                    type
+                  )
+              };
+            }
 
-        if (!resource || typeof resource !== "object") {
-          return null;
-        }
+            if (
+              !resource ||
+              typeof resource !==
+                "object"
+            ) {
+              return null;
+            }
 
-        const url =
-          resource.url ||
-          resource.link ||
-          resource.href ||
-          resource.resourceUrl ||
-          "";
+            const url =
+              resource.url ||
+              resource.link ||
+              resource.href ||
+              resource.resourceUrl ||
+              "";
 
-        const type =
-          resource.type ||
-          resource.resourceType ||
-          guessResourceType(url);
+            const type =
+              resource.type ||
+              resource.resourceType ||
+              guessResourceType(url);
 
-        const label =
-          resource.label ||
-          resource.title ||
-          resource.name ||
-          getDefaultResourceLabel(type) ||
-          `Resource ${index + 1}`;
+            const label =
+              resource.label ||
+              resource.title ||
+              resource.name ||
+              getDefaultResourceLabel(
+                type
+              ) ||
+              `Resource ${
+                index + 1
+              }`;
 
-        return {
-          type,
-          url,
-          label
-        };
-      })
-      .filter(resource => {
-        return resource && resource.url;
-      });
+            return {
+              type,
+              url,
+              label
+            };
+          }
+        )
+        .filter(
+          resource =>
+            resource &&
+            resource.url
+        );
 
-    if (normalized.length > 0) {
-      return normalized;
+    if (
+      normalizedResources.length >
+      0
+    ) {
+      return normalizedResources;
     }
 
     const oldSingleLink =
@@ -179,13 +296,19 @@
       "";
 
     if (oldSingleLink) {
-      const type = guessResourceType(oldSingleLink);
+      const type =
+        guessResourceType(
+          oldSingleLink
+        );
 
       return [
         {
           type,
           url: oldSingleLink,
-          label: getDefaultResourceLabel(type)
+          label:
+            getDefaultResourceLabel(
+              type
+            )
         }
       ];
     }
@@ -193,25 +316,15 @@
     return [];
   }
 
-  function setText(elementId, value, emptyMessage) {
-    const element = document.getElementById(elementId);
+  /*
+  ==========================================
+  LESSON NORMALIZATION
+  ==========================================
+  */
 
-    if (!element) {
-      return;
-    }
-
-    const cleanValue = String(value || "").trim();
-
-    if (cleanValue) {
-      element.textContent = cleanValue;
-      element.classList.remove("empty-text");
-    } else {
-      element.textContent = emptyMessage;
-      element.classList.add("empty-text");
-    }
-  }
-
-  function normalizeLesson(lesson) {
+  function normalizeLesson(
+    lesson
+  ) {
     if (!lesson) {
       return null;
     }
@@ -245,63 +358,311 @@
         lesson.profileFocus ||
         "",
 
-      resources: normalizeResources(lesson)
+      agenda:
+        lesson.agenda ||
+        lesson.lessonAgenda ||
+        "",
+
+      resources:
+        normalizeResources(
+          lesson
+        )
     };
   }
 
-  function createResourceStyles() {
-    if (document.getElementById("patriot-resource-styles")) {
+  /*
+  ==========================================
+  TEXT DISPLAY
+  ==========================================
+  */
+
+  function setText(
+    elementId,
+    value,
+    emptyMessage
+  ) {
+    const element =
+      document.getElementById(
+        elementId
+      );
+
+    if (!element) {
       return;
     }
 
-    const style = document.createElement("style");
-    style.id = "patriot-resource-styles";
+    const cleanValue =
+      String(value || "")
+        .trim();
+
+    if (cleanValue) {
+      element.textContent =
+        cleanValue;
+
+      element.classList.remove(
+        "empty-text"
+      );
+    } else {
+      element.textContent =
+        emptyMessage;
+
+      element.classList.add(
+        "empty-text"
+      );
+    }
+  }
+
+  function displayAgenda(
+    agendaText
+  ) {
+    const agendaList =
+      document.getElementById(
+        "agenda-display"
+      );
+
+    if (!agendaList) {
+      return;
+    }
+
+    agendaList.innerHTML = "";
+
+    const items =
+      String(agendaText || "")
+        .split("\n")
+        .map(
+          item =>
+            item.trim()
+        )
+        .filter(Boolean);
+
+    if (
+      items.length === 0
+    ) {
+      const emptyItem =
+        document.createElement(
+          "li"
+        );
+
+      emptyItem.textContent =
+        "Add today’s agenda.";
+
+      emptyItem.className =
+        "empty-text";
+
+      agendaList.appendChild(
+        emptyItem
+      );
+
+      return;
+    }
+
+    items.forEach(
+      itemText => {
+        const item =
+          document.createElement(
+            "li"
+          );
+
+        item.textContent =
+          itemText;
+
+        agendaList.appendChild(
+          item
+        );
+      }
+    );
+  }
+
+  /*
+  ==========================================
+  RESOURCE STYLES
+  ==========================================
+  */
+
+  function createResourceStyles() {
+    if (
+      document.getElementById(
+        "patriot-resource-styles"
+      )
+    ) {
+      return;
+    }
+
+    const style =
+      document.createElement(
+        "style"
+      );
+
+    style.id =
+      "patriot-resource-styles";
 
     style.textContent = `
       .resource-tabs {
         display: none;
+        align-items: center;
         flex-wrap: wrap;
-        gap: 8px;
-        padding: 10px 14px;
-        background: #e8ebef;
-        border-bottom: 1px solid #ccd2da;
+        gap: 7px;
+        min-height: 48px;
+        padding: 8px 12px;
+        background:
+          rgba(
+            255,
+            255,
+            255,
+            0.84
+          );
+        border-bottom:
+          1px solid
+          rgba(
+            42,
+            67,
+            163,
+            0.12
+          );
+        backdrop-filter:
+          blur(14px);
+        -webkit-backdrop-filter:
+          blur(14px);
       }
 
       .resource-tabs.show {
         display: flex;
       }
 
+      .resource-tabs-label {
+        margin-right: 2px;
+        color:
+          var(
+            --patriot-muted,
+            #657087
+          );
+        font-size: 0.7rem;
+        font-weight: 750;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+      }
+
       .resource-tab {
-        padding: 8px 13px;
-        color: #ffffff;
-        font-family: inherit;
-        font-size: 0.95rem;
-        font-weight: 700;
-        background: #192e52;
-        border: 0;
-        border-radius: 7px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        padding: 6px 10px;
+        color:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+        font-family:
+          "Inter",
+          "Segoe UI",
+          Arial,
+          sans-serif;
+        font-size: 0.74rem;
+        font-weight: 750;
+        line-height: 1;
+        background:
+          rgba(
+            42,
+            67,
+            163,
+            0.08
+          );
+        border:
+          1px solid
+          rgba(
+            42,
+            67,
+            163,
+            0.13
+          );
+        border-radius: 9px;
         cursor: pointer;
+        transition:
+          color 180ms ease,
+          background 180ms ease,
+          border-color 180ms ease,
+          transform 180ms ease,
+          box-shadow 180ms ease;
       }
 
       .resource-tab:hover {
-        background: #28446f;
+        color: #ffffff;
+        background:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+        border-color:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+        box-shadow:
+          0 5px 12px
+          rgba(
+            42,
+            67,
+            163,
+            0.15
+          );
+        transform:
+          translateY(-1px);
       }
 
       .resource-tab.active {
-        background: #ad3437;
+        color: #ffffff;
+        background:
+          var(
+            --patriot-red,
+            #cf1b13
+          );
+        border-color:
+          var(
+            --patriot-red,
+            #cf1b13
+          );
+        box-shadow:
+          0 5px 12px
+          rgba(
+            207,
+            27,
+            19,
+            0.15
+          );
       }
 
       .resource-open-placeholder {
         position: absolute;
         inset: 0;
+        z-index: 2;
         display: none;
-        flex-direction: column;
-        justify-content: center;
         align-items: center;
-        gap: 14px;
+        justify-content: center;
+        flex-direction: column;
+        gap: 10px;
         padding: 30px;
+        color:
+          var(
+            --patriot-text,
+            #20283a
+          );
         text-align: center;
-        background: #ffffff;
+        background:
+          linear-gradient(
+            145deg,
+            rgba(
+              255,
+              252,
+              233,
+              0.96
+            ),
+            rgba(
+              255,
+              255,
+              255,
+              0.98
+            )
+          );
       }
 
       .resource-open-placeholder.show {
@@ -310,121 +671,262 @@
 
       .resource-open-placeholder h3 {
         margin: 0;
-        color: #192e52;
-        font-size: 1.6rem;
+        color:
+          var(
+            --patriot-text,
+            #20283a
+          );
+        font-family:
+          "Literata",
+          Georgia,
+          serif;
+        font-size: 1.25rem;
       }
 
       .resource-open-placeholder p {
         margin: 0;
-        color: #5f6875;
+        color:
+          var(
+            --patriot-muted,
+            #657087
+          );
+        font-size: 0.85rem;
       }
 
       .resource-open-placeholder a {
-        padding: 12px 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 38px;
+        padding: 8px 13px;
         color: #ffffff;
-        font-weight: 700;
+        font-size: 0.78rem;
+        font-weight: 750;
         text-decoration: none;
-        background: #ad3437;
-        border-radius: 8px;
+        background:
+          var(
+            --patriot-red,
+            #cf1b13
+          );
+        border-radius: 9px;
+      }
+
+      .resource-open-placeholder a:hover {
+        background:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+      }
+
+      @media (
+        max-width: 540px
+      ) {
+        .resource-tabs {
+          align-items: stretch;
+          flex-direction: column;
+        }
+
+        .resource-tabs-label {
+          margin-bottom: 2px;
+        }
+
+        .resource-tab {
+          width: 100%;
+        }
       }
     `;
 
-    document.head.appendChild(style);
+    document.head.appendChild(
+      style
+    );
+  }
+
+  /*
+  ==========================================
+  RESOURCE DISPLAY CREATION
+  ==========================================
+  */
+
+  function findLessonHeader() {
+    return (
+      document.querySelector(
+        ".lesson-workspace-header"
+      ) ||
+      document.querySelector(
+        ".lesson-window-header"
+      )
+    );
+  }
+
+  function findLessonWindow() {
+    return document.querySelector(
+      ".lesson-window"
+    );
   }
 
   function createResourceDisplay() {
-    let tabs = document.getElementById("resource-tabs");
+    let tabs =
+      document.getElementById(
+        "resource-tabs"
+      );
 
     if (tabs) {
       return tabs;
     }
 
-    const lessonWindow =
-      document.querySelector(".lesson-window");
-
     const lessonHeader =
-      document.querySelector(".lesson-window-header");
+      findLessonHeader();
 
-    if (!lessonWindow || !lessonHeader) {
+    const lessonWindow =
+      findLessonWindow();
+
+    if (
+      !lessonHeader ||
+      !lessonWindow
+    ) {
       console.warn(
-        "Teach Loader could not find the lesson window."
+        "Teach Loader could not find the lesson workspace."
       );
 
       return null;
     }
 
-    tabs = document.createElement("div");
-    tabs.id = "resource-tabs";
-    tabs.className = "resource-tabs";
+    tabs =
+      document.createElement(
+        "div"
+      );
 
-    lessonHeader.insertAdjacentElement("afterend", tabs);
+    tabs.id =
+      "resource-tabs";
 
-    const openPlaceholder = document.createElement("div");
-    openPlaceholder.id = "resource-open-placeholder";
-    openPlaceholder.className = "resource-open-placeholder";
+    tabs.className =
+      "resource-tabs";
 
-    openPlaceholder.innerHTML = `
-      <h3 id="resource-open-title">
-        Open Lesson Resource
-      </h3>
+    tabs.setAttribute(
+      "aria-label",
+      "Lesson resources"
+    );
 
-      <p>
-        This resource opens in a separate browser tab.
-      </p>
+    lessonHeader.insertAdjacentElement(
+      "afterend",
+      tabs
+    );
 
-      <a
-        id="resource-open-button"
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Open Resource
-      </a>
-    `;
+    let openPlaceholder =
+      document.getElementById(
+        "resource-open-placeholder"
+      );
 
-    lessonWindow.appendChild(openPlaceholder);
+    if (!openPlaceholder) {
+      openPlaceholder =
+        document.createElement(
+          "div"
+        );
+
+      openPlaceholder.id =
+        "resource-open-placeholder";
+
+      openPlaceholder.className =
+        "resource-open-placeholder";
+
+      openPlaceholder.innerHTML = `
+        <h3 id="resource-open-title">
+          Open Lesson Resource
+        </h3>
+
+        <p>
+          This resource opens in a separate
+          browser tab.
+        </p>
+
+        <a
+          id="resource-open-button"
+          href="#"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Open Resource
+        </a>
+      `;
+
+      lessonWindow.appendChild(
+        openPlaceholder
+      );
+    }
 
     return tabs;
   }
 
+  /*
+  ==========================================
+  URL HANDLING
+  ==========================================
+  */
+
   function isValidUrl(url) {
     try {
-      const parsed = new URL(url);
+      const parsedUrl =
+        new URL(url);
 
       return (
-        parsed.protocol === "https:" ||
-        parsed.protocol === "http:"
+        parsedUrl.protocol ===
+          "https:" ||
+        parsedUrl.protocol ===
+          "http:"
       );
     } catch (error) {
       return false;
     }
   }
 
-  function canEmbed(resource) {
+  function canEmbed(
+    resource
+  ) {
     return [
       "slides",
       "video",
       "youtube",
       "canva",
       "pdf"
-    ].includes(resource.type);
+    ].includes(
+      resource.type
+    );
   }
 
-  function createEmbedUrl(resource) {
-    const url = resource.url;
+  function createEmbedUrl(
+    resource
+  ) {
+    const url =
+      resource.url;
 
     if (
       resource.type === "slides" &&
-      url.includes("docs.google.com/presentation")
+      url.includes(
+        "docs.google.com/presentation"
+      )
     ) {
-      const baseUrl = url.split("?")[0];
+      const baseUrl =
+        url.split("?")[0];
 
-      if (baseUrl.includes("/edit")) {
-        return baseUrl.replace("/edit", "/embed");
+      if (
+        baseUrl.includes("/edit")
+      ) {
+        return baseUrl.replace(
+          "/edit",
+          "/embed"
+        );
       }
 
-      if (baseUrl.includes("/present")) {
-        return baseUrl.replace("/present", "/embed");
+      if (
+        baseUrl.includes(
+          "/present"
+        )
+      ) {
+        return baseUrl.replace(
+          "/present",
+          "/embed"
+        );
       }
 
       return baseUrl;
@@ -435,33 +937,66 @@
       resource.type === "youtube"
     ) {
       try {
-        const parsed = new URL(url);
+        const parsedUrl =
+          new URL(url);
 
-        if (parsed.hostname.includes("youtu.be")) {
-          const videoId = parsed.pathname
-            .replace("/", "")
-            .split("?")[0];
+        if (
+          parsedUrl.hostname.includes(
+            "youtu.be"
+          )
+        ) {
+          const videoId =
+            parsedUrl.pathname
+              .replace("/", "")
+              .split("?")[0];
 
-          return `https://www.youtube.com/embed/${videoId}`;
+          return (
+            "https://www.youtube.com/embed/" +
+            videoId
+          );
         }
 
-        if (parsed.hostname.includes("youtube.com")) {
+        if (
+          parsedUrl.hostname.includes(
+            "youtube.com"
+          )
+        ) {
           const videoId =
-            parsed.searchParams.get("v");
+            parsedUrl.searchParams.get(
+              "v"
+            );
 
           if (videoId) {
-            return `https://www.youtube.com/embed/${videoId}`;
+            return (
+              "https://www.youtube.com/embed/" +
+              videoId
+            );
           }
 
-          if (parsed.pathname.includes("/embed/")) {
+          if (
+            parsedUrl.pathname.includes(
+              "/embed/"
+            )
+          ) {
             return url;
           }
 
-          if (parsed.pathname.includes("/shorts/")) {
+          if (
+            parsedUrl.pathname.includes(
+              "/shorts/"
+            )
+          ) {
             const shortId =
-              parsed.pathname.split("/shorts/")[1];
+              parsedUrl.pathname
+                .split(
+                  "/shorts/"
+                )[1]
+                .split("/")[0];
 
-            return `https://www.youtube.com/embed/${shortId}`;
+            return (
+              "https://www.youtube.com/embed/" +
+              shortId
+            );
           }
         }
       } catch (error) {
@@ -475,20 +1010,51 @@
     return url;
   }
 
-  function selectResource(resource, selectedButton) {
-    document
-      .querySelectorAll(".resource-tab")
-      .forEach(button => {
-        button.classList.remove("active");
-      });
+  /*
+  ==========================================
+  RESOURCE SELECTION
+  ==========================================
+  */
 
-    selectedButton.classList.add("active");
+  function selectResource(
+    resource,
+    selectedButton
+  ) {
+    document
+      .querySelectorAll(
+        ".resource-tab"
+      )
+      .forEach(
+        button => {
+          button.classList.remove(
+            "active"
+          );
+
+          button.setAttribute(
+            "aria-pressed",
+            "false"
+          );
+        }
+      );
+
+    selectedButton.classList.add(
+      "active"
+    );
+
+    selectedButton.setAttribute(
+      "aria-pressed",
+      "true"
+    );
 
     const frame =
-      document.getElementById("lesson-frame");
+      document.getElementById(
+        "lesson-frame"
+      );
 
     const originalPlaceholder =
-      document.getElementById("lesson-placeholder");
+      document.getElementById(
+        "lesson-placeholder"
+      );
 
     const openPlaceholder =
       document.getElementById(
@@ -496,71 +1062,116 @@
       );
 
     const openTitle =
-      document.getElementById("resource-open-title");
+      document.getElementById(
+        "resource-open-title"
+      );
 
     const openButton =
-      document.getElementById("resource-open-button");
+      document.getElementById(
+        "resource-open-button"
+      );
 
     const headerOpenLink =
-      document.getElementById("open-lesson-link");
+      document.getElementById(
+        "open-lesson-link"
+      );
 
     if (originalPlaceholder) {
-      originalPlaceholder.style.display = "none";
+      originalPlaceholder.style.display =
+        "none";
     }
 
     if (headerOpenLink) {
-      headerOpenLink.href = resource.url;
-      headerOpenLink.style.display = "inline-block";
+      headerOpenLink.href =
+        resource.url;
+
+      headerOpenLink.style.display =
+        "inline-flex";
     }
 
-    if (canEmbed(resource) && frame) {
+    if (
+      canEmbed(resource) &&
+      frame
+    ) {
       if (openPlaceholder) {
-        openPlaceholder.classList.remove("show");
+        openPlaceholder.classList.remove(
+          "show"
+        );
       }
 
-      frame.src = createEmbedUrl(resource);
-      frame.style.display = "block";
+      frame.src =
+        createEmbedUrl(
+          resource
+        );
+
+      frame.style.display =
+        "block";
 
       return;
     }
 
     if (frame) {
-      frame.style.display = "none";
-      frame.removeAttribute("src");
+      frame.style.display =
+        "none";
+
+      frame.removeAttribute(
+        "src"
+      );
     }
 
     if (openTitle) {
       openTitle.textContent =
         resource.label ||
-        getDefaultResourceLabel(resource.type);
+        getDefaultResourceLabel(
+          resource.type
+        );
     }
 
     if (openButton) {
-      openButton.href = resource.url;
+      openButton.href =
+        resource.url;
+
       openButton.textContent =
         `Open ${
           resource.label ||
-          getDefaultResourceLabel(resource.type)
+          getDefaultResourceLabel(
+            resource.type
+          )
         }`;
     }
 
     if (openPlaceholder) {
-      openPlaceholder.classList.add("show");
+      openPlaceholder.classList.add(
+        "show"
+      );
     }
   }
 
-  function displayLessonResources(resources) {
-    const tabs = createResourceDisplay();
+  /*
+  ==========================================
+  RESOURCE RENDERING
+  ==========================================
+  */
+
+  function displayLessonResources(
+    resources
+  ) {
+    const tabs =
+      createResourceDisplay();
 
     if (!tabs) {
       return;
     }
 
     const frame =
-      document.getElementById("lesson-frame");
+      document.getElementById(
+        "lesson-frame"
+      );
 
     const originalPlaceholder =
-      document.getElementById("lesson-placeholder");
+      document.getElementById(
+        "lesson-placeholder"
+      );
 
     const openPlaceholder =
       document.getElementById(
@@ -568,66 +1179,145 @@
       );
 
     const headerOpenLink =
-      document.getElementById("open-lesson-link");
+      document.getElementById(
+        "open-lesson-link"
+      );
 
     tabs.innerHTML = "";
 
-    const validResources = resources.filter(resource => {
-      return isValidUrl(resource.url);
-    });
+    const validResources =
+      resources.filter(
+        resource =>
+          isValidUrl(
+            resource.url
+          )
+      );
 
-    if (validResources.length === 0) {
-      tabs.classList.remove("show");
+    if (
+      validResources.length ===
+      0
+    ) {
+      tabs.classList.remove(
+        "show"
+      );
 
       if (frame) {
-        frame.style.display = "none";
-        frame.removeAttribute("src");
+        frame.style.display =
+          "none";
+
+        frame.removeAttribute(
+          "src"
+        );
       }
 
       if (openPlaceholder) {
-        openPlaceholder.classList.remove("show");
+        openPlaceholder.classList.remove(
+          "show"
+        );
       }
 
       if (originalPlaceholder) {
-        originalPlaceholder.style.display = "flex";
+        originalPlaceholder.style.display =
+          "flex";
       }
 
       if (headerOpenLink) {
-        headerOpenLink.style.display = "none";
+        headerOpenLink.style.display =
+          "none";
       }
 
       return;
     }
 
-    tabs.classList.add("show");
+    tabs.classList.add(
+      "show"
+    );
 
-    validResources.forEach((resource, index) => {
-      const button = document.createElement("button");
+    const label =
+      document.createElement(
+        "span"
+      );
 
-      button.type = "button";
-      button.className = "resource-tab";
+    label.className =
+      "resource-tabs-label";
 
-      button.textContent =
-        resource.label ||
-        getDefaultResourceLabel(resource.type);
+    label.textContent =
+      "Resources";
 
-      button.addEventListener("click", function () {
-        selectResource(resource, button);
-      });
+    tabs.appendChild(label);
 
-      tabs.appendChild(button);
+    validResources.forEach(
+      (
+        resource,
+        index
+      ) => {
+        const button =
+          document.createElement(
+            "button"
+          );
 
-      if (index === 0) {
-        selectResource(resource, button);
+        button.type =
+          "button";
+
+        button.className =
+          "resource-tab";
+
+        button.setAttribute(
+          "aria-pressed",
+          "false"
+        );
+
+        button.textContent =
+          resource.label ||
+          getDefaultResourceLabel(
+            resource.type
+          );
+
+        button.addEventListener(
+          "click",
+          () => {
+            selectResource(
+              resource,
+              button
+            );
+          }
+        );
+
+        tabs.appendChild(
+          button
+        );
+
+        if (index === 0) {
+          selectResource(
+            resource,
+            button
+          );
+        }
       }
-    });
+    );
   }
 
-  function applyLesson(rawLesson) {
-    const lesson = normalizeLesson(rawLesson);
+  /*
+  ==========================================
+  LESSON DISPLAY
+  ==========================================
+  */
+
+  function applyLesson(
+    rawLesson
+  ) {
+    const lesson =
+      normalizeLesson(
+        rawLesson
+      );
 
     if (!lesson) {
-      displayLessonResources([]);
+      displayLessonResources(
+        []
+      );
+
+      displayAgenda("");
+
       return;
     }
 
@@ -649,11 +1339,19 @@
       "Add today’s success criteria."
     );
 
+    displayAgenda(
+      lesson.agenda
+    );
+
     const profileTitle =
-      document.getElementById("profile-title");
+      document.getElementById(
+        "profile-title"
+      );
 
     const profileDescription =
-      document.getElementById("profile-description");
+      document.getElementById(
+        "profile-description"
+      );
 
     if (profileTitle) {
       let title =
@@ -663,18 +1361,26 @@
         "Choose a component";
 
       if (
-        typeof window.findProfile === "function" &&
+        typeof window.findProfile ===
+          "function" &&
         lesson.profileId
       ) {
         const profile =
-          window.findProfile(lesson.profileId);
+          window.findProfile(
+            lesson.profileId
+          );
 
-        if (profile && profile.title) {
-          title = profile.title;
+        if (
+          profile &&
+          profile.title
+        ) {
+          title =
+            profile.title;
         }
       }
 
-      profileTitle.textContent = title;
+      profileTitle.textContent =
+        title;
     }
 
     if (profileDescription) {
@@ -685,57 +1391,109 @@
 
       if (
         !description &&
-        typeof window.findProfile === "function" &&
+        typeof window.findProfile ===
+          "function" &&
         lesson.profileId
       ) {
         const profile =
-          window.findProfile(lesson.profileId);
+          window.findProfile(
+            lesson.profileId
+          );
 
-        if (profile && profile.shortDescription) {
-          description = profile.shortDescription;
+        if (
+          profile &&
+          profile.shortDescription
+        ) {
+          description =
+            profile.shortDescription;
         }
       }
 
       if (description) {
-        profileDescription.textContent = description;
-        profileDescription.classList.remove("empty-text");
+        profileDescription.textContent =
+          description;
+
+        profileDescription.classList.remove(
+          "empty-text"
+        );
       } else {
         profileDescription.textContent =
           "Select a component during lesson setup.";
 
-        profileDescription.classList.add("empty-text");
+        profileDescription.classList.add(
+          "empty-text"
+        );
       }
     }
 
-    displayLessonResources(lesson.resources);
+    displayLessonResources(
+      lesson.resources
+    );
   }
+
+  /*
+  ==========================================
+  REFRESH
+  ==========================================
+  */
 
   function refreshTeachLesson() {
-    const lesson = getActiveLesson();
-    applyLesson(lesson);
+    const lesson =
+      getActiveLesson();
+
+    applyLesson(
+      lesson
+    );
   }
 
-  window.applyLesson = applyLesson;
-  window.refreshTeachLesson = refreshTeachLesson;
-  window.getActiveTeachLesson = getActiveLesson;
+  window.applyLesson =
+    applyLesson;
+
+  window.refreshTeachLesson =
+    refreshTeachLesson;
+
+  window.getActiveTeachLesson =
+    getActiveLesson;
+
+  /*
+  ==========================================
+  START
+  ==========================================
+  */
 
   function startTeachLoader() {
     createResourceStyles();
+
     createResourceDisplay();
+
     refreshTeachLesson();
 
-    window.addEventListener("storage", function (event) {
-      if (
-        event.key === TEACH_LESSON_KEY ||
-        event.key === DAILY_LESSON_KEY ||
-        event.key === LAST_PLANNED_KEY
-      ) {
-        refreshTeachLesson();
+    window.addEventListener(
+      "storage",
+      event => {
+        if (
+          event.key ===
+            TEACH_LESSON_KEY ||
+          event.key ===
+            DAILY_LESSON_KEY ||
+          event.key ===
+            LAST_PLANNED_KEY
+        ) {
+          refreshTeachLesson();
+        }
       }
-    });
+    );
+
+    document.addEventListener(
+      "patriotTeachLessonChange",
+      refreshTeachLesson
+    );
   }
 
-  if (document.readyState === "loading") {
+  if (
+    document.readyState ===
+    "loading"
+  ) {
     document.addEventListener(
       "DOMContentLoaded",
       startTeachLoader
