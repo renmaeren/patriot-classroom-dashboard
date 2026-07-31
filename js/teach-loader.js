@@ -805,7 +805,7 @@ Empty optional components are not displayed.
         text-align: left !important;
         text-indent: 0 !important;
       
-        white-space: pre-wrap;
+        white-space: pre-line;
         overflow-wrap: break-word;
         word-break: normal;
     }
