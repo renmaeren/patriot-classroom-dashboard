@@ -33,69 +33,16 @@
     */
 
     :root {
-      --planner-blue:
-        var(
-          --patriot-blue,
-          #2a43a3
-        );
-
-      --planner-red:
-        var(
-          --patriot-red,
-          #cf1b13
-        );
-
-      --planner-cream:
-        var(
-          --patriot-cream,
-          #fffce9
-        );
-
-      --planner-gold:
-        var(
-          --patriot-gold,
-          #ffe269
-        );
-
-      --planner-green:
-        #39764d;
-
-      --planner-ink:
-        var(
-          --patriot-text,
-          #20283a
-        );
-
-      --planner-muted:
-        var(
-          --patriot-muted,
-          #657087
-        );
-
-      --planner-line:
-        rgba(
-          42,
-          67,
-          163,
-          0.13
-        );
-
-      --planner-glass:
-        rgba(
-          255,
-          255,
-          255,
-          0.8
-        );
-
-      --planner-shadow:
-        0 8px 25px
-        rgba(
-          42,
-          67,
-          163,
-          0.1
-        );
+      --planner-blue: var(--patriot-blue, #2a43a3);
+      --planner-red: var(--patriot-red, #cf1b13);
+      --planner-cream: var(--patriot-cream, #fffce9);
+      --planner-gold: var(--patriot-gold, #ffe269);
+      --planner-green: #39764d;
+      --planner-ink: var(--patriot-text, #20283a);
+      --planner-muted: var(--patriot-muted, #657087);
+      --planner-line: rgba(42, 67, 163, 0.13);
+      --planner-glass: rgba(255, 255, 255, 0.8);
+      --planner-shadow: 0 8px 25px rgba(42, 67, 163, 0.1);
     }
 
     * {
@@ -104,55 +51,29 @@
 
     html {
       min-height: 100%;
-      background:
-        var(--planner-cream);
+      background: var(--planner-cream);
     }
 
     body {
       min-height: 100vh;
       margin: 0;
-      color:
-        var(--planner-ink);
-      font-family:
-        "Inter",
-        "Segoe UI",
-        Arial,
-        sans-serif;
+      color: var(--planner-ink);
+      font-family: "Inter", "Segoe UI", Arial, sans-serif;
       background:
         radial-gradient(
           circle at 8% 2%,
-          rgba(
-            42,
-            67,
-            163,
-            0.16
-          ),
+          rgba(42, 67, 163, 0.16),
           transparent 27%
         ),
         radial-gradient(
           circle at 92% 3%,
-          rgba(
-            255,
-            226,
-            105,
-            0.16
-          ),
+          rgba(255, 226, 105, 0.16),
           transparent 28%
         ),
         linear-gradient(
           180deg,
-          rgba(
-            255,
-            255,
-            255,
-            0.74
-          ),
-          rgba(
-            255,
-            252,
-            233,
-            0.94
-          )
+          rgba(255, 255, 255, 0.74),
+          rgba(255, 252, 233, 0.94)
         );
     }
 
@@ -179,58 +100,25 @@
       align-items: center;
       justify-content: space-between;
       gap: 24px;
-      width:
-        min(
-          1800px,
-          calc(
-            100% -
-            24px
-          )
-        );
+      width: min(1800px, calc(100% - 24px));
       min-height: 92px;
       margin: 12px auto;
       padding: 16px 23px;
       overflow: hidden;
-      color:
-        var(--planner-ink);
+      color: var(--planner-ink);
       text-align: left;
       background:
         linear-gradient(
           112deg,
-          rgba(
-            42,
-            67,
-            163,
-            0.32
-          ) 0%,
-          rgba(
-            255,
-            255,
-            255,
-            0.88
-          ) 54%,
-          rgba(
-            42,
-            67,
-            163,
-            0.18
-          ) 100%
+          rgba(42, 67, 163, 0.32) 0%,
+          rgba(255, 255, 255, 0.88) 54%,
+          rgba(42, 67, 163, 0.18) 100%
         );
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.88
-        );
+      border: 1px solid rgba(255, 255, 255, 0.88);
       border-radius: 16px;
-      box-shadow:
-        var(--planner-shadow);
-      backdrop-filter:
-        blur(18px);
-      -webkit-backdrop-filter:
-        blur(18px);
+      box-shadow: var(--planner-shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
       isolation: isolate;
     }
 
@@ -243,13 +131,7 @@
       width: 220px;
       height: 220px;
       pointer-events: none;
-      background:
-        rgba(
-          42,
-          67,
-          163,
-          0.08
-        );
+      background: rgba(42, 67, 163, 0.08);
       border-radius: 50%;
     }
 
@@ -259,8 +141,7 @@
 
     .planner-eyebrow {
       margin: 0 0 2px;
-      color:
-        var(--planner-blue);
+      color: var(--planner-blue);
       font-size: 0.62rem;
       font-weight: 800;
       text-transform: uppercase;
@@ -269,26 +150,16 @@
 
     .planner-header h1 {
       margin: 0;
-      color:
-        var(--planner-ink);
-      font-family:
-        "Literata",
-        Georgia,
-        serif;
-      font-size:
-        clamp(
-          1.55rem,
-          2.4vw,
-          2.15rem
-        );
+      color: var(--planner-ink);
+      font-family: "Literata", Georgia, serif;
+      font-size: clamp(1.55rem, 2.4vw, 2.15rem);
       line-height: 1.08;
       letter-spacing: -0.03em;
     }
 
     .planner-header p {
       margin: 4px 0 0;
-      color:
-        var(--planner-muted);
+      color: var(--planner-muted);
       font-size: 0.78rem;
       font-weight: 650;
     }
@@ -301,75 +172,31 @@
       width: 48px;
       height: 48px;
       font-size: 1.65rem;
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.62
-        );
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.84
-        );
+      background: rgba(255, 255, 255, 0.62);
+      border: 1px solid rgba(255, 255, 255, 0.84);
       border-radius: 13px;
-      box-shadow:
-        0 4px 14px
-        rgba(
-          42,
-          67,
-          163,
-          0.09
-        );
+      box-shadow: 0 4px 14px rgba(42, 67, 163, 0.09);
     }
 
     /*
     ==========================================
-    MAIN PLANNER WORKSPACE
+    MAIN WORKSPACE
     ==========================================
     */
 
     .planner-main {
-      width:
-        min(
-          1500px,
-          calc(
-            100% -
-            24px
-          )
-        );
-      margin:
-        0
-        auto
-        38px;
+      width: min(1500px, calc(100% - 24px));
+      margin: 0 auto 38px;
     }
 
     .planner-card {
-      padding:
-        16px
-        19px
-        19px;
-      background:
-        var(--planner-glass);
-      border:
-        1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.9
-        );
+      padding: 16px 19px 19px;
+      background: var(--planner-glass);
+      border: 1px solid rgba(255, 255, 255, 0.9);
       border-radius: 16px;
-      box-shadow:
-        var(--planner-shadow);
-      backdrop-filter:
-        blur(18px);
-      -webkit-backdrop-filter:
-        blur(18px);
+      box-shadow: var(--planner-shadow);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
 
     /*
@@ -380,12 +207,8 @@
 
     .section {
       margin: 0;
-      padding:
-        15px
-        0;
-      border-bottom:
-        1px solid
-        var(--planner-line);
+      padding: 15px 0;
+      border-bottom: 1px solid var(--planner-line);
     }
 
     .section:first-child {
@@ -398,16 +221,9 @@
     }
 
     .section h2 {
-      margin:
-        0
-        0
-        11px;
-      color:
-        var(--planner-red);
-      font-family:
-        "Literata",
-        Georgia,
-        serif;
+      margin: 0 0 11px;
+      color: var(--planner-red);
+      font-family: "Literata", Georgia, serif;
       font-size: 1rem;
       line-height: 1.2;
       letter-spacing: -0.015em;
@@ -427,9 +243,47 @@
 
     .section-heading-row p {
       margin: 0;
-      color:
-        var(--planner-muted);
+      color: var(--planner-muted);
       font-size: 0.68rem;
+    }
+
+    /*
+    ==========================================
+    LESSON FLOW HEADINGS
+    ==========================================
+    */
+
+    .lesson-stage {
+      margin-top: 14px;
+    }
+
+    .lesson-stage:first-child {
+      margin-top: 0;
+    }
+
+    .lesson-stage-heading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 9px;
+      padding-bottom: 6px;
+      color: var(--planner-blue);
+      font-size: 0.73rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      border-bottom: 1px solid rgba(42, 67, 163, 0.1);
+    }
+
+    .lesson-stage-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 25px;
+      height: 25px;
+      font-size: 0.78rem;
+      background: rgba(42, 67, 163, 0.08);
+      border-radius: 7px;
     }
 
     /*
@@ -438,34 +292,11 @@
     ==========================================
     */
 
-    .form-grid {
+    .form-grid,
+    .lesson-components-grid {
       display: grid;
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(
-            0,
-            1fr
-          )
-        );
-      gap:
-        11px
-        14px;
-    }
-
-    .required-components-grid {
-      display: grid;
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(
-            0,
-            1fr
-          )
-        );
-      gap:
-        11px
-        14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px 14px;
     }
 
     .form-group {
@@ -478,37 +309,32 @@
     }
 
     .form-group.full-width {
-      grid-column:
-        1 /
-        -1;
+      grid-column: 1 / -1;
     }
 
     label,
     .group-label {
       display: block;
-      margin:
-        0
-        0
-        5px;
-      color:
-        var(--planner-ink);
+      margin: 0 0 5px;
+      color: var(--planner-ink);
       font-size: 0.78rem;
       font-weight: 750;
     }
 
     .required {
-      color:
-        var(--planner-red);
+      color: var(--planner-red);
+    }
+
+    .optional-label {
+      color: var(--planner-muted);
+      font-size: 0.65rem;
+      font-weight: 650;
     }
 
     .help-text {
       display: block;
-      margin:
-        -1px
-        0
-        6px;
-      color:
-        var(--planner-muted);
+      margin: -1px 0 6px;
+      color: var(--planner-muted);
       font-size: 0.68rem;
       line-height: 1.35;
     }
@@ -517,27 +343,11 @@
     textarea,
     select {
       width: 100%;
-      min-height: 39px;
-      padding:
-        8px
-        10px;
-      color:
-        var(--planner-ink);
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.88
-        );
-      border:
-        1px solid
-        rgba(
-          42,
-          67,
-          163,
-          0.18
-        );
+      min-height: 37px;
+      padding: 7px 10px;
+      color: var(--planner-ink);
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(42, 67, 163, 0.18);
       border-radius: 9px;
       outline: none;
       transition:
@@ -549,18 +359,9 @@
     input:focus,
     textarea:focus,
     select:focus {
-      background:
-        #ffffff;
-      border-color:
-        var(--planner-blue);
-      box-shadow:
-        0 0 0 3px
-        rgba(
-          42,
-          67,
-          163,
-          0.1
-        );
+      background: #ffffff;
+      border-color: var(--planner-blue);
+      box-shadow: 0 0 0 3px rgba(42, 67, 163, 0.1);
     }
 
     textarea {
@@ -581,55 +382,31 @@
 
     .class-options {
       display: grid;
-      grid-template-columns:
-        repeat(
-          4,
-          minmax(
-            0,
-            1fr
-          )
-        );
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 8px;
     }
 
     .class-options > p {
-      grid-column:
-        1 /
-        -1;
+      grid-column: 1 / -1;
       margin: 0;
-      color:
-        var(--planner-muted);
-      font-size: 0.75rem;
+      color: var(--planner-muted);
+      font-size: 0.72rem;
     }
 
     .class-choice {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       min-width: 0;
-      min-height: 42px;
-      padding:
-        8px
-        10px;
-      color:
-        var(--planner-ink);
-      font-size: 0.75rem;
+      min-height: 40px;
+      margin: 0;
+      padding: 7px 11px;
+      color: var(--planner-ink);
+      font-size: 0.7rem;
       font-weight: 650;
-      background:
-        rgba(
-          255,
-          252,
-          233,
-          0.76
-        );
-      border:
-        1px solid
-        rgba(
-          42,
-          67,
-          163,
-          0.16
-        );
+      line-height: 1.25;
+      background: rgba(255, 252, 233, 0.76);
+      border: 1px solid rgba(42, 67, 163, 0.16);
       border-radius: 9px;
       cursor: pointer;
       transition:
@@ -639,33 +416,67 @@
     }
 
     .class-choice:hover {
-      background:
-        rgba(
-          255,
-          226,
-          105,
-          0.21
-        );
-      border-color:
-        rgba(
-          42,
-          67,
-          163,
-          0.28
-        );
-      transform:
-        translateY(-1px);
+      background: rgba(255, 226, 105, 0.21);
+      border-color: rgba(42, 67, 163, 0.28);
+      transform: translateY(-1px);
     }
 
     .class-choice input {
       flex: 0 0 auto;
-      width: 17px;
-      height: 17px;
+      width: 16px;
+      height: 16px;
       min-height: 0;
       margin: 0;
       padding: 0;
-      accent-color:
-        var(--planner-blue);
+      accent-color: var(--planner-blue);
+    }
+
+    /*
+    ==========================================
+    OPTIONAL COMPONENT TOGGLES
+    ==========================================
+    */
+
+    .optional-component {
+      padding: 10px;
+      background: rgba(255, 252, 233, 0.62);
+      border: 1px solid rgba(42, 67, 163, 0.11);
+      border-radius: 10px;
+    }
+
+    .optional-component.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .optional-toggle {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 30px;
+      margin: 0;
+      color: var(--planner-blue);
+      font-size: 0.75rem;
+      font-weight: 750;
+      cursor: pointer;
+    }
+
+    .optional-toggle input {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+      min-height: 0;
+      margin: 0;
+      padding: 0;
+      accent-color: var(--planner-blue);
+    }
+
+    .optional-component-field {
+      display: none;
+      margin-top: 9px;
+    }
+
+    .optional-component.is-active .optional-component-field {
+      display: block;
     }
 
     /*
@@ -682,33 +493,14 @@
     .resource-row {
       display: grid;
       grid-template-columns:
-        minmax(
-          135px,
-          180px
-        )
-        minmax(
-          0,
-          1fr
-        )
+        minmax(135px, 180px)
+        minmax(0, 1fr)
         auto;
       align-items: center;
       gap: 8px;
       padding: 8px;
-      background:
-        rgba(
-          255,
-          252,
-          233,
-          0.68
-        );
-      border:
-        1px solid
-        rgba(
-          42,
-          67,
-          163,
-          0.1
-        );
+      background: rgba(255, 252, 233, 0.68);
+      border: 1px solid rgba(42, 67, 163, 0.1);
       border-radius: 10px;
     }
 
@@ -719,75 +511,51 @@
 
     .remove-resource {
       min-height: 37px;
-      padding:
-        7px
-        11px;
+      padding: 7px 11px;
       color: #ffffff;
       font-size: 0.72rem;
       font-weight: 750;
-      background:
-        var(--planner-red);
+      background: var(--planner-red);
       border: 0;
       border-radius: 8px;
     }
 
     .remove-resource:hover {
-      filter:
-        brightness(1.06);
+      filter: brightness(1.06);
     }
 
     .add-resource {
       width: auto;
       min-height: 37px;
       margin-top: 8px;
-      padding:
-        8px
-        13px;
+      padding: 8px 13px;
       color: #ffffff;
       font-size: 0.74rem;
       font-weight: 750;
-      background:
-        var(--planner-blue);
+      background: var(--planner-blue);
       border: 0;
       border-radius: 8px;
     }
 
     .add-resource:hover {
-      background:
-        var(--planner-red);
+      background: var(--planner-red);
     }
 
     /*
     ==========================================
-    OPTIONAL FIELDS
+    MORE OPTIONS
     ==========================================
     */
 
     details {
-      padding:
-        11px
-        13px;
-      background:
-        rgba(
-          255,
-          252,
-          233,
-          0.7
-        );
-      border:
-        1px solid
-        rgba(
-          42,
-          67,
-          163,
-          0.12
-        );
+      padding: 11px 13px;
+      background: rgba(255, 252, 233, 0.7);
+      border: 1px solid rgba(42, 67, 163, 0.12);
       border-radius: 10px;
     }
 
     summary {
-      color:
-        var(--planner-blue);
+      color: var(--planner-blue);
       font-size: 0.79rem;
       font-weight: 750;
       cursor: pointer;
@@ -795,28 +563,17 @@
     }
 
     summary::marker {
-      color:
-        var(--planner-red);
+      color: var(--planner-red);
     }
 
     .optional-fields {
       display: grid;
-      grid-template-columns:
-        repeat(
-          2,
-          minmax(
-            0,
-            1fr
-          )
-        );
-      gap:
-        11px
-        14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 11px 14px;
       margin-top: 13px;
     }
 
-    .optional-fields
-    .form-group {
+    .optional-fields .form-group {
       margin: 0;
     }
 
@@ -829,18 +586,9 @@
     .planner-actions {
       display: grid;
       grid-template-columns:
-        minmax(
-          180px,
-          1.4fr
-        )
-        minmax(
-          150px,
-          0.8fr
-        )
-        minmax(
-          150px,
-          0.8fr
-        );
+        minmax(180px, 1.4fr)
+        minmax(150px, 0.8fr)
+        minmax(150px, 0.8fr);
       gap: 9px;
       margin-top: 15px;
     }
@@ -850,9 +598,7 @@
       align-items: center;
       justify-content: center;
       min-height: 41px;
-      padding:
-        8px
-        13px;
+      padding: 8px 13px;
       color: #ffffff;
       font-size: 0.76rem;
       font-weight: 750;
@@ -870,65 +616,40 @@
     }
 
     .action-button:hover {
-      box-shadow:
-        0 6px 15px
-        rgba(
-          42,
-          67,
-          163,
-          0.13
-        );
-      transform:
-        translateY(-1px);
+      box-shadow: 0 6px 15px rgba(42, 67, 163, 0.13);
+      transform: translateY(-1px);
     }
 
     .save-button {
-      background:
-        var(--planner-green);
+      background: var(--planner-green);
     }
 
     .save-button:hover {
-      background:
-        #2f6842;
+      background: #2f6842;
     }
 
     .new-button {
-      color:
-        var(--planner-blue);
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.88
-        );
-      border:
-        1px solid
-        var(--planner-blue);
+      color: var(--planner-blue);
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--planner-blue);
     }
 
     .new-button:hover {
       color: #ffffff;
-      background:
-        var(--planner-blue);
+      background: var(--planner-blue);
     }
 
     .library-button,
     .library-button:visited {
       color: #ffffff;
-      background:
-        var(--planner-blue);
-      border:
-        1px solid
-        var(--planner-blue);
+      background: var(--planner-blue);
+      border: 1px solid var(--planner-blue);
     }
 
     .library-button:hover {
       color: #ffffff;
-      background:
-        var(--planner-red);
-      border-color:
-        var(--planner-red);
+      background: var(--planner-red);
+      border-color: var(--planner-red);
     }
 
     .status-message {
@@ -939,8 +660,7 @@
       font-size: 0.76rem;
       text-align: center;
       font-weight: 750;
-      background:
-        var(--planner-green);
+      background: var(--planner-green);
       border-radius: 8px;
     }
 
@@ -950,48 +670,28 @@
     ==========================================
     */
 
-    @media (
-      max-width: 1100px
-    ) {
+    @media (max-width: 1100px) {
       .class-options {
-        grid-template-columns:
-          repeat(
-            3,
-            minmax(
-              0,
-              1fr
-            )
-          );
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
     }
 
-    @media (
-      max-width: 820px
-    ) {
+    @media (max-width: 820px) {
       .class-options {
-        grid-template-columns:
-          repeat(
-            2,
-            minmax(
-              0,
-              1fr
-            )
-          );
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
-      .required-components-grid,
+      .lesson-components-grid,
       .optional-fields {
-        grid-template-columns:
-          minmax(
-            0,
-            1fr
-          );
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .optional-component.full-width {
+        grid-column: auto;
       }
     }
 
-    @media (
-      max-width: 700px
-    ) {
+    @media (max-width: 700px) {
       .planner-header {
         align-items: flex-start;
         flex-direction: column;
@@ -1009,11 +709,7 @@
       .form-grid,
       .resource-row,
       .planner-actions {
-        grid-template-columns:
-          minmax(
-            0,
-            1fr
-          );
+        grid-template-columns: minmax(0, 1fr);
       }
 
       .resource-row {
@@ -1026,30 +722,19 @@
       }
     }
 
-    @media (
-      max-width: 500px
-    ) {
+    @media (max-width: 500px) {
       .planner-header,
       .planner-main {
-        width:
-          calc(
-            100% -
-            16px
-          );
+        width: calc(100% - 16px);
       }
 
       .planner-card {
-        padding:
-          13px;
+        padding: 13px;
         border-radius: 13px;
       }
 
       .class-options {
-        grid-template-columns:
-          minmax(
-            0,
-            1fr
-          );
+        grid-template-columns: minmax(0, 1fr);
       }
 
       .section-heading-row {
@@ -1059,15 +744,11 @@
       }
     }
 
-    @media (
-      prefers-reduced-motion:
-      reduce
-    ) {
+    @media (prefers-reduced-motion: reduce) {
       *,
       *::before,
       *::after {
-        transition:
-          none !important;
+        transition: none !important;
       }
     }
   </style>
@@ -1173,114 +854,195 @@
 
       <!--
       ========================================
-      REQUIRED COMPONENTS
+      LESSON COMPONENTS
       ========================================
       -->
 
       <section class="section">
         <div class="section-heading-row">
           <h2>
-            Required Lesson Components
+            Lesson Components
           </h2>
 
           <p>
-            These appear in Teach mode.
+            Build your lesson in the order you will teach it.
           </p>
         </div>
 
-        <div class="required-components-grid">
-          <div class="form-group">
-            <label for="bell-ringer">
-              Bell Ringer
-              <span class="required">
-                *
-              </span>
-            </label>
+        <!-- OPENING -->
 
-            <textarea
-              id="bell-ringer"
-              placeholder="What should students do as they enter?"
-              required
-            ></textarea>
-          </div>
-
-          <div class="form-group">
-            <label for="learning-target">
-              I Can / Learning Target
-              <span class="required">
-                *
-              </span>
-            </label>
-
-            <textarea
-              id="learning-target"
-              placeholder="I can..."
-              required
-            ></textarea>
-          </div>
-
-          <div class="form-group full-width">
-            <label for="agenda">
-              Agenda
-              <span class="required">
-                *
-              </span>
-            </label>
-
-            <span class="help-text">
-              Type one agenda item on each line.
+        <div class="lesson-stage">
+          <h3 class="lesson-stage-heading">
+            <span
+              class="lesson-stage-icon"
+              aria-hidden="true"
+            >
+              🔔
             </span>
 
-            <textarea
-              id="agenda"
-              placeholder="Bell Ringer&#10;Mini Lesson&#10;Guided Practice&#10;Independent Work&#10;Exit Ticket"
-              required
-            ></textarea>
+            Opening
+          </h3>
+
+          <div class="lesson-components-grid">
+            <div class="form-group">
+              <label for="bell-ringer">
+                Bell Ringer
+                <span class="required">
+                  *
+                </span>
+              </label>
+
+              <textarea
+                id="bell-ringer"
+                placeholder="What should students do as they enter?"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="essential-question">
+                Essential Question
+                <span class="required">
+                  *
+                </span>
+              </label>
+
+              <textarea
+                id="essential-question"
+                placeholder="What important question will guide this lesson?"
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="learning-target">
+                I Can / Learning Target
+                <span class="required">
+                  *
+                </span>
+              </label>
+
+              <textarea
+                id="learning-target"
+                placeholder="I can..."
+                required
+              ></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="profile-component">
+                Profile of a Patriot
+                <span class="required">
+                  *
+                </span>
+              </label>
+
+              <select
+                id="profile-component"
+                required
+              >
+                <option value="">
+                  Choose a component
+                </option>
+              </select>
+
+              <label
+                for="profile-focus"
+                style="margin-top: 9px;"
+              >
+                Optional Focus Statement
+              </label>
+
+              <select id="profile-focus">
+                <option value="">
+                  Use the general component
+                </option>
+              </select>
+            </div>
           </div>
+        </div>
 
-          <div class="form-group">
-            <label for="profile-component">
-              Profile of a Patriot
-              <span class="required">
-                *
-              </span>
-            </label>
+        <!-- LEARNING -->
 
-            <select
-              id="profile-component"
-              required
+        <div class="lesson-stage">
+          <h3 class="lesson-stage-heading">
+            <span
+              class="lesson-stage-icon"
+              aria-hidden="true"
             >
-              <option value="">
-                Choose a component
-              </option>
-            </select>
-          </div>
+              📚
+            </span>
 
-          <div class="form-group">
-            <label for="profile-focus">
-              Optional Focus Statement
-            </label>
+            Learning
+          </h3>
 
-            <select id="profile-focus">
-              <option value="">
-                Use the general component
-              </option>
-            </select>
-          </div>
+          <div class="lesson-components-grid">
+            <div class="form-group full-width">
+              <label for="agenda">
+                Agenda
+                <span class="required">
+                  *
+                </span>
+              </label>
 
-          <div class="form-group full-width">
-            <label for="standards">
-              Standards
-              <span class="required">
-                *
+              <span class="help-text">
+                Type one agenda item on each line.
               </span>
-            </label>
 
-            <textarea
-              id="standards"
-              placeholder="Type or paste the applicable Kentucky standard(s)."
-              required
-            ></textarea>
+              <textarea
+                id="agenda"
+                placeholder="Bell Ringer&#10;Mini Lesson&#10;Guided Practice&#10;Independent Work&#10;Exit Ticket"
+                required
+              ></textarea>
+            </div>
+
+            <div
+              id="vocabulary-component"
+              class="optional-component full-width"
+            >
+              <label class="optional-toggle">
+                <input
+                  id="include-vocabulary"
+                  type="checkbox"
+                  data-optional-toggle="vocabulary-component"
+                >
+
+                Include Vocabulary
+              </label>
+
+              <div class="optional-component-field">
+                <label for="vocabulary">
+                  Vocabulary
+                  <span class="optional-label">
+                    Optional
+                  </span>
+                </label>
+
+                <span class="help-text">
+                  Enter important words, phrases, or definitions for this lesson.
+                </span>
+
+                <textarea
+                  id="vocabulary"
+                  placeholder="Term — Definition&#10;Term — Definition"
+                ></textarea>
+              </div>
+            </div>
+
+            <div class="form-group full-width">
+              <label for="standards">
+                Standards
+                <span class="required">
+                  *
+                </span>
+              </label>
+
+              <textarea
+                id="standards"
+                placeholder="Type or paste the applicable Kentucky standard(s)."
+                required
+              ></textarea>
+            </div>
           </div>
         </div>
       </section>
@@ -1372,7 +1134,85 @@
 
       <!--
       ========================================
-      OPTIONAL COMPONENTS
+      CLOSING
+      ========================================
+      -->
+
+      <section class="section">
+        <div class="section-heading-row">
+          <h2>
+            Closing
+          </h2>
+
+          <p>
+            Add either component only when needed.
+          </p>
+        </div>
+
+        <div class="lesson-components-grid">
+          <div
+            id="exit-ticket-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-exit-ticket"
+                type="checkbox"
+                data-optional-toggle="exit-ticket-component"
+              >
+
+              Include Exit Ticket
+            </label>
+
+            <div class="optional-component-field">
+              <label for="exit-ticket">
+                Exit Ticket
+                <span class="optional-label">
+                  Optional
+                </span>
+              </label>
+
+              <textarea
+                id="exit-ticket"
+                placeholder="What should students complete before leaving?"
+              ></textarea>
+            </div>
+          </div>
+
+          <div
+            id="homework-component"
+            class="optional-component"
+          >
+            <label class="optional-toggle">
+              <input
+                id="include-homework"
+                type="checkbox"
+                data-optional-toggle="homework-component"
+              >
+
+              Include Homework
+            </label>
+
+            <div class="optional-component-field">
+              <label for="homework">
+                Homework
+                <span class="optional-label">
+                  Optional
+                </span>
+              </label>
+
+              <textarea
+                id="homework"
+                placeholder="What should students complete outside class?"
+              ></textarea>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!--
+      ========================================
+      MORE OPTIONS
       ========================================
       -->
 
@@ -1469,6 +1309,46 @@
       </div>
     </form>
   </main>
+
+  <script>
+    /*
+    ==========================================
+    OPTIONAL COMPONENT DISPLAY
+    ==========================================
+    This controls only whether the optional
+    Planner fields are visible. Saving and
+    loading the new fields will be added to
+    the Planner JavaScript files next.
+    */
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const optionalToggles = document.querySelectorAll(
+        "[data-optional-toggle]"
+      );
+
+      function updateOptionalComponent(toggle) {
+        const componentId = toggle.dataset.optionalToggle;
+        const component = document.getElementById(componentId);
+
+        if (!component) {
+          return;
+        }
+
+        component.classList.toggle(
+          "is-active",
+          toggle.checked
+        );
+      }
+
+      optionalToggles.forEach((toggle) => {
+        updateOptionalComponent(toggle);
+
+        toggle.addEventListener("change", () => {
+          updateOptionalComponent(toggle);
+        });
+      });
+    });
+  </script>
 
   <script src="data/profile-options.js?v=4"></script>
 
