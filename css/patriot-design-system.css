@@ -920,11 +920,19 @@ body.patriot-page-teach {
 
 body.patriot-page-teach
 .teach-header {
-  min-height: 92px;
-  margin-top: 12px;
-  padding: 15px 20px;
+  min-height: 74px;
+  margin-top: 10px;
+  padding: 11px 17px;
+
   background:
-    rgba(255, 255, 255, 0.64);
+    linear-gradient(
+      110deg,
+      #cf1b13 0%,
+      #e95a53 18%,
+      rgba(255, 255, 255, 0.97) 54%,
+      rgba(255, 252, 233, 0.96) 76%,
+      rgba(42, 67, 163, 0.28) 100%
+    );
 }
 
 body.patriot-page-teach
@@ -992,19 +1000,33 @@ body.patriot-page-teach
 
 body.patriot-page-teach
 .lesson-flow-section {
-  padding: 12px 14px;
+  padding:
+    9px
+    12px
+    9px
+    16px;
 }
 
 body.patriot-page-teach
 .lesson-flow-heading {
-  font-size: 0.9rem;
+  font-size: 0.75rem;
 }
 
 body.patriot-page-teach
 .lesson-text,
 body.patriot-page-teach
 .profile-description {
-  font-size: 0.84rem;
+  margin: 0;
+  padding: 0;
+
+  font-size: 0.72rem;
+  line-height: 1.4;
+
+  text-align: left;
+  text-indent: 0;
+
+  overflow-wrap: break-word;
+  word-break: normal;
 }
 
 /*
