@@ -646,52 +646,43 @@ Empty optional components are not displayed.
 
     .lesson-flow-section {
       position: relative;
-      margin:
-        7px
-        9px
-        0;
-      padding:
-        10px
-        11px;
-      overflow: hidden;
+      margin: 0;
+      padding: 9px 12px 9px 14px;
+      overflow: visible;
+    
       background:
         rgba(
           255,
           255,
           255,
-          0.72
+          0.34
         );
-      border:
+    
+      border: 0;
+      border-bottom:
         1px solid
         rgba(
           42,
           67,
           163,
-          0.10
+          0.11
         );
-      border-radius: 11px;
-      box-shadow:
-        0 3px 10px
-        rgba(
-          42,
-          67,
-          163,
-          0.045
-        );
+    
+      border-radius: 0;
+      box-shadow: none;
+    
       transition:
-        background 180ms ease,
-        border-color 180ms ease,
-        box-shadow 180ms ease,
-        transform 180ms ease;
+        background 180ms ease;
     }
 
     .lesson-flow-section::before {
       content: "";
       position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
+      top: 9px;
+      bottom: 9px;
+      left: 5px;
       width: 3px;
+    
       background:
         linear-gradient(
           180deg,
@@ -704,156 +695,149 @@ Empty optional components are not displayed.
             #2a43a3
           )
         );
-      opacity: 0.72;
+    
+      border-radius: 999px;
+      opacity: 0.68;
     }
-
-    .lesson-flow-section:hover {
-      background:
-        rgba(
-          255,
-          255,
-          255,
-          0.90
-        );
-      border-color:
-        rgba(
-          42,
-          67,
-          163,
-          0.18
-        );
-      box-shadow:
-        0 6px 16px
-        rgba(
-          42,
-          67,
-          163,
-          0.075
-        );
-      transform:
-        translateY(-1px);
-    }
-
+    
+   .lesson-flow-section:hover {
+    background:
+      rgba(
+        255,
+        255,
+        255,
+        0.72
+      );
+  
+    border-color:
+      rgba(
+        42,
+        67,
+        163,
+        0.11
+      );
+  
+    box-shadow: none;
+    transform: none;
+  }
+      
     .lesson-flow-heading {
       display: flex;
       align-items: center;
-      gap: 7px;
-      margin:
-        0
-        0
-        5px;
+      gap: 6px;
+      min-width: 0;
+      margin: 0 0 4px;
+    
       color:
         var(
           --teach-blue,
           #2a43a3
         );
+    
       font-family:
         "Literata",
         Georgia,
         serif;
-      font-size: 0.82rem;
+    
+      font-size: 0.75rem;
       font-weight: 750;
       line-height: 1.2;
-      letter-spacing: -0.012em;
+      letter-spacing: -0.01em;
+      overflow-wrap: anywhere;
     }
 
     .lesson-flow-icon {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      flex:
-        0
-        0
-        auto;
-      width: 22px;
-      height: 22px;
-      color:
-        var(
-          --teach-blue,
-          #2a43a3
-        );
-      font-family:
-        "Inter",
-        "Segoe UI",
-        Arial,
-        sans-serif;
-      font-size: 0.72rem;
-      font-weight: 800;
-      line-height: 1;
-      background:
-        linear-gradient(
-          145deg,
-          rgba(
-            42,
-            67,
-            163,
-            0.10
-          ),
-          rgba(
-            207,
-            27,
-            19,
-            0.07
-          )
-        );
-      border:
-        1px solid
-        rgba(
-          42,
-          67,
-          163,
-          0.10
-        );
-      border-radius: 7px;
-    }
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+
+  width: 19px;
+  height: 19px;
+
+  color:
+    var(
+      --teach-blue,
+      #2a43a3
+    );
+
+  font-family:
+    "Inter",
+    "Segoe UI",
+    Arial,
+    sans-serif;
+
+  font-size: 0.62rem;
+  font-weight: 800;
+  line-height: 1;
+
+  background:
+    rgba(
+      42,
+      67,
+      163,
+      0.08
+    );
+
+  border: 0;
+  border-radius: 6px;
+}
 
     .lesson-text,
     .profile-description {
+      width: 100%;
+      min-width: 0;
       margin: 0;
+    
       color:
         var(
           --teach-ink,
           #20283a
         );
-      font-size: 0.74rem;
+    
+      font-size: 0.68rem;
       font-weight: 500;
-      line-height: 1.42;
+      line-height: 1.34;
+    
       white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: normal;
     }
 
     .profile-title {
-      margin:
-        0
-        0
-        3px;
+      margin: 0 0 2px;
+    
       color:
         var(
           --teach-red,
           #cf1b13
         );
+    
       font-family:
         "Literata",
         Georgia,
         serif;
-      font-size: 0.76rem;
+    
+      font-size: 0.70rem;
       font-weight: 750;
-      line-height: 1.25;
+      line-height: 1.2;
+      overflow-wrap: anywhere;
     }
 
     .agenda-list {
-      margin:
-        1px
-        0
-        0;
-      padding-left: 19px;
+      margin: 0;
+      padding-left: 17px;
+    
       color:
         var(
           --teach-ink,
           #20283a
         );
-      font-size: 0.74rem;
+    
+      font-size: 0.68rem;
       font-weight: 500;
-      line-height: 1.4;
+      line-height: 1.32;
+      overflow-wrap: anywhere;
     }
 
     .agenda-list li {
