@@ -245,6 +245,27 @@ Full-Page Lesson Planner Saving
     return field.value.trim();
   }
 
+  function isChecked(id) {
+    const checkbox =
+      document.getElementById(id);
+
+    return Boolean(
+      checkbox &&
+      checkbox.checked
+    );
+  }
+
+  function getOptionalFieldValue(
+    checkboxId,
+    fieldId
+  ) {
+    if (!isChecked(checkboxId)) {
+      return "";
+    }
+
+    return getFieldValue(fieldId);
+  }
+
   function collectLesson() {
     const selectedClasses =
       collectSelectedClasses();
@@ -257,6 +278,24 @@ Full-Page Lesson Planner Saving
     const profileFocusField =
       document.getElementById(
         "profile-focus"
+      );
+
+    const vocabulary =
+      getOptionalFieldValue(
+        "include-vocabulary",
+        "vocabulary"
+      );
+
+    const exitTicket =
+      getOptionalFieldValue(
+        "include-exit-ticket",
+        "exit-ticket"
+      );
+
+    const homework =
+      getOptionalFieldValue(
+        "include-homework",
+        "homework"
       );
 
     return {
@@ -288,15 +327,26 @@ Full-Page Lesson Planner Saving
           "bell-ringer"
         ),
 
-      agenda:
+      essentialQuestion:
         getFieldValue(
-          "agenda"
+          "essential-question"
         ),
 
       learningTarget:
         getFieldValue(
           "learning-target"
         ),
+
+      agenda:
+        getFieldValue(
+          "agenda"
+        ),
+
+      vocabulary:
+        vocabulary,
+
+      includeVocabulary:
+        Boolean(vocabulary),
 
       profileId:
         profileComponentField
@@ -320,6 +370,18 @@ Full-Page Lesson Planner Saving
 
       resources:
         collectResources(),
+
+      exitTicket:
+        exitTicket,
+
+      includeExitTicket:
+        Boolean(exitTicket),
+
+      homework:
+        homework,
+
+      includeHomework:
+        Boolean(homework),
 
       successCriteria:
         getFieldValue(
@@ -366,15 +428,21 @@ Full-Page Lesson Planner Saving
       );
     }
 
-    if (!lesson.agenda) {
+    if (!lesson.essentialQuestion) {
       missing.push(
-        "Agenda"
+        "Essential Question"
       );
     }
 
     if (!lesson.learningTarget) {
       missing.push(
         "I Can / Learning Target"
+      );
+    }
+
+    if (!lesson.agenda) {
+      missing.push(
+        "Agenda"
       );
     }
 
@@ -462,11 +530,17 @@ Full-Page Lesson Planner Saving
         bellRinger:
           lesson.bellRinger,
 
-        agenda:
-          lesson.agenda,
+        essentialQuestion:
+          lesson.essentialQuestion,
 
         learningTarget:
           lesson.learningTarget,
+
+        agenda:
+          lesson.agenda,
+
+        vocabulary:
+          lesson.vocabulary,
 
         whyLearning:
           lesson.whyLearning,
@@ -487,6 +561,12 @@ Full-Page Lesson Planner Saving
           JSON.stringify(
             lesson.resources
           ),
+
+        exitTicket:
+          lesson.exitTicket,
+
+        homework:
+          lesson.homework,
 
         materials:
           lesson.materials,
@@ -530,6 +610,9 @@ Full-Page Lesson Planner Saving
           lessonDate:
             lesson.lessonDate,
 
+          lessonTitle:
+            lesson.lessonTitle,
+
           assignedPeriods:
             lesson.assignedPeriods,
 
@@ -538,6 +621,9 @@ Full-Page Lesson Planner Saving
 
           bellringer:
             lesson.bellRinger,
+
+          essentialQuestion:
+            lesson.essentialQuestion,
 
           agenda:
             lesson.agenda,
@@ -551,11 +637,32 @@ Full-Page Lesson Planner Saving
           profileId:
             lesson.profileId,
 
+          profileComponent:
+            lesson.profileComponent,
+
           profileStatement:
             lesson.profileFocus,
 
+          standards:
+            lesson.standards,
+
+          vocabulary:
+            lesson.vocabulary,
+
           resources:
-            lesson.resources
+            lesson.resources,
+
+          exitTicket:
+            lesson.exitTicket,
+
+          homework:
+            lesson.homework,
+
+          whyLearning:
+            lesson.whyLearning,
+
+          materials:
+            lesson.materials
         })
       );
     }
