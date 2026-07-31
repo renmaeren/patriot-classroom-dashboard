@@ -1,19 +1,37 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Teach Loader
+Teach Loader v2
 ==========================================
 
-Loads the active lesson from Library,
-Planner, or the daily lesson setup.
+Loads the active lesson from:
+- Lesson Library
+- Planner
+- Daily lesson storage
 
-Displays:
+Displays the lesson lifecycle:
+
+OPENING
 - Bell Ringer
-- I Can Statement
-- Success Criteria
+- Essential Question
+- I Can / Learning Target
 - Profile of a Patriot
+- Success Criteria (optional)
+
+LEARNING
 - Agenda
-- Multiple lesson resources
+- Vocabulary (optional)
+- Resources
+
+CLOSING
+- Exit Ticket (optional)
+- Homework (optional)
+
+ADDITIONAL
+- Why Are We Learning This? (optional)
+- Materials Needed (optional)
+
+Empty optional components are not displayed.
 */
 
 (function () {
@@ -29,7 +47,7 @@ Displays:
     "patriotLastPlannedLesson";
 
   window.PATRIOT_TEACH_LOADER_VERSION =
-    "5";
+    "6";
 
   /*
   ==========================================
@@ -68,13 +86,44 @@ Displays:
 
   /*
   ==========================================
+  GENERAL HELPERS
+  ==========================================
+  */
+
+  function cleanText(value) {
+    return String(value || "")
+      .trim();
+  }
+
+  function hasContent(value) {
+    return Boolean(
+      cleanText(value)
+    );
+  }
+
+  function firstContent(...values) {
+    return (
+      values.find(hasContent) ||
+      ""
+    );
+  }
+
+  function escapeHtml(value) {
+    return String(value || "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+  }
+
+  /*
+  ==========================================
   RESOURCE NORMALIZATION
   ==========================================
   */
 
-  function getDefaultResourceLabel(
-    type
-  ) {
+  function getDefaultResourceLabel(type) {
     const labels = {
       slides: "Google Slides",
       video: "Video",
@@ -97,7 +146,7 @@ Displays:
 
   function guessResourceType(url) {
     const value =
-      String(url || "")
+      cleanText(url)
         .toLowerCase();
 
     if (
@@ -177,9 +226,35 @@ Displays:
     return "website";
   }
 
-  function normalizeResources(
-    lesson
-  ) {
+  function parseResourceValue(value) {
+    if (!value) {
+      return [];
+    }
+
+    if (Array.isArray(value)) {
+      return value;
+    }
+
+    if (
+      typeof value ===
+      "string"
+    ) {
+      try {
+        const parsed =
+          JSON.parse(value);
+
+        return Array.isArray(parsed)
+          ? parsed
+          : [];
+      } catch (error) {
+        return [];
+      }
+    }
+
+    return [];
+  }
+
+  function normalizeResources(lesson) {
     if (
       !lesson ||
       typeof lesson !== "object"
@@ -187,32 +262,19 @@ Displays:
       return [];
     }
 
-    let resources =
-      lesson.resources ||
-      lesson.lessonResources ||
-      lesson.resourceLinks ||
-      lesson.links ||
+    const possibleResources =
+      lesson.resources ??
+      lesson.lessonResources ??
+      lesson.resourceLinks ??
+      lesson.links ??
       [];
 
-    if (
-      typeof resources ===
-      "string"
-    ) {
-      try {
-        resources =
-          JSON.parse(resources);
-      } catch (error) {
-        resources = [];
-      }
-    }
+    const resources =
+      parseResourceValue(
+        possibleResources
+      );
 
-    if (
-      !Array.isArray(resources)
-    ) {
-      resources = [];
-    }
-
-    const normalizedResources =
+    const normalized =
       resources
         .map(
           (
@@ -230,7 +292,9 @@ Displays:
 
               return {
                 type,
-                url: resource,
+                url: cleanText(
+                  resource
+                ),
                 label:
                   getDefaultResourceLabel(
                     type
@@ -247,27 +311,34 @@ Displays:
             }
 
             const url =
-              resource.url ||
-              resource.link ||
-              resource.href ||
-              resource.resourceUrl ||
-              "";
+              firstContent(
+                resource.url,
+                resource.link,
+                resource.href,
+                resource.resourceUrl
+              );
+
+            if (!url) {
+              return null;
+            }
 
             const type =
-              resource.type ||
-              resource.resourceType ||
+              firstContent(
+                resource.type,
+                resource.resourceType
+              ) ||
               guessResourceType(url);
 
             const label =
-              resource.label ||
-              resource.title ||
-              resource.name ||
+              firstContent(
+                resource.label,
+                resource.title,
+                resource.name
+              ) ||
               getDefaultResourceLabel(
                 type
               ) ||
-              `Resource ${
-                index + 1
-              }`;
+              `Resource ${index + 1}`;
 
             return {
               type,
@@ -276,44 +347,38 @@ Displays:
             };
           }
         )
-        .filter(
-          resource =>
-            resource &&
-            resource.url
-        );
+        .filter(Boolean);
 
-    if (
-      normalizedResources.length >
-      0
-    ) {
-      return normalizedResources;
+    if (normalized.length) {
+      return normalized;
     }
 
     const oldSingleLink =
-      lesson.lessonLink ||
-      lesson.lessonUrl ||
-      lesson.resourceUrl ||
-      "";
+      firstContent(
+        lesson.lessonLink,
+        lesson.lessonUrl,
+        lesson.resourceUrl
+      );
 
-    if (oldSingleLink) {
-      const type =
-        guessResourceType(
-          oldSingleLink
-        );
-
-      return [
-        {
-          type,
-          url: oldSingleLink,
-          label:
-            getDefaultResourceLabel(
-              type
-            )
-        }
-      ];
+    if (!oldSingleLink) {
+      return [];
     }
 
-    return [];
+    const type =
+      guessResourceType(
+        oldSingleLink
+      );
+
+    return [
+      {
+        type,
+        url: oldSingleLink,
+        label:
+          getDefaultResourceLabel(
+            type
+          )
+      }
+    ];
   }
 
   /*
@@ -322,166 +387,122 @@ Displays:
   ==========================================
   */
 
-  function normalizeLesson(
-    lesson
-  ) {
-    if (!lesson) {
+  function normalizeLesson(rawLesson) {
+    if (
+      !rawLesson ||
+      typeof rawLesson !== "object"
+    ) {
       return null;
     }
 
     return {
-      ...lesson,
+      lessonId:
+        firstContent(
+          rawLesson.lessonId
+        ),
 
-      bellringer:
-        lesson.bellringer ||
-        lesson.bellRinger ||
-        "",
+      lessonTitle:
+        firstContent(
+          rawLesson.lessonTitle,
+          rawLesson.title
+        ),
 
-      ican:
-        lesson.ican ||
-        lesson.learningTarget ||
-        lesson.iCan ||
-        "",
+      bellRinger:
+        firstContent(
+          rawLesson.bellRinger,
+          rawLesson.bellringer
+        ),
 
-      success:
-        lesson.success ||
-        lesson.successCriteria ||
-        "",
+      essentialQuestion:
+        firstContent(
+          rawLesson.essentialQuestion,
+          rawLesson.essentialquestion
+        ),
+
+      learningTarget:
+        firstContent(
+          rawLesson.learningTarget,
+          rawLesson.ican,
+          rawLesson.iCan
+        ),
+
+      successCriteria:
+        firstContent(
+          rawLesson.successCriteria,
+          rawLesson.success
+        ),
 
       profileId:
-        lesson.profileId ||
-        lesson.profileComponent ||
+        firstContent(
+          rawLesson.profileId
+        ) ||
         "none",
 
-      profileStatement:
-        lesson.profileStatement ||
-        lesson.profileFocus ||
-        "",
+      profileComponent:
+        firstContent(
+          rawLesson.profileComponent,
+          rawLesson.profileTitle
+        ),
+
+      profileFocus:
+        firstContent(
+          rawLesson.profileFocus,
+          rawLesson.profileStatement
+        ),
 
       agenda:
-        lesson.agenda ||
-        lesson.lessonAgenda ||
-        "",
+        firstContent(
+          rawLesson.agenda,
+          rawLesson.lessonAgenda
+        ),
+
+      vocabulary:
+        firstContent(
+          rawLesson.vocabulary
+        ),
+
+      exitTicket:
+        firstContent(
+          rawLesson.exitTicket
+        ),
+
+      homework:
+        firstContent(
+          rawLesson.homework
+        ),
+
+      whyLearning:
+        firstContent(
+          rawLesson.whyLearning
+        ),
+
+      materials:
+        firstContent(
+          rawLesson.materials
+        ),
+
+      teacherNotes:
+        firstContent(
+          rawLesson.teacherNotes
+        ),
 
       resources:
         normalizeResources(
-          lesson
+          rawLesson
         )
     };
   }
 
   /*
   ==========================================
-  TEXT DISPLAY
+  LESSON FLOW STYLES
   ==========================================
   */
 
-  function setText(
-    elementId,
-    value,
-    emptyMessage
-  ) {
-    const element =
-      document.getElementById(
-        elementId
-      );
-
-    if (!element) {
-      return;
-    }
-
-    const cleanValue =
-      String(value || "")
-        .trim();
-
-    if (cleanValue) {
-      element.textContent =
-        cleanValue;
-
-      element.classList.remove(
-        "empty-text"
-      );
-    } else {
-      element.textContent =
-        emptyMessage;
-
-      element.classList.add(
-        "empty-text"
-      );
-    }
-  }
-
-  function displayAgenda(
-    agendaText
-  ) {
-    const agendaList =
-      document.getElementById(
-        "agenda-display"
-      );
-
-    if (!agendaList) {
-      return;
-    }
-
-    agendaList.innerHTML = "";
-
-    const items =
-      String(agendaText || "")
-        .split("\n")
-        .map(
-          item =>
-            item.trim()
-        )
-        .filter(Boolean);
-
-    if (
-      items.length === 0
-    ) {
-      const emptyItem =
-        document.createElement(
-          "li"
-        );
-
-      emptyItem.textContent =
-        "Add today’s agenda.";
-
-      emptyItem.className =
-        "empty-text";
-
-      agendaList.appendChild(
-        emptyItem
-      );
-
-      return;
-    }
-
-    items.forEach(
-      itemText => {
-        const item =
-          document.createElement(
-            "li"
-          );
-
-        item.textContent =
-          itemText;
-
-        agendaList.appendChild(
-          item
-        );
-      }
-    );
-  }
-
-  /*
-  ==========================================
-  RESOURCE STYLES
-  ==========================================
-  */
-
-  function createResourceStyles() {
+  function addLessonFlowStyles() {
     if (
       document.getElementById(
-        "patriot-resource-styles"
+        "patriot-teach-loader-styles"
       )
     ) {
       return;
@@ -493,16 +514,105 @@ Displays:
       );
 
     style.id =
-      "patriot-resource-styles";
+      "patriot-teach-loader-styles";
 
     style.textContent = `
+      .lesson-flow-body {
+        display: grid;
+        align-content: start;
+      }
+
+      .lesson-flow-stage {
+        padding:
+          10px
+          14px
+          5px;
+        color:
+          var(
+            --blue,
+            #2a43a3
+          );
+        font-size: 0.61rem;
+        font-weight: 850;
+        text-transform: uppercase;
+        letter-spacing: 0.11em;
+        background:
+          rgba(
+            42,
+            67,
+            163,
+            0.035
+          );
+        border-bottom:
+          1px solid
+          rgba(
+            42,
+            67,
+            163,
+            0.09
+          );
+      }
+
+      .lesson-flow-section {
+        padding:
+          10px
+          14px;
+      }
+
+      .lesson-flow-heading {
+        margin-bottom: 5px;
+        font-size: 0.86rem;
+      }
+
+      .lesson-flow-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 0.82rem;
+      }
+
+      .lesson-text,
+      .profile-description,
+      .agenda-list {
+        font-size: 0.79rem;
+        line-height: 1.38;
+      }
+
+      .profile-title {
+        margin-bottom: 3px;
+        font-size: 0.82rem;
+      }
+
+      .agenda-list {
+        padding-left: 19px;
+      }
+
+      .agenda-list li {
+        margin-bottom: 2px;
+      }
+
+      .lesson-flow-empty {
+        padding:
+          18px
+          15px;
+        color:
+          var(
+            --muted,
+            #657087
+          );
+        font-size: 0.78rem;
+        line-height: 1.45;
+        text-align: center;
+      }
+
       .resource-tabs {
         display: none;
         align-items: center;
         flex-wrap: wrap;
-        gap: 7px;
-        min-height: 48px;
-        padding: 8px 12px;
+        gap: 6px;
+        min-height: 42px;
+        padding:
+          6px
+          10px;
         background:
           rgba(
             255,
@@ -532,11 +642,11 @@ Displays:
         margin-right: 2px;
         color:
           var(
-            --patriot-muted,
+            --muted,
             #657087
           );
-        font-size: 0.7rem;
-        font-weight: 750;
+        font-size: 0.61rem;
+        font-weight: 800;
         text-transform: uppercase;
         letter-spacing: 0.07em;
       }
@@ -545,19 +655,16 @@ Displays:
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 32px;
-        padding: 6px 10px;
+        min-height: 29px;
+        padding:
+          5px
+          9px;
         color:
           var(
-            --patriot-blue,
+            --blue,
             #2a43a3
           );
-        font-family:
-          "Inter",
-          "Segoe UI",
-          Arial,
-          sans-serif;
-        font-size: 0.74rem;
+        font-size: 0.68rem;
         font-weight: 750;
         line-height: 1;
         background:
@@ -575,35 +682,26 @@ Displays:
             163,
             0.13
           );
-        border-radius: 9px;
+        border-radius: 8px;
         cursor: pointer;
         transition:
           color 180ms ease,
           background 180ms ease,
           border-color 180ms ease,
-          transform 180ms ease,
-          box-shadow 180ms ease;
+          transform 180ms ease;
       }
 
       .resource-tab:hover {
         color: #ffffff;
         background:
           var(
-            --patriot-blue,
+            --blue,
             #2a43a3
           );
         border-color:
           var(
-            --patriot-blue,
+            --blue,
             #2a43a3
-          );
-        box-shadow:
-          0 5px 12px
-          rgba(
-            42,
-            67,
-            163,
-            0.15
           );
         transform:
           translateY(-1px);
@@ -613,21 +711,13 @@ Displays:
         color: #ffffff;
         background:
           var(
-            --patriot-red,
+            --red,
             #cf1b13
           );
         border-color:
           var(
-            --patriot-red,
+            --red,
             #cf1b13
-          );
-        box-shadow:
-          0 5px 12px
-          rgba(
-            207,
-            27,
-            19,
-            0.15
           );
       }
 
@@ -639,11 +729,11 @@ Displays:
         align-items: center;
         justify-content: center;
         flex-direction: column;
-        gap: 10px;
-        padding: 30px;
+        gap: 9px;
+        padding: 28px;
         color:
           var(
-            --patriot-text,
+            --ink,
             #20283a
           );
         text-align: center;
@@ -671,50 +761,47 @@ Displays:
 
       .resource-open-placeholder h3 {
         margin: 0;
-        color:
-          var(
-            --patriot-text,
-            #20283a
-          );
         font-family:
           "Literata",
           Georgia,
           serif;
-        font-size: 1.25rem;
+        font-size: 1.15rem;
       }
 
       .resource-open-placeholder p {
         margin: 0;
         color:
           var(
-            --patriot-muted,
+            --muted,
             #657087
           );
-        font-size: 0.85rem;
+        font-size: 0.8rem;
       }
 
       .resource-open-placeholder a {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-height: 38px;
-        padding: 8px 13px;
+        min-height: 36px;
+        padding:
+          7px
+          12px;
         color: #ffffff;
-        font-size: 0.78rem;
+        font-size: 0.74rem;
         font-weight: 750;
         text-decoration: none;
         background:
           var(
-            --patriot-red,
+            --red,
             #cf1b13
           );
-        border-radius: 9px;
+        border-radius: 8px;
       }
 
       .resource-open-placeholder a:hover {
         background:
           var(
-            --patriot-blue,
+            --blue,
             #2a43a3
           );
       }
@@ -727,10 +814,6 @@ Displays:
           flex-direction: column;
         }
 
-        .resource-tabs-label {
-          margin-bottom: 2px;
-        }
-
         .resource-tab {
           width: 100%;
         }
@@ -740,6 +823,405 @@ Displays:
     document.head.appendChild(
       style
     );
+  }
+
+  /*
+  ==========================================
+  LESSON FLOW CREATION
+  ==========================================
+  */
+
+  function createStageHeading(title) {
+    const heading =
+      document.createElement(
+        "div"
+      );
+
+    heading.className =
+      "lesson-flow-stage";
+
+    heading.textContent =
+      title;
+
+    return heading;
+  }
+
+  function createTextSection(
+    title,
+    icon,
+    value
+  ) {
+    if (!hasContent(value)) {
+      return null;
+    }
+
+    const section =
+      document.createElement(
+        "section"
+      );
+
+    section.className =
+      "lesson-flow-section";
+
+    section.innerHTML = `
+      <h3 class="lesson-flow-heading">
+        <span
+          class="lesson-flow-icon"
+          aria-hidden="true"
+        >
+          ${escapeHtml(icon)}
+        </span>
+
+        ${escapeHtml(title)}
+      </h3>
+
+      <p class="lesson-text">
+        ${escapeHtml(value)}
+      </p>
+    `;
+
+    return section;
+  }
+
+  function createAgendaSection(
+    agendaText
+  ) {
+    if (!hasContent(agendaText)) {
+      return null;
+    }
+
+    const items =
+      cleanText(agendaText)
+        .split("\n")
+        .map(item =>
+          item.trim()
+        )
+        .filter(Boolean);
+
+    if (!items.length) {
+      return null;
+    }
+
+    const section =
+      document.createElement(
+        "section"
+      );
+
+    section.className =
+      "lesson-flow-section";
+
+    section.innerHTML = `
+      <h3 class="lesson-flow-heading">
+        <span
+          class="lesson-flow-icon"
+          aria-hidden="true"
+        >
+          ≡
+        </span>
+
+        Agenda
+      </h3>
+
+      <ol class="agenda-list">
+        ${items
+          .map(item => {
+            return `
+              <li>
+                ${escapeHtml(item)}
+              </li>
+            `;
+          })
+          .join("")}
+      </ol>
+    `;
+
+    return section;
+  }
+
+  function getProfileInformation(
+    lesson
+  ) {
+    let title =
+      firstContent(
+        lesson.profileComponent
+      );
+
+    let description =
+      firstContent(
+        lesson.profileFocus
+      );
+
+    if (
+      typeof window.findProfile ===
+        "function" &&
+      lesson.profileId &&
+      lesson.profileId !== "none"
+    ) {
+      const profile =
+        window.findProfile(
+          lesson.profileId
+        );
+
+      if (profile) {
+        title =
+          firstContent(
+            title,
+            profile.title
+          );
+
+        description =
+          firstContent(
+            description,
+            profile.shortDescription
+          );
+      }
+    }
+
+    if (
+      !title &&
+      lesson.profileId &&
+      lesson.profileId !== "none"
+    ) {
+      title =
+        lesson.profileId;
+    }
+
+    return {
+      title,
+      description
+    };
+  }
+
+  function createProfileSection(
+    lesson
+  ) {
+    const profile =
+      getProfileInformation(
+        lesson
+      );
+
+    if (
+      !hasContent(profile.title) &&
+      !hasContent(
+        profile.description
+      )
+    ) {
+      return null;
+    }
+
+    const section =
+      document.createElement(
+        "section"
+      );
+
+    section.className =
+      "lesson-flow-section";
+
+    section.innerHTML = `
+      <h3 class="lesson-flow-heading">
+        <span
+          class="lesson-flow-icon"
+          aria-hidden="true"
+        >
+          ★
+        </span>
+
+        Profile of a Patriot
+      </h3>
+
+      ${
+        hasContent(profile.title)
+          ? `
+            <div class="profile-title">
+              ${escapeHtml(
+                profile.title
+              )}
+            </div>
+          `
+          : ""
+      }
+
+      ${
+        hasContent(
+          profile.description
+        )
+          ? `
+            <p class="profile-description">
+              ${escapeHtml(
+                profile.description
+              )}
+            </p>
+          `
+          : ""
+      }
+    `;
+
+    return section;
+  }
+
+  function appendStage(
+    container,
+    stageTitle,
+    sections
+  ) {
+    const populatedSections =
+      sections.filter(Boolean);
+
+    if (!populatedSections.length) {
+      return;
+    }
+
+    container.appendChild(
+      createStageHeading(
+        stageTitle
+      )
+    );
+
+    populatedSections.forEach(
+      section => {
+        container.appendChild(
+          section
+        );
+      }
+    );
+  }
+
+  function displayLessonFlow(lesson) {
+    const lessonBody =
+      document.querySelector(
+        "#lesson-flow-panel .command-panel-body"
+      );
+
+    if (!lessonBody) {
+      return;
+    }
+
+    lessonBody.className =
+      "command-panel-body lesson-flow-body";
+
+    lessonBody.innerHTML = "";
+
+    if (!lesson) {
+      const empty =
+        document.createElement(
+          "p"
+        );
+
+      empty.className =
+        "lesson-flow-empty";
+
+      empty.textContent =
+        "Choose a saved lesson from the Library or create one in Planner.";
+
+      lessonBody.appendChild(
+        empty
+      );
+
+      return;
+    }
+
+    appendStage(
+      lessonBody,
+      "Opening",
+      [
+        createTextSection(
+          "Bell Ringer",
+          "📌",
+          lesson.bellRinger
+        ),
+
+        createTextSection(
+          "Essential Question",
+          "?",
+          lesson.essentialQuestion
+        ),
+
+        createTextSection(
+          "I Can",
+          "🎯",
+          lesson.learningTarget
+        ),
+
+        createProfileSection(
+          lesson
+        ),
+
+        createTextSection(
+          "Success Criteria",
+          "✓",
+          lesson.successCriteria
+        )
+      ]
+    );
+
+    appendStage(
+      lessonBody,
+      "Learning",
+      [
+        createAgendaSection(
+          lesson.agenda
+        ),
+
+        createTextSection(
+          "Vocabulary",
+          "Aa",
+          lesson.vocabulary
+        )
+      ]
+    );
+
+    appendStage(
+      lessonBody,
+      "Closing",
+      [
+        createTextSection(
+          "Exit Ticket",
+          "↗",
+          lesson.exitTicket
+        ),
+
+        createTextSection(
+          "Homework",
+          "⌂",
+          lesson.homework
+        )
+      ]
+    );
+
+    appendStage(
+      lessonBody,
+      "Additional",
+      [
+        createTextSection(
+          "Why Are We Learning This?",
+          "💡",
+          lesson.whyLearning
+        ),
+
+        createTextSection(
+          "Materials Needed",
+          "▣",
+          lesson.materials
+        )
+      ]
+    );
+
+    if (!lessonBody.children.length) {
+      const empty =
+        document.createElement(
+          "p"
+        );
+
+      empty.className =
+        "lesson-flow-empty";
+
+      empty.textContent =
+        "This lesson does not contain displayable lesson components.";
+
+      lessonBody.appendChild(
+        empty
+      );
+    }
   }
 
   /*
@@ -836,8 +1318,7 @@ Displays:
         </h3>
 
         <p>
-          This resource opens in a separate
-          browser tab.
+          This resource opens in a separate browser tab.
         </p>
 
         <a
@@ -860,7 +1341,7 @@ Displays:
 
   /*
   ==========================================
-  URL HANDLING
+  RESOURCE URL HANDLING
   ==========================================
   */
 
@@ -880,9 +1361,7 @@ Displays:
     }
   }
 
-  function canEmbed(
-    resource
-  ) {
+  function canEmbed(resource) {
     return [
       "slides",
       "video",
@@ -894,9 +1373,7 @@ Displays:
     );
   }
 
-  function createEmbedUrl(
-    resource
-  ) {
+  function createEmbedUrl(resource) {
     const url =
       resource.url;
 
@@ -919,9 +1396,7 @@ Displays:
       }
 
       if (
-        baseUrl.includes(
-          "/present"
-        )
+        baseUrl.includes("/present")
       ) {
         return baseUrl.replace(
           "/present",
@@ -1024,18 +1499,16 @@ Displays:
       .querySelectorAll(
         ".resource-tab"
       )
-      .forEach(
-        button => {
-          button.classList.remove(
-            "active"
-          );
+      .forEach(button => {
+        button.classList.remove(
+          "active"
+        );
 
-          button.setAttribute(
-            "aria-pressed",
-            "false"
-          );
-        }
-      );
+        button.setAttribute(
+          "aria-pressed",
+          "false"
+        );
+      });
 
     selectedButton.classList.add(
       "active"
@@ -1121,10 +1594,7 @@ Displays:
 
     if (openTitle) {
       openTitle.textContent =
-        resource.label ||
-        getDefaultResourceLabel(
-          resource.type
-        );
+        resource.label;
     }
 
     if (openButton) {
@@ -1132,12 +1602,7 @@ Displays:
         resource.url;
 
       openButton.textContent =
-        `Open ${
-          resource.label ||
-          getDefaultResourceLabel(
-            resource.type
-          )
-        }`;
+        `Open ${resource.label}`;
     }
 
     if (openPlaceholder) {
@@ -1146,12 +1611,6 @@ Displays:
       );
     }
   }
-
-  /*
-  ==========================================
-  RESOURCE RENDERING
-  ==========================================
-  */
 
   function displayLessonResources(
     resources
@@ -1193,10 +1652,7 @@ Displays:
           )
       );
 
-    if (
-      validResources.length ===
-      0
-    ) {
+    if (!validResources.length) {
       tabs.classList.remove(
         "show"
       );
@@ -1268,10 +1724,7 @@ Displays:
         );
 
         button.textContent =
-          resource.label ||
-          getDefaultResourceLabel(
-            resource.type
-          );
+          resource.label;
 
         button.addEventListener(
           "click",
@@ -1303,131 +1756,20 @@ Displays:
   ==========================================
   */
 
-  function applyLesson(
-    rawLesson
-  ) {
+  function applyLesson(rawLesson) {
     const lesson =
       normalizeLesson(
         rawLesson
       );
 
-    if (!lesson) {
-      displayLessonResources(
-        []
-      );
-
-      displayAgenda("");
-
-      return;
-    }
-
-    setText(
-      "bellringer-display",
-      lesson.bellringer,
-      "Add today’s bell ringer."
+    displayLessonFlow(
+      lesson
     );
-
-    setText(
-      "ican-display",
-      lesson.ican,
-      "Add today’s learning target."
-    );
-
-    setText(
-      "success-display",
-      lesson.success,
-      "Add today’s success criteria."
-    );
-
-    displayAgenda(
-      lesson.agenda
-    );
-
-    const profileTitle =
-      document.getElementById(
-        "profile-title"
-      );
-
-    const profileDescription =
-      document.getElementById(
-        "profile-description"
-      );
-
-    if (profileTitle) {
-      let title =
-        lesson.profileTitle ||
-        lesson.profileComponent ||
-        lesson.profileId ||
-        "Choose a component";
-
-      if (
-        typeof window.findProfile ===
-          "function" &&
-        lesson.profileId
-      ) {
-        const profile =
-          window.findProfile(
-            lesson.profileId
-          );
-
-        if (
-          profile &&
-          profile.title
-        ) {
-          title =
-            profile.title;
-        }
-      }
-
-      profileTitle.textContent =
-        title;
-    }
-
-    if (profileDescription) {
-      let description =
-        lesson.profileStatement ||
-        lesson.profileFocus ||
-        "";
-
-      if (
-        !description &&
-        typeof window.findProfile ===
-          "function" &&
-        lesson.profileId
-      ) {
-        const profile =
-          window.findProfile(
-            lesson.profileId
-          );
-
-        if (
-          profile &&
-          profile.shortDescription
-        ) {
-          description =
-            profile.shortDescription;
-        }
-      }
-
-      if (description) {
-        profileDescription.textContent =
-          description;
-
-        profileDescription.classList.remove(
-          "empty-text"
-        );
-      } else {
-        profileDescription.textContent =
-          "Select a component during lesson setup.";
-
-        profileDescription.classList.add(
-          "empty-text"
-        );
-      }
-    }
 
     displayLessonResources(
-      lesson.resources
+      lesson
+        ? lesson.resources
+        : []
     );
   }
 
@@ -1438,11 +1780,8 @@ Displays:
   */
 
   function refreshTeachLesson() {
-    const lesson =
-      getActiveLesson();
-
     applyLesson(
-      lesson
+      getActiveLesson()
     );
   }
 
@@ -1462,7 +1801,7 @@ Displays:
   */
 
   function startTeachLoader() {
-    createResourceStyles();
+    addLessonFlowStyles();
 
     createResourceDisplay();
 
