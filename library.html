@@ -8,117 +8,595 @@
     content="width=device-width, initial-scale=1.0"
   >
 
+  <meta
+    name="description"
+    content="Find, review, reuse, and launch saved Patriot Command lessons."
+  >
+
   <title>Library | Patriot Command</title>
 
+  <link
+    rel="stylesheet"
+    href="css/patriot-design-system.css?v=2"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/layout.css?v=2"
+  >
+
   <style>
+    /*
+    ==========================================
+    LIBRARY PAGE
+    ==========================================
+    */
+
     :root {
-      --navy: #11284a;
-      --red: #aa3235;
-      --gold: #d3a84f;
-      --white: #ffffff;
-      --gray: #657184;
-      --border: #d7dce3;
-      --cream: #f7f2e8;
-      --background: #e9edf2;
-      --shadow: rgba(0, 0, 0, 0.13);
+      --library-blue:
+        var(
+          --patriot-blue,
+          #2a43a3
+        );
+
+      --library-red:
+        var(
+          --patriot-red,
+          #cf1b13
+        );
+
+      --library-cream:
+        var(
+          --patriot-cream,
+          #fffce9
+        );
+
+      --library-gold:
+        var(
+          --patriot-gold,
+          #ffe269
+        );
+
+      --library-white:
+        #ffffff;
+
+      --library-ink:
+        var(
+          --patriot-text,
+          #20283a
+        );
+
+      --library-muted:
+        var(
+          --patriot-muted,
+          #657087
+        );
+
+      --library-line:
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+
+      --library-glass:
+        rgba(
+          255,
+          255,
+          255,
+          0.8
+        );
+
+      --library-glass-strong:
+        rgba(
+          255,
+          255,
+          255,
+          0.92
+        );
+
+      --library-shadow:
+        0 8px 24px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+
+      --library-shadow-hover:
+        0 12px 28px
+        rgba(
+          42,
+          67,
+          163,
+          0.15
+        );
     }
 
     * {
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      color: var(--navy);
-      background: var(--background);
+    html {
+      min-height: 100%;
+      background:
+        var(--library-cream);
     }
 
-    button {
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color:
+        var(--library-ink);
+      font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at 8% 2%,
+          rgba(
+            42,
+            67,
+            163,
+            0.16
+          ),
+          transparent 27%
+        ),
+        radial-gradient(
+          circle at 92% 4%,
+          rgba(
+            255,
+            226,
+            105,
+            0.16
+          ),
+          transparent 28%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(
+            255,
+            255,
+            255,
+            0.76
+          ),
+          rgba(
+            255,
+            252,
+            233,
+            0.94
+          )
+        );
+    }
+
+    button,
+    input,
+    select {
       font: inherit;
     }
 
+    button {
+      cursor: pointer;
+    }
+
+    /*
+    ==========================================
+    COMPACT LIBRARY HEADER
+    ==========================================
+    */
+
     .library-header {
-      padding: 34px 24px;
-      color: var(--white);
-      text-align: center;
-      background: var(--navy);
-      border-bottom: 7px solid var(--red);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      width:
+        min(
+          1800px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      min-height: 92px;
+      margin:
+        12px
+        auto;
+      padding:
+        16px
+        23px;
+      overflow: hidden;
+      color:
+        var(--library-ink);
+      text-align: left;
+      background:
+        linear-gradient(
+          112deg,
+          rgba(
+            42,
+            67,
+            163,
+            0.34
+          ) 0%,
+          rgba(
+            255,
+            255,
+            255,
+            0.9
+          ) 54%,
+          rgba(
+            42,
+            67,
+            163,
+            0.18
+          ) 100%
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border-radius: 16px;
+      box-shadow:
+        var(--library-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
+      isolation: isolate;
+    }
+
+    .library-header::before {
+      content: "";
+      position: absolute;
+      top: -85px;
+      right: -40px;
+      z-index: -1;
+      width: 220px;
+      height: 220px;
+      pointer-events: none;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+      border-radius: 50%;
+    }
+
+    .library-header-copy {
+      min-width: 0;
+    }
+
+    .library-eyebrow {
+      margin:
+        0
+        0
+        2px;
+      color:
+        var(--library-blue);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
     }
 
     .library-header h1 {
       margin: 0;
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      color:
+        var(--library-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size:
+        clamp(
+          1.55rem,
+          2.4vw,
+          2.15rem
+        );
+      line-height: 1.08;
+      letter-spacing: -0.03em;
     }
 
     .library-header p {
-      margin: 9px 0 0;
-      color: var(--gold);
-      font-weight: bold;
+      margin:
+        4px
+        0
+        0;
+      color:
+        var(--library-muted);
+      font-size: 0.78rem;
+      font-weight: 650;
     }
 
-    main {
-      width: min(1100px, 94%);
-      margin: 28px auto 50px;
+    .library-header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      font-size: 1.6rem;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.62
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.84
+        );
+      border-radius: 13px;
+      box-shadow:
+        0 4px 14px
+        rgba(
+          42,
+          67,
+          163,
+          0.09
+        );
     }
 
     /*
     ==========================================
-    LIBRARY INTRODUCTION
+    MAIN LIBRARY WORKSPACE
+    ==========================================
+    */
+
+    .library-main {
+      display: grid;
+      gap: 12px;
+      width:
+        min(
+          1500px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      margin:
+        0
+        auto
+        38px;
+    }
+
+    /*
+    ==========================================
+    FILTER TOOLBAR
     ==========================================
     */
 
     .library-toolbar {
-      margin-bottom: 22px;
-      padding: 22px;
-      background: var(--white);
-      border-radius: 14px;
-      box-shadow: 0 6px 18px var(--shadow);
+      display: grid;
+      grid-template-columns:
+        minmax(
+          240px,
+          0.7fr
+        )
+        minmax(
+          0,
+          1.6fr
+        );
+      align-items: center;
+      gap:
+        18px;
+      margin: 0;
+      padding:
+        13px
+        16px;
+      background:
+        var(--library-glass);
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border-radius: 15px;
+      box-shadow:
+        var(--library-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
+    }
+
+    .library-toolbar-copy {
+      min-width: 0;
     }
 
     .library-toolbar h2 {
-      margin: 0 0 7px;
-      color: var(--red);
+      margin:
+        0
+        0
+        3px;
+      color:
+        var(--library-red);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.98rem;
+      line-height: 1.2;
     }
 
     .library-toolbar p {
       margin: 0;
-      color: var(--gray);
+      color:
+        var(--library-muted);
+      font-size: 0.69rem;
+      line-height: 1.4;
+    }
+
+    .library-filter-area {
+      display: grid;
+      grid-template-columns:
+        minmax(
+          0,
+          1.6fr
+        )
+        minmax(
+          180px,
+          0.7fr
+        );
+      align-items: end;
+      gap: 10px;
+    }
+
+    .library-filter-group {
+      min-width: 0;
+    }
+
+    .library-filter-group label {
+      display: block;
+      margin:
+        0
+        0
+        4px;
+      color:
+        var(--library-ink);
+      font-size: 0.72rem;
+      font-weight: 750;
+    }
+
+    .library-filter-group input,
+    .library-filter-group select {
+      width: 100%;
+      min-height: 38px;
+      padding:
+        8px
+        10px;
+      color:
+        var(--library-ink);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
+      border-radius: 9px;
+      outline: none;
+    }
+
+    .library-filter-group input:focus,
+    .library-filter-group select:focus {
+      border-color:
+        var(--library-blue);
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+    }
+
+    .library-filter-count {
+      grid-column:
+        1 /
+        -1;
+      margin:
+        -2px
+        0
+        0;
+      color:
+        var(--library-muted);
+      font-size: 0.66rem;
+      font-weight: 650;
     }
 
     /*
     ==========================================
-    CALENDAR
+    CALENDAR PANEL
     ==========================================
     */
 
     .lesson-calendar-panel {
-      margin-bottom: 24px;
-      padding: 22px;
-      background: var(--white);
-      border-radius: 14px;
-      box-shadow: 0 6px 18px var(--shadow);
+      margin: 0;
+      padding:
+        14px
+        16px
+        16px;
+      background:
+        var(--library-glass);
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border-radius: 15px;
+      box-shadow:
+        var(--library-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
     }
 
     .calendar-heading-row {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 18px;
-      margin-bottom: 20px;
+      gap: 16px;
+      margin-bottom: 10px;
+    }
+
+    .calendar-title-group {
+      min-width: 0;
     }
 
     .calendar-title-group h2 {
       margin: 0;
-      color: var(--navy);
-      font-size: 1.45rem;
+      color:
+        var(--library-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.98rem;
+      line-height: 1.2;
     }
 
     .calendar-title-group p {
-      margin: 6px 0 0;
-      color: var(--gray);
-      line-height: 1.4;
+      margin:
+        3px
+        0
+        0;
+      color:
+        var(--library-muted);
+      font-size: 0.68rem;
+      line-height: 1.35;
     }
 
     .calendar-controls {
@@ -126,169 +604,321 @@
       align-items: center;
       flex-wrap: wrap;
       justify-content: flex-end;
-      gap: 9px;
+      gap: 7px;
     }
 
     .calendar-control-button {
-      min-height: 42px;
-      padding: 9px 13px;
-      color: var(--navy);
-      font-weight: bold;
-      background: var(--white);
-      border: 2px solid var(--navy);
+      min-height: 34px;
+      padding:
+        6px
+        10px;
+      color:
+        var(--library-blue);
+      font-size: 0.7rem;
+      font-weight: 750;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        var(--library-blue);
       border-radius: 8px;
       cursor: pointer;
+      transition:
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
     }
 
     .calendar-control-button:hover {
-      color: var(--white);
-      background: var(--red);
-      border-color: var(--red);
+      color:
+        var(--library-white);
+      background:
+        var(--library-red);
+      border-color:
+        var(--library-red);
+      transform:
+        translateY(-1px);
     }
 
     .calendar-control-button.primary {
-      color: var(--white);
-      background: var(--navy);
+      color:
+        var(--library-white);
+      background:
+        var(--library-blue);
     }
 
     .calendar-control-button.primary:hover {
-      background: var(--red);
-      border-color: var(--red);
+      background:
+        var(--library-red);
+      border-color:
+        var(--library-red);
     }
+
+    /*
+    ==========================================
+    MONTH NAVIGATION
+    ==========================================
+    */
 
     .calendar-month-navigation {
       display: grid;
-      grid-template-columns: 48px 1fr 48px;
+      grid-template-columns:
+        38px
+        minmax(
+          0,
+          1fr
+        )
+        38px;
       align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
+      gap: 9px;
+      margin-bottom: 8px;
     }
 
     .calendar-month-label {
       margin: 0;
+      color:
+        var(--library-red);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size:
+        clamp(
+          1.05rem,
+          2vw,
+          1.4rem
+        );
       text-align: center;
-      color: var(--red);
-      font-size: clamp(1.35rem, 4vw, 1.85rem);
+      letter-spacing: -0.02em;
     }
 
     .calendar-arrow-button {
-      width: 48px;
-      height: 44px;
-      color: var(--white);
-      font-size: 1.3rem;
-      font-weight: bold;
-      background: var(--navy);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 38px;
+      height: 34px;
+      padding: 0;
+      color:
+        var(--library-white);
+      font-size: 1rem;
+      font-weight: 800;
+      background:
+        var(--library-blue);
       border: 0;
       border-radius: 8px;
       cursor: pointer;
+      transition:
+        background 180ms ease,
+        transform 180ms ease;
     }
 
     .calendar-arrow-button:hover {
-      background: var(--red);
+      background:
+        var(--library-red);
+      transform:
+        translateY(-1px);
     }
+
+    /*
+    ==========================================
+    CALENDAR GRID
+    ==========================================
+    */
 
     .calendar-weekdays {
       display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 7px;
-      margin-bottom: 7px;
+      grid-template-columns:
+        repeat(
+          7,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 5px;
+      margin-bottom: 5px;
     }
 
     .calendar-weekday {
-      padding: 8px 4px;
-      color: var(--gray);
-      font-size: 0.84rem;
-      font-weight: bold;
+      padding:
+        4px
+        2px;
+      color:
+        var(--library-muted);
+      font-size: 0.64rem;
+      font-weight: 800;
       text-align: center;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .lesson-calendar-grid {
       display: grid;
-      grid-template-columns: repeat(7, minmax(0, 1fr));
-      gap: 7px;
+      grid-template-columns:
+        repeat(
+          7,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 5px;
     }
 
     .calendar-day {
       position: relative;
-      min-height: 105px;
-      padding: 9px;
-      color: var(--navy);
-      text-align: left;
-      background: var(--white);
-      border: 2px solid var(--border);
-      border-radius: 9px;
-      cursor: pointer;
+      min-height: 68px;
+      padding: 7px;
       overflow: hidden;
+      color:
+        var(--library-ink);
+      text-align: left;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.16
+        );
+      border-radius: 8px;
+      cursor: pointer;
+      transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
     }
 
     .calendar-day:hover {
-      border-color: var(--gold);
-      box-shadow: 0 3px 10px var(--shadow);
+      border-color:
+        var(--library-gold);
+      box-shadow:
+        0 5px 12px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+      transform:
+        translateY(-1px);
     }
 
     .calendar-day.outside-month {
-      color: #9ba3ae;
-      background: #f4f5f7;
+      color:
+        #9aa2ae;
+      background:
+        rgba(
+          243,
+          245,
+          248,
+          0.8
+        );
     }
 
     .calendar-day.has-lessons {
-      background: var(--cream);
-      border-color: var(--gold);
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.9
+        );
+      border-color:
+        rgba(
+          211,
+          168,
+          79,
+          0.72
+        );
     }
 
     .calendar-day.selected {
-      color: var(--white);
-      background: var(--navy);
-      border-color: var(--navy);
+      color:
+        var(--library-white);
+      background:
+        var(--library-blue);
+      border-color:
+        var(--library-blue);
     }
 
     .calendar-day.today {
-      outline: 3px solid var(--red);
-      outline-offset: -3px;
+      box-shadow:
+        inset
+        0
+        0
+        0
+        2px
+        var(--library-red);
     }
 
     .calendar-day-number {
       display: block;
-      font-size: 1rem;
-      font-weight: bold;
+      font-size: 0.72rem;
+      font-weight: 800;
     }
 
     .calendar-day-lesson-count {
-      display: block;
-      margin-top: 12px;
-      padding: 5px 7px;
-      color: var(--white);
-      font-size: 0.78rem;
-      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 20px;
+      margin-top: 7px;
+      padding:
+        3px
+        6px;
+      color:
+        var(--library-white);
+      font-size: 0.58rem;
+      font-weight: 750;
       text-align: center;
-      background: var(--red);
+      background:
+        var(--library-red);
       border-radius: 6px;
     }
 
     .calendar-day.selected
     .calendar-day-lesson-count {
-      color: var(--navy);
-      background: var(--gold);
+      color:
+        var(--library-blue);
+      background:
+        var(--library-gold);
     }
 
     .calendar-day-dots {
       display: flex;
       flex-wrap: wrap;
-      gap: 4px;
-      margin-top: 8px;
+      gap: 3px;
+      margin-top: 5px;
     }
 
     .calendar-day-dot {
-      width: 7px;
-      height: 7px;
-      background: var(--red);
+      width: 5px;
+      height: 5px;
+      background:
+        var(--library-red);
       border-radius: 50%;
     }
 
     .calendar-day.selected
     .calendar-day-dot {
-      background: var(--gold);
+      background:
+        var(--library-gold);
     }
 
     /*
@@ -301,31 +931,56 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 15px;
-      margin: 4px 0 16px;
-      padding: 0 4px;
+      gap: 14px;
+      margin: 0;
+      padding:
+        3px
+        4px;
     }
 
     .lesson-results-heading h2 {
       margin: 0;
-      color: var(--navy);
-      font-size: 1.35rem;
+      color:
+        var(--library-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.98rem;
     }
 
     .lesson-results-count {
       margin: 0;
-      color: var(--gray);
-      font-weight: bold;
+      color:
+        var(--library-muted);
+      font-size: 0.7rem;
+      font-weight: 700;
     }
 
     .library-message {
       display: none;
-      margin: 20px 0;
-      padding: 16px;
+      margin: 0;
+      padding: 10px;
+      color:
+        #6c4300;
+      font-size: 0.74rem;
       text-align: center;
-      background: #fff0cf;
-      border: 2px solid var(--gold);
-      border-radius: 10px;
+      background:
+        rgba(
+          255,
+          226,
+          105,
+          0.25
+        );
+      border:
+        1px solid
+        rgba(
+          211,
+          168,
+          79,
+          0.52
+        );
+      border-radius: 9px;
     }
 
     .library-message.show {
@@ -334,7 +989,7 @@
 
     .lesson-library-list {
       display: grid;
-      gap: 18px;
+      gap: 10px;
     }
 
     /*
@@ -344,29 +999,77 @@
     */
 
     .lesson-card {
-      padding: 22px;
-      background: var(--white);
-      border-left: 7px solid var(--red);
-      border-radius: 13px;
-      box-shadow: 0 6px 18px var(--shadow);
+      padding:
+        13px
+        15px;
+      background:
+        var(--library-glass-strong);
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.11
+        );
+      border-left:
+        4px solid
+        var(--library-red);
+      border-radius: 12px;
+      box-shadow:
+        0 5px 16px
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+      transition:
+        box-shadow 180ms ease,
+        transform 180ms ease;
+    }
+
+    .lesson-card:hover {
+      box-shadow:
+        var(--library-shadow-hover);
+      transform:
+        translateY(-1px);
     }
 
     .lesson-card-heading {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 20px;
+      gap: 16px;
+    }
+
+    .lesson-card-copy {
+      min-width: 0;
     }
 
     .lesson-card h3 {
-      margin: 0 0 8px;
-      color: var(--navy);
-      font-size: 1.35rem;
+      margin:
+        0
+        0
+        3px;
+      color:
+        var(--library-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.94rem;
+      line-height: 1.25;
     }
 
     .lesson-card-meta {
-      margin: 3px 0;
-      color: var(--gray);
+      margin:
+        2px
+        0;
+      color:
+        var(--library-muted);
+      font-size: 0.68rem;
+      line-height: 1.35;
     }
 
     .lesson-card-actions {
@@ -374,225 +1077,455 @@
       flex: 0 0 auto;
       flex-wrap: wrap;
       justify-content: flex-end;
-      gap: 9px;
+      gap: 6px;
     }
 
     .lesson-details-button,
     .lesson-preview-button,
     .lesson-edit-button,
     .lesson-duplicate-button {
-      padding: 11px 15px;
-      font-weight: bold;
+      min-height: 33px;
+      padding:
+        6px
+        9px;
+      font-size: 0.66rem;
+      font-weight: 750;
       border-radius: 8px;
       cursor: pointer;
+      transition:
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
     }
 
     .lesson-details-button,
     .lesson-preview-button {
-      color: var(--white);
-      background: var(--navy);
-      border: 2px solid var(--navy);
+      color:
+        var(--library-white);
+      background:
+        var(--library-blue);
+      border:
+        1px solid
+        var(--library-blue);
     }
 
     .lesson-details-button:hover,
     .lesson-preview-button:hover {
-      background: var(--red);
-      border-color: var(--red);
+      background:
+        var(--library-red);
+      border-color:
+        var(--library-red);
+      transform:
+        translateY(-1px);
     }
 
     .lesson-edit-button {
-      color: var(--white);
-      background: #4d8256;
-      border: 2px solid #4d8256;
+      color:
+        var(--library-white);
+      background:
+        #39764d;
+      border:
+        1px solid
+        #39764d;
     }
 
     .lesson-edit-button:hover {
-      background: #376640;
-      border-color: #376640;
+      background:
+        #2f6842;
+      border-color:
+        #2f6842;
+      transform:
+        translateY(-1px);
     }
 
     .lesson-duplicate-button {
-      color: var(--navy);
-      background: var(--white);
-      border: 2px solid var(--navy);
+      color:
+        var(--library-blue);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        var(--library-blue);
     }
 
     .lesson-duplicate-button:hover {
-      color: var(--white);
-      background: var(--red);
-      border-color: var(--red);
+      color:
+        var(--library-white);
+      background:
+        var(--library-red);
+      border-color:
+        var(--library-red);
+      transform:
+        translateY(-1px);
     }
+
+    /*
+    ==========================================
+    EXPANDED LESSON DETAILS
+    ==========================================
+    */
 
     .lesson-details {
       display: none;
-      margin-top: 20px;
-      padding-top: 20px;
-      border-top: 2px solid var(--border);
+      margin-top: 11px;
+      padding-top: 11px;
+      border-top:
+        1px solid
+        var(--library-line);
     }
 
     .lesson-details.show {
       display: grid;
-      gap: 15px;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 8px;
     }
 
     .lesson-detail-section {
-      padding: 15px;
-      background: var(--cream);
-      border-radius: 9px;
+      min-width: 0;
+      padding:
+        9px
+        10px;
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.74
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+      border-radius: 8px;
     }
 
     .lesson-detail-section h4 {
-      margin: 0 0 7px;
-      color: var(--red);
+      margin:
+        0
+        0
+        4px;
+      color:
+        var(--library-red);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.76rem;
     }
 
     .lesson-detail-section p {
       margin: 0;
+      color:
+        var(--library-ink);
+      font-size: 0.69rem;
+      line-height: 1.42;
       white-space: pre-wrap;
-      line-height: 1.5;
     }
 
     .lesson-resource-links {
       display: flex;
       flex-wrap: wrap;
-      gap: 9px;
+      gap: 6px;
     }
 
     .lesson-resource-link {
-      display: inline-block;
-      padding: 9px 12px;
-      color: var(--white);
-      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding:
+        5px
+        8px;
+      color:
+        var(--library-white);
+      font-size: 0.65rem;
+      font-weight: 750;
       text-decoration: none;
-      background: var(--navy);
+      background:
+        var(--library-blue);
       border-radius: 7px;
     }
 
     .lesson-resource-link:hover {
-      background: var(--red);
+      background:
+        var(--library-red);
     }
 
     .lesson-no-resources {
-      color: var(--gray);
+      color:
+        var(--library-muted);
+      font-size: 0.69rem;
       font-style: italic;
     }
 
     /*
     ==========================================
-    RESPONSIVE LAYOUT
+    RESPONSIVE
     ==========================================
     */
 
-    @media (max-width: 760px) {
+    @media (
+      max-width: 980px
+    ) {
+      .library-toolbar {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+        gap: 10px;
+      }
+    }
+
+    @media (
+      max-width: 760px
+    ) {
       .calendar-heading-row {
-        align-items: stretch;
+        align-items: flex-start;
         flex-direction: column;
+        gap: 8px;
       }
 
       .calendar-controls {
         justify-content: flex-start;
       }
 
-      .calendar-day {
-        min-height: 82px;
-        padding: 7px;
-      }
-
-      .calendar-day-lesson-count {
-        margin-top: 8px;
-        padding: 4px;
-        font-size: 0.68rem;
-      }
-
-      .lesson-results-heading {
-        align-items: flex-start;
-        flex-direction: column;
+      .lesson-details.show {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
       }
     }
 
-    @media (max-width: 650px) {
+    @media (
+      max-width: 650px
+    ) {
+      .library-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .library-header-icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 42px;
+        height: 42px;
+      }
+
+      .library-filter-area {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .library-filter-count {
+        grid-column: auto;
+      }
+
       .lesson-card-heading {
         align-items: stretch;
         flex-direction: column;
+        gap: 9px;
       }
 
       .lesson-card-actions {
         width: 100%;
-        flex-direction: column;
-      }
-
-      .lesson-card-actions button {
-        width: 100%;
-      }
-
-      .calendar-weekday {
-        font-size: 0.7rem;
+        justify-content: flex-start;
       }
 
       .calendar-day {
-        min-height: 67px;
+        min-height: 60px;
       }
 
       .calendar-day-dots {
         display: none;
       }
-
-      .calendar-day-lesson-count {
-        overflow: hidden;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-      }
     }
 
-    @media (max-width: 430px) {
-      main {
-        width: min(96%, 1100px);
+    @media (
+      max-width: 500px
+    ) {
+      .library-header,
+      .library-main {
+        width:
+          calc(
+            100% -
+            16px
+          );
       }
 
+      .library-toolbar,
       .lesson-calendar-panel {
-        padding: 15px 10px;
+        padding:
+          12px;
+        border-radius: 13px;
       }
 
-      .lesson-calendar-grid,
-      .calendar-weekdays {
-        gap: 4px;
+      .calendar-weekdays,
+      .lesson-calendar-grid {
+        gap: 3px;
       }
 
       .calendar-day {
-        min-height: 58px;
-        padding: 6px 4px;
+        min-height: 52px;
+        padding:
+          5px
+          4px;
       }
 
       .calendar-day-lesson-count {
+        width: 18px;
+        min-height: 18px;
+        padding: 0;
+        overflow: hidden;
         font-size: 0;
+        border-radius: 50%;
       }
 
       .calendar-day-lesson-count::after {
-        content: "●";
-        font-size: 0.8rem;
+        content: "•";
+        font-size: 0.82rem;
+      }
+
+      .lesson-card-actions {
+        display: grid;
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(
+              0,
+              1fr
+            )
+          );
+      }
+
+      .lesson-card-actions button {
+        width: 100%;
+      }
+    }
+
+    @media (
+      prefers-reduced-motion:
+      reduce
+    ) {
+      *,
+      *::before,
+      *::after {
+        transition:
+          none !important;
       }
     }
   </style>
 </head>
 
-<body>
+<body class="patriot-page-library">
+  <!--
+  ==========================================
+  COMPACT PAGE HEADER
+  ==========================================
+  -->
+
   <header class="library-header">
-    <h1>📚 Library</h1>
+    <div class="library-header-copy">
+      <p class="library-eyebrow">
+        Saved Lesson Archive
+      </p>
 
-    <p>
-      Find, review, reuse, and launch your saved lessons.
-    </p>
-  </header>
-
-  <main>
-    <section class="library-toolbar">
-      <h2>Your Saved Lessons</h2>
+      <h1>
+        Library
+      </h1>
 
       <p>
-        Select a calendar date to see its lessons, or choose
-        All Lessons to view your complete archive.
+        Find, review, reuse, and launch your saved lessons.
       </p>
+    </div>
+
+    <div
+      class="library-header-icon"
+      aria-hidden="true"
+    >
+      📚
+    </div>
+  </header>
+
+  <main class="library-main">
+    <!--
+    ========================================
+    SEARCH AND FILTERS
+    ========================================
+    -->
+
+    <section class="library-toolbar">
+      <div class="library-toolbar-copy">
+        <h2>
+          Your Saved Lessons
+        </h2>
+
+        <p>
+          Search your archive or select a calendar date.
+        </p>
+      </div>
+
+      <div class="library-filter-area">
+        <div class="library-filter-group">
+          <label for="lesson-search-input">
+            Search Your Lessons
+          </label>
+
+          <input
+            id="lesson-search-input"
+            type="search"
+            placeholder="Search by title, standard, agenda, or keyword"
+          >
+        </div>
+
+        <div class="library-filter-group">
+          <label for="lesson-class-filter">
+            Class
+          </label>
+
+          <select id="lesson-class-filter">
+            <option value="">
+              All Classes
+            </option>
+          </select>
+        </div>
+
+        <p
+          id="lesson-filter-count"
+          class="library-filter-count"
+          aria-live="polite"
+        ></p>
+      </div>
     </section>
+
+    <!--
+    ========================================
+    CALENDAR
+    ========================================
+    -->
 
     <section
       class="lesson-calendar-panel"
@@ -660,13 +1593,33 @@
         class="calendar-weekdays"
         aria-hidden="true"
       >
-        <div class="calendar-weekday">Sun</div>
-        <div class="calendar-weekday">Mon</div>
-        <div class="calendar-weekday">Tue</div>
-        <div class="calendar-weekday">Wed</div>
-        <div class="calendar-weekday">Thu</div>
-        <div class="calendar-weekday">Fri</div>
-        <div class="calendar-weekday">Sat</div>
+        <div class="calendar-weekday">
+          Sun
+        </div>
+
+        <div class="calendar-weekday">
+          Mon
+        </div>
+
+        <div class="calendar-weekday">
+          Tue
+        </div>
+
+        <div class="calendar-weekday">
+          Wed
+        </div>
+
+        <div class="calendar-weekday">
+          Thu
+        </div>
+
+        <div class="calendar-weekday">
+          Fri
+        </div>
+
+        <div class="calendar-weekday">
+          Sat
+        </div>
       </div>
 
       <div
@@ -676,6 +1629,12 @@
         aria-label="Saved lesson calendar"
       ></div>
     </section>
+
+    <!--
+    ========================================
+    RESULTS
+    ========================================
+    -->
 
     <div class="lesson-results-heading">
       <h2 id="lesson-results-title">
@@ -692,6 +1651,7 @@
     <div
       id="library-message"
       class="library-message"
+      role="status"
     >
       Loading your saved lessons...
     </div>
@@ -704,8 +1664,10 @@
     ></section>
   </main>
 
-<script src="js/navigation.js?v=2"></script>
-  <script src="js/library.js"></script>
-  <script src="js/library-search.js"></script>
+  <script src="js/navigation.js?v=3"></script>
+
+  <script src="js/library.js?v=2"></script>
+
+  <script src="js/library-search.js?v=2"></script>
 </body>
 </html>
