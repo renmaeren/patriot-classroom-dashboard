@@ -17,19 +17,36 @@
 
     style.textContent = `
       .classroom-view-button {
-        min-width: 190px;
-        padding: 11px 14px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      
+        min-width: 0;
+        min-height: 34px;
+      
+        padding: 6px 11px;
+      
         color: #ffffff;
-        font-weight: bold;
-        background: #2f7d4a;
+        font-size: 0.69rem;
+        font-weight: 750;
+        line-height: 1;
+      
+        background: #39764d;
+      
         border: 0;
         border-radius: 9px;
+      
         cursor: pointer;
+      
+        transition:
+          filter 180ms ease,
+          transform 180ms ease;
       }
 
       .classroom-view-button:hover {
-        filter: brightness(1.08);
-      }
+  filter: brightness(1.07);
+  transform: translateY(-1px);
+}
 
       .exit-classroom-view {
         position: fixed;
@@ -98,7 +115,7 @@
       "classroom-view-button";
 
     launchButton.textContent =
-      "🖥️ Launch Classroom View";
+  "Classroom View";
 
     launchButton.addEventListener(
       "click",
