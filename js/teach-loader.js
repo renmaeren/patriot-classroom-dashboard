@@ -896,6 +896,130 @@ Empty optional components are not displayed.
       border-radius: 11px;
     }
 
+/*
+========================================
+LESSON FLOW ALIGNMENT CORRECTION
+========================================
+*/
+
+.lesson-flow-body {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  align-content: start;
+
+  width: 100%;
+  min-width: 0;
+
+  gap: 0;
+  padding: 0 0 8px;
+}
+
+.lesson-flow-stage,
+.lesson-flow-section {
+  grid-column:
+    1 / -1;
+
+  justify-self: stretch;
+
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+
+  box-sizing: border-box;
+}
+
+.lesson-flow-stage {
+  margin: 0;
+}
+
+.lesson-flow-section {
+  display: block;
+
+  margin: 0 !important;
+  padding:
+    9px
+    12px
+    9px
+    16px;
+
+  text-align: left;
+}
+
+.lesson-flow-heading {
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-width: 0;
+
+  margin:
+    0
+    0
+    4px;
+
+  padding: 0;
+
+  text-align: left;
+}
+
+.lesson-flow-heading > span:last-child {
+  display: block;
+
+  min-width: 0;
+
+  overflow-wrap:
+    break-word;
+
+  word-break:
+    normal;
+}
+
+.lesson-flow-section .lesson-text,
+.lesson-flow-section .profile-title,
+.lesson-flow-section .profile-description {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+
+  margin:
+    0 !important;
+
+  padding:
+    0 !important;
+
+  text-align:
+    left !important;
+
+  text-indent:
+    0 !important;
+
+  overflow-wrap:
+    break-word;
+
+  word-break:
+    normal;
+}
+
+.lesson-flow-section .agenda-list {
+  width: 100%;
+  min-width: 0;
+
+  margin:
+    0 !important;
+
+  padding-left:
+    18px !important;
+
+  text-align:
+    left !important;
+
+  overflow-wrap:
+    break-word;
+}
+
     /*
     ========================================
     RESOURCE BAR
