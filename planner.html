@@ -8,31 +8,152 @@
     content="width=device-width, initial-scale=1.0"
   >
 
+  <meta
+    name="description"
+    content="Create and save lessons in Patriot Command."
+  >
+
   <title>Planner | Patriot Command</title>
 
+  <link
+    rel="stylesheet"
+    href="css/patriot-design-system.css?v=2"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/layout.css?v=2"
+  >
+
   <style>
+    /*
+    ==========================================
+    PLANNER PAGE
+    ==========================================
+    */
+
     :root {
-      --navy: #11284a;
-      --red: #aa3235;
-      --green: #4d8256;
-      --gold: #d3a84f;
-      --cream: #f7f2e8;
-      --white: #ffffff;
-      --gray: #657184;
-      --border: #d7dce3;
-      --shadow: rgba(0, 0, 0, 0.13);
+      --planner-blue:
+        var(
+          --patriot-blue,
+          #2a43a3
+        );
+
+      --planner-red:
+        var(
+          --patriot-red,
+          #cf1b13
+        );
+
+      --planner-cream:
+        var(
+          --patriot-cream,
+          #fffce9
+        );
+
+      --planner-gold:
+        var(
+          --patriot-gold,
+          #ffe269
+        );
+
+      --planner-green:
+        #39764d;
+
+      --planner-ink:
+        var(
+          --patriot-text,
+          #20283a
+        );
+
+      --planner-muted:
+        var(
+          --patriot-muted,
+          #657087
+        );
+
+      --planner-line:
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+
+      --planner-glass:
+        rgba(
+          255,
+          255,
+          255,
+          0.8
+        );
+
+      --planner-shadow:
+        0 8px 25px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      min-height: 100%;
+      background:
+        var(--planner-cream);
+    }
+
     body {
-      margin: 0;
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      color: var(--navy);
-      background: #e9edf2;
+      margin: 0;
+      color:
+        var(--planner-ink);
+      font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at 8% 2%,
+          rgba(
+            42,
+            67,
+            163,
+            0.16
+          ),
+          transparent 27%
+        ),
+        radial-gradient(
+          circle at 92% 3%,
+          rgba(
+            255,
+            226,
+            105,
+            0.16
+          ),
+          transparent 28%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(
+            255,
+            255,
+            255,
+            0.74
+          ),
+          rgba(
+            255,
+            252,
+            233,
+            0.94
+          )
+        );
     }
 
     button,
@@ -42,270 +163,969 @@
       font: inherit;
     }
 
+    button {
+      cursor: pointer;
+    }
+
+    /*
+    ==========================================
+    COMPACT PLANNER HEADER
+    ==========================================
+    */
+
     .planner-header {
-      padding: 34px 24px;
-      color: var(--white);
-      text-align: center;
-      background: var(--navy);
-      border-bottom: 7px solid var(--red);
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      width:
+        min(
+          1800px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      min-height: 92px;
+      margin: 12px auto;
+      padding: 16px 23px;
+      overflow: hidden;
+      color:
+        var(--planner-ink);
+      text-align: left;
+      background:
+        linear-gradient(
+          112deg,
+          rgba(
+            42,
+            67,
+            163,
+            0.32
+          ) 0%,
+          rgba(
+            255,
+            255,
+            255,
+            0.88
+          ) 54%,
+          rgba(
+            42,
+            67,
+            163,
+            0.18
+          ) 100%
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border-radius: 16px;
+      box-shadow:
+        var(--planner-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
+      isolation: isolate;
+    }
+
+    .planner-header::before {
+      content: "";
+      position: absolute;
+      top: -80px;
+      right: -35px;
+      z-index: -1;
+      width: 220px;
+      height: 220px;
+      pointer-events: none;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+      border-radius: 50%;
+    }
+
+    .planner-header-copy {
+      min-width: 0;
+    }
+
+    .planner-eyebrow {
+      margin: 0 0 2px;
+      color:
+        var(--planner-blue);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
     }
 
     .planner-header h1 {
       margin: 0;
-      font-size: clamp(2rem, 5vw, 3.5rem);
+      color:
+        var(--planner-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size:
+        clamp(
+          1.55rem,
+          2.4vw,
+          2.15rem
+        );
+      line-height: 1.08;
+      letter-spacing: -0.03em;
     }
 
     .planner-header p {
-      margin: 9px 0 0;
-      color: var(--gold);
-      font-weight: bold;
+      margin: 4px 0 0;
+      color:
+        var(--planner-muted);
+      font-size: 0.78rem;
+      font-weight: 650;
     }
 
-    main {
-      width: min(1100px, 94%);
-      margin: 28px auto 50px;
+    .planner-header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      font-size: 1.65rem;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.62
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.84
+        );
+      border-radius: 13px;
+      box-shadow:
+        0 4px 14px
+        rgba(
+          42,
+          67,
+          163,
+          0.09
+        );
+    }
+
+    /*
+    ==========================================
+    MAIN PLANNER WORKSPACE
+    ==========================================
+    */
+
+    .planner-main {
+      width:
+        min(
+          1500px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      margin:
+        0
+        auto
+        38px;
     }
 
     .planner-card {
-      padding: 26px;
-      background: var(--white);
+      padding:
+        16px
+        19px
+        19px;
+      background:
+        var(--planner-glass);
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
       border-radius: 16px;
-      box-shadow: 0 7px 20px var(--shadow);
+      box-shadow:
+        var(--planner-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
     }
 
+    /*
+    ==========================================
+    FORM SECTIONS
+    ==========================================
+    */
+
     .section {
-      margin-bottom: 28px;
-      padding-bottom: 25px;
-      border-bottom: 2px solid #e3e6ea;
+      margin: 0;
+      padding:
+        15px
+        0;
+      border-bottom:
+        1px solid
+        var(--planner-line);
+    }
+
+    .section:first-child {
+      padding-top: 2px;
     }
 
     .section:last-of-type {
+      padding-bottom: 4px;
       border-bottom: 0;
     }
 
     .section h2 {
-      margin: 0 0 17px;
-      color: var(--red);
-      font-size: 1.25rem;
+      margin:
+        0
+        0
+        11px;
+      color:
+        var(--planner-red);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 1rem;
+      line-height: 1.2;
+      letter-spacing: -0.015em;
     }
+
+    .section-heading-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 10px;
+    }
+
+    .section-heading-row h2 {
+      margin: 0;
+    }
+
+    .section-heading-row p {
+      margin: 0;
+      color:
+        var(--planner-muted);
+      font-size: 0.68rem;
+    }
+
+    /*
+    ==========================================
+    FORM LAYOUT
+    ==========================================
+    */
 
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap:
+        11px
+        14px;
+    }
+
+    .required-components-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap:
+        11px
+        14px;
     }
 
     .form-group {
-      margin-bottom: 18px;
+      min-width: 0;
+      margin: 0 0 12px;
     }
 
     .form-group:last-child {
       margin-bottom: 0;
     }
 
+    .form-group.full-width {
+      grid-column:
+        1 /
+        -1;
+    }
+
     label,
     .group-label {
       display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
+      margin:
+        0
+        0
+        5px;
+      color:
+        var(--planner-ink);
+      font-size: 0.78rem;
+      font-weight: 750;
     }
 
     .required {
-      color: var(--red);
+      color:
+        var(--planner-red);
     }
 
     .help-text {
       display: block;
-      margin: -2px 0 8px;
-      color: var(--gray);
-      font-size: 0.87rem;
+      margin:
+        -1px
+        0
+        6px;
+      color:
+        var(--planner-muted);
+      font-size: 0.68rem;
+      line-height: 1.35;
     }
 
     input,
     textarea,
     select {
       width: 100%;
-      padding: 12px;
-      color: var(--navy);
-      background: var(--white);
-      border: 2px solid var(--border);
-      border-radius: 8px;
+      min-height: 39px;
+      padding:
+        8px
+        10px;
+      color:
+        var(--planner-ink);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
+      border-radius: 9px;
+      outline: none;
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    input:focus,
+    textarea:focus,
+    select:focus {
+      background:
+        #ffffff;
+      border-color:
+        var(--planner-blue);
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
     }
 
     textarea {
-      min-height: 105px;
-      line-height: 1.45;
+      min-height: 72px;
+      line-height: 1.42;
       resize: vertical;
     }
 
     #agenda {
-      min-height: 145px;
+      min-height: 94px;
     }
+
+    /*
+    ==========================================
+    CLASS OPTIONS
+    ==========================================
+    */
 
     .class-options {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
+      grid-template-columns:
+        repeat(
+          4,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 8px;
+    }
+
+    .class-options > p {
+      grid-column:
+        1 /
+        -1;
+      margin: 0;
+      color:
+        var(--planner-muted);
+      font-size: 0.75rem;
     }
 
     .class-choice {
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 12px;
-      background: var(--cream);
-      border: 2px solid var(--border);
+      gap: 8px;
+      min-width: 0;
+      min-height: 42px;
+      padding:
+        8px
+        10px;
+      color:
+        var(--planner-ink);
+      font-size: 0.75rem;
+      font-weight: 650;
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.76
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.16
+        );
       border-radius: 9px;
       cursor: pointer;
+      transition:
+        background 180ms ease,
+        border-color 180ms ease,
+        transform 180ms ease;
+    }
+
+    .class-choice:hover {
+      background:
+        rgba(
+          255,
+          226,
+          105,
+          0.21
+        );
+      border-color:
+        rgba(
+          42,
+          67,
+          163,
+          0.28
+        );
+      transform:
+        translateY(-1px);
     }
 
     .class-choice input {
-      width: 20px;
-      height: 20px;
+      flex: 0 0 auto;
+      width: 17px;
+      height: 17px;
+      min-height: 0;
       margin: 0;
+      padding: 0;
+      accent-color:
+        var(--planner-blue);
     }
+
+    /*
+    ==========================================
+    RESOURCES
+    ==========================================
+    */
 
     .resource-list {
       display: grid;
-      gap: 12px;
+      gap: 8px;
     }
 
     .resource-row {
       display: grid;
-      grid-template-columns: 180px 1fr auto;
-      gap: 10px;
+      grid-template-columns:
+        minmax(
+          135px,
+          180px
+        )
+        minmax(
+          0,
+          1fr
+        )
+        auto;
       align-items: center;
-      padding: 12px;
-      background: var(--cream);
+      gap: 8px;
+      padding: 8px;
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.68
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
       border-radius: 10px;
     }
 
+    .resource-row input,
+    .resource-row select {
+      min-height: 37px;
+    }
+
     .remove-resource {
-      padding: 11px 14px;
-      color: var(--white);
-      font-weight: bold;
-      background: var(--red);
+      min-height: 37px;
+      padding:
+        7px
+        11px;
+      color: #ffffff;
+      font-size: 0.72rem;
+      font-weight: 750;
+      background:
+        var(--planner-red);
       border: 0;
       border-radius: 8px;
-      cursor: pointer;
+    }
+
+    .remove-resource:hover {
+      filter:
+        brightness(1.06);
     }
 
     .add-resource {
-      width: 100%;
-      margin-top: 12px;
-      padding: 13px;
-      color: var(--white);
-      font-weight: bold;
-      background: var(--navy);
+      width: auto;
+      min-height: 37px;
+      margin-top: 8px;
+      padding:
+        8px
+        13px;
+      color: #ffffff;
+      font-size: 0.74rem;
+      font-weight: 750;
+      background:
+        var(--planner-blue);
       border: 0;
-      border-radius: 9px;
-      cursor: pointer;
+      border-radius: 8px;
     }
 
+    .add-resource:hover {
+      background:
+        var(--planner-red);
+    }
+
+    /*
+    ==========================================
+    OPTIONAL FIELDS
+    ==========================================
+    */
+
     details {
-      padding: 16px;
-      background: var(--cream);
+      padding:
+        11px
+        13px;
+      background:
+        rgba(
+          255,
+          252,
+          233,
+          0.7
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.12
+        );
       border-radius: 10px;
     }
 
     summary {
-      color: var(--navy);
-      font-weight: bold;
+      color:
+        var(--planner-blue);
+      font-size: 0.79rem;
+      font-weight: 750;
       cursor: pointer;
+      user-select: none;
+    }
+
+    summary::marker {
+      color:
+        var(--planner-red);
     }
 
     .optional-fields {
-      margin-top: 18px;
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap:
+        11px
+        14px;
+      margin-top: 13px;
     }
+
+    .optional-fields
+    .form-group {
+      margin: 0;
+    }
+
+    /*
+    ==========================================
+    ACTIONS
+    ==========================================
+    */
 
     .planner-actions {
       display: grid;
-      grid-template-columns: 2fr 1fr 1fr;
-      gap: 12px;
-      margin-top: 28px;
+      grid-template-columns:
+        minmax(
+          180px,
+          1.4fr
+        )
+        minmax(
+          150px,
+          0.8fr
+        )
+        minmax(
+          150px,
+          0.8fr
+        );
+      gap: 9px;
+      margin-top: 15px;
     }
 
     .action-button {
-  padding: 15px 18px;
-  color: var(--white);
-  font-weight: bold;
-  text-align: center;
-  text-decoration: none;
-  border: 0;
-  border-radius: 10px;
-  cursor: pointer;
-}
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 41px;
+      padding:
+        8px
+        13px;
+      color: #ffffff;
+      font-size: 0.76rem;
+      font-weight: 750;
+      text-align: center;
+      text-decoration: none;
+      border: 0;
+      border-radius: 9px;
+      cursor: pointer;
+      transition:
+        background 180ms ease,
+        color 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+    }
+
+    .action-button:hover {
+      box-shadow:
+        0 6px 15px
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+      transform:
+        translateY(-1px);
+    }
+
     .save-button {
-      background: var(--green);
+      background:
+        var(--planner-green);
+    }
+
+    .save-button:hover {
+      background:
+        #2f6842;
     }
 
     .new-button {
-      color: var(--navy);
-      background: var(--white);
-      border: 2px solid var(--navy);
+      color:
+        var(--planner-blue);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border:
+        1px solid
+        var(--planner-blue);
     }
 
-   .library-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--white);
-  background: var(--navy);
-  border: 2px solid var(--navy);
-}
+    .new-button:hover {
+      color: #ffffff;
+      background:
+        var(--planner-blue);
+    }
 
-.library-button:visited {
-  color: var(--white);
-}
+    .library-button,
+    .library-button:visited {
+      color: #ffffff;
+      background:
+        var(--planner-blue);
+      border:
+        1px solid
+        var(--planner-blue);
+    }
 
-.library-button:hover {
-  color: var(--white);
-  background: var(--red);
-  border-color: var(--red);
-}
+    .library-button:hover {
+      color: #ffffff;
+      background:
+        var(--planner-red);
+      border-color:
+        var(--planner-red);
+    }
+
     .status-message {
       display: none;
-      margin-top: 16px;
-      padding: 13px;
-      color: var(--white);
+      margin-top: 10px;
+      padding: 9px;
+      color: #ffffff;
+      font-size: 0.76rem;
       text-align: center;
-      font-weight: bold;
-      background: var(--green);
-      border-radius: 9px;
+      font-weight: 750;
+      background:
+        var(--planner-green);
+      border-radius: 8px;
     }
 
-    @media (max-width: 760px) {
+    /*
+    ==========================================
+    RESPONSIVE
+    ==========================================
+    */
+
+    @media (
+      max-width: 1100px
+    ) {
+      .class-options {
+        grid-template-columns:
+          repeat(
+            3,
+            minmax(
+              0,
+              1fr
+            )
+          );
+      }
+    }
+
+    @media (
+      max-width: 820px
+    ) {
+      .class-options {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(
+              0,
+              1fr
+            )
+          );
+      }
+
+      .required-components-grid,
+      .optional-fields {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+    }
+
+    @media (
+      max-width: 700px
+    ) {
+      .planner-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .planner-header-icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 42px;
+        height: 42px;
+      }
+
       .form-grid,
-      .class-options,
-      .planner-actions,
+      .resource-row,
+      .planner-actions {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
       .resource-row {
-        grid-template-columns: 1fr;
+        align-items: stretch;
+      }
+
+      .remove-resource,
+      .add-resource {
+        width: 100%;
+      }
+    }
+
+    @media (
+      max-width: 500px
+    ) {
+      .planner-header,
+      .planner-main {
+        width:
+          calc(
+            100% -
+            16px
+          );
+      }
+
+      .planner-card {
+        padding:
+          13px;
+        border-radius: 13px;
+      }
+
+      .class-options {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .section-heading-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 2px;
+      }
+    }
+
+    @media (
+      prefers-reduced-motion:
+      reduce
+    ) {
+      *,
+      *::before,
+      *::after {
+        transition:
+          none !important;
       }
     }
   </style>
 </head>
 
-<body>
+<body class="patriot-page-plan">
   <header class="planner-header">
-    <h1>📝 Planner</h1>
+    <div class="planner-header-copy">
+      <p class="planner-eyebrow">
+        Lesson Planning
+      </p>
 
-    <p>
-Create and save your lesson.    </p>
+      <h1>
+        Planner
+      </h1>
+
+      <p>
+        Create, save, and reuse your lesson.
+      </p>
+    </div>
+
+    <div
+      class="planner-header-icon"
+      aria-hidden="true"
+    >
+      📝
+    </div>
   </header>
 
-  <main>
+  <main class="planner-main">
     <form
       id="lesson-planner-form"
       class="planner-card"
     >
+      <!--
+      ========================================
+      LESSON INFORMATION
+      ========================================
+      -->
+
       <section class="section">
-        <h2>Lesson Information</h2>
+        <div class="section-heading-row">
+          <h2>
+            Lesson Information
+          </h2>
+
+          <p>
+            Choose the date and classes for this lesson.
+          </p>
+        </div>
 
         <div class="form-grid">
           <div class="form-group">
             <label for="lesson-date">
               Lesson Date
-              <span class="required">*</span>
+              <span class="required">
+                *
+              </span>
             </label>
 
             <input
@@ -328,76 +1148,102 @@ Create and save your lesson.    </p>
           </div>
         </div>
 
-        <span class="group-label">
-          Use This Lesson For
-          <span class="required">*</span>
-        </span>
+        <div class="form-group">
+          <span class="group-label">
+            Use This Lesson For
+            <span class="required">
+              *
+            </span>
+          </span>
 
-        <span class="help-text">
-          Your classes from Teacher Settings will appear here.
-        </span>
+          <span class="help-text">
+            Your classes from Teacher Settings will appear here.
+          </span>
 
-        <div
-          id="planner-class-options"
-          class="class-options"
-        >
-          <p>
-            Loading your classes...
-          </p>
+          <div
+            id="planner-class-options"
+            class="class-options"
+          >
+            <p>
+              Loading your classes...
+            </p>
+          </div>
         </div>
       </section>
 
+      <!--
+      ========================================
+      REQUIRED COMPONENTS
+      ========================================
+      -->
+
       <section class="section">
-        <h2>Required Lesson Components</h2>
+        <div class="section-heading-row">
+          <h2>
+            Required Lesson Components
+          </h2>
 
-        <div class="form-group">
-          <label for="bell-ringer">
-            Bell Ringer
-            <span class="required">*</span>
-          </label>
-
-          <textarea
-            id="bell-ringer"
-            placeholder="What should students do as they enter?"
-            required
-          ></textarea>
+          <p>
+            These appear in Teach mode.
+          </p>
         </div>
 
-        <div class="form-group">
-          <label for="agenda">
-            Agenda
-            <span class="required">*</span>
-          </label>
+        <div class="required-components-grid">
+          <div class="form-group">
+            <label for="bell-ringer">
+              Bell Ringer
+              <span class="required">
+                *
+              </span>
+            </label>
 
-          <span class="help-text">
-            Type one agenda item on each line.
-          </span>
+            <textarea
+              id="bell-ringer"
+              placeholder="What should students do as they enter?"
+              required
+            ></textarea>
+          </div>
 
-          <textarea
-            id="agenda"
-            placeholder="Bell Ringer&#10;Mini Lesson&#10;Guided Practice&#10;Independent Work&#10;Exit Ticket"
-            required
-          ></textarea>
-        </div>
+          <div class="form-group">
+            <label for="learning-target">
+              I Can / Learning Target
+              <span class="required">
+                *
+              </span>
+            </label>
 
-        <div class="form-group">
-          <label for="learning-target">
-            I Can / Learning Target
-            <span class="required">*</span>
-          </label>
+            <textarea
+              id="learning-target"
+              placeholder="I can..."
+              required
+            ></textarea>
+          </div>
 
-          <textarea
-            id="learning-target"
-            placeholder="I can..."
-            required
-          ></textarea>
-        </div>
+          <div class="form-group full-width">
+            <label for="agenda">
+              Agenda
+              <span class="required">
+                *
+              </span>
+            </label>
 
-        <div class="form-grid">
+            <span class="help-text">
+              Type one agenda item on each line.
+            </span>
+
+            <textarea
+              id="agenda"
+              placeholder="Bell Ringer&#10;Mini Lesson&#10;Guided Practice&#10;Independent Work&#10;Exit Ticket"
+              required
+            ></textarea>
+          </div>
+
           <div class="form-group">
             <label for="profile-component">
               Profile of a Patriot
-              <span class="required">*</span>
+              <span class="required">
+                *
+              </span>
             </label>
 
             <select
@@ -421,28 +1267,44 @@ Create and save your lesson.    </p>
               </option>
             </select>
           </div>
-        </div>
 
-        <div class="form-group">
-          <label for="standards">
-            Standards
-            <span class="required">*</span>
-          </label>
+          <div class="form-group full-width">
+            <label for="standards">
+              Standards
+              <span class="required">
+                *
+              </span>
+            </label>
 
-          <textarea
-            id="standards"
-            placeholder="Type or paste the applicable Kentucky standard(s)."
-            required
-          ></textarea>
+            <textarea
+              id="standards"
+              placeholder="Type or paste the applicable Kentucky standard(s)."
+              required
+            ></textarea>
+          </div>
         </div>
       </section>
 
+      <!--
+      ========================================
+      RESOURCES
+      ========================================
+      -->
+
       <section class="section">
-        <h2>Lesson Resources</h2>
+        <div class="section-heading-row">
+          <h2>
+            Lesson Resources
+          </h2>
+
+          <p>
+            Add resources in teaching order.
+          </p>
+        </div>
 
         <span class="help-text">
-          Add Slides, StudySync, videos, Google Docs, Canva,
-          PDFs, or websites in the order you plan to use them.
+          Add Slides, StudySync, videos, Google Docs,
+          Canva, PDFs, or websites.
         </span>
 
         <div
@@ -508,6 +1370,12 @@ Create and save your lesson.    </p>
         </button>
       </section>
 
+      <!--
+      ========================================
+      OPTIONAL COMPONENTS
+      ========================================
+      -->
+
       <section class="section">
         <details>
           <summary>
@@ -562,6 +1430,12 @@ Create and save your lesson.    </p>
         </details>
       </section>
 
+      <!--
+      ========================================
+      ACTIONS
+      ========================================
+      -->
+
       <div class="planner-actions">
         <button
           class="action-button save-button"
@@ -579,26 +1453,31 @@ Create and save your lesson.    </p>
         </button>
 
         <a
-  class="action-button library-button"
-  href="library.html"
->
-  Open Lesson Library
-</a>
+          class="action-button library-button"
+          href="library.html"
+        >
+          Open Lesson Library
+        </a>
       </div>
 
       <div
         id="planner-status"
         class="status-message"
+        role="status"
       >
         Lesson saved!
       </div>
     </form>
   </main>
 
-<script src="data/profile-options.js?v=4"></script>
-<script src="js/navigation.js?v=2"></script>
-<script src="js/planner-page.js?v=4"></script>
-<script src="js/planner-duplicate.js?v=6"></script>
-<script src="js/planner-save.js?v=4"></script>
+  <script src="data/profile-options.js?v=4"></script>
+
+  <script src="js/navigation.js?v=3"></script>
+
+  <script src="js/planner-page.js?v=4"></script>
+
+  <script src="js/planner-duplicate.js?v=6"></script>
+
+  <script src="js/planner-save.js?v=4"></script>
 </body>
 </html>
