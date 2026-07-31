@@ -1,12 +1,41 @@
+/*
+==========================================
+PATRIOT COMMAND
+Student Picker Widget
+==========================================
+
+FEATURES:
+- Uses saved teacher classes and rosters
+- Remembers the active class
+- Calls every student once per round
+- Saves round progress by class
+- Responds to the shared widget toolbar
+- Matches the modern Teaching Tools panel
+*/
+
 (function () {
   "use strict";
 
-  const PROFILE_STORAGE_KEY = "patriotTeacherProfile";
-  const ROSTER_STORAGE_KEY = "patriotStudentRosters";
-  const ACTIVE_CLASS_STORAGE_KEY = "patriotActiveClass";
-  const ROUND_STORAGE_KEY = "patriotStudentPickerRounds";
+  const PROFILE_STORAGE_KEY =
+    "patriotTeacherProfile";
 
-  const WIDGET_ID = "student-picker-widget";
+  const ROSTER_STORAGE_KEY =
+    "patriotStudentRosters";
+
+  const ACTIVE_CLASS_STORAGE_KEY =
+    "patriotActiveClass";
+
+  const ROUND_STORAGE_KEY =
+    "patriotStudentPickerRounds";
+
+  const WIDGET_SETTINGS_STORAGE_KEY =
+    "patriotTeachWidgetPreferences";
+
+  const WIDGET_ID =
+    "student-picker-widget";
+
+  const WIDGET_NAME =
+    "picker";
 
   let selectedClassKey = "";
   let roster = [];
@@ -22,18 +51,21 @@
     storageKey,
     fallbackValue
   ) {
-    const saved =
+    const savedValue =
       localStorage.getItem(storageKey);
 
-    if (!saved) {
+    if (!savedValue) {
       return fallbackValue;
     }
 
     try {
-      const parsed =
-        JSON.parse(saved);
+      const parsedValue =
+        JSON.parse(savedValue);
 
-      return parsed ?? fallbackValue;
+      return (
+        parsedValue ??
+        fallbackValue
+      );
     } catch (error) {
       console.error(
         `Could not read ${storageKey}.`,
@@ -65,25 +97,48 @@
     );
   }
 
-  function saveRoundData(roundData) {
+  function saveRoundData(
+    roundData
+  ) {
     localStorage.setItem(
       ROUND_STORAGE_KEY,
       JSON.stringify(roundData)
     );
   }
 
-  function saveActiveClass(classKey) {
-    localStorage.setItem(
-      ACTIVE_CLASS_STORAGE_KEY,
-      classKey
+  function readInitialVisibility() {
+    const settings =
+      readStorage(
+        WIDGET_SETTINGS_STORAGE_KEY,
+        {}
+      );
+
+    return Boolean(
+      settings &&
+      settings[WIDGET_NAME]
     );
+  }
+
+  function saveActiveClass(
+    classKey
+  ) {
+    if (classKey) {
+      localStorage.setItem(
+        ACTIVE_CLASS_STORAGE_KEY,
+        classKey
+      );
+    } else {
+      localStorage.removeItem(
+        ACTIVE_CLASS_STORAGE_KEY
+      );
+    }
 
     document.dispatchEvent(
       new CustomEvent(
         "patriotActiveClassChange",
         {
           detail: {
-            classKey: classKey
+            classKey
           }
         }
       )
@@ -102,7 +157,9 @@
 
     if (
       !profile ||
-      !profile.classes
+      !profile.classes ||
+      typeof profile.classes !==
+        "object"
     ) {
       return [];
     }
@@ -111,18 +168,31 @@
       profile.classes
     )
       .filter(
-        ([periodName, courseName]) =>
-          periodName &&
+        ([
+          periodName,
+          courseName
+        ]) =>
+          String(
+            periodName || ""
+          ).trim() &&
           String(
             courseName || ""
           ).trim()
       )
       .map(
-        ([periodName, courseName]) => ({
-          key: periodName,
+        ([
+          periodName,
+          courseName
+        ]) => ({
+          key:
+            String(
+              periodName
+            ).trim(),
 
           label:
-            `${periodName} — ` +
+            `${String(
+              periodName
+            ).trim()} — ` +
             String(
               courseName
             ).trim()
@@ -133,20 +203,27 @@
   function getStudentDisplayName(
     student
   ) {
+    if (!student) {
+      return "";
+    }
+
     const preferredName =
       String(
-        student.preferredName || ""
+        student.preferredName ||
+        ""
       ).trim();
 
     const firstName =
       preferredName ||
       String(
-        student.firstName || ""
+        student.firstName ||
+        ""
       ).trim();
 
     const lastName =
       String(
-        student.lastName || ""
+        student.lastName ||
+        ""
       ).trim();
 
     return [
@@ -155,6 +232,25 @@
     ]
       .filter(Boolean)
       .join(" ");
+  }
+
+  function getStudentId(
+    student,
+    index
+  ) {
+    if (
+      student.id !== undefined &&
+      student.id !== null &&
+      String(student.id).trim()
+    ) {
+      return String(student.id);
+    }
+
+    return (
+      `${selectedClassKey}-` +
+      `${index}-` +
+      getStudentDisplayName(student)
+    );
   }
 
   function loadRosterForClass(
@@ -171,14 +267,28 @@
         : [];
 
     roster =
-      savedRoster.filter(
-        student =>
-          student &&
-          student.active !== false &&
-          getStudentDisplayName(
-            student
-          )
-      );
+      savedRoster
+        .filter(
+          student =>
+            student &&
+            student.active !== false &&
+            getStudentDisplayName(
+              student
+            )
+        )
+        .map(
+          (
+            student,
+            index
+          ) => ({
+            ...student,
+            id:
+              getStudentId(
+                student,
+                index
+              )
+          })
+        );
 
     loadSavedRound();
     updateWidgetDisplay();
@@ -192,7 +302,8 @@
 
   function getValidStudentIds() {
     return roster.map(
-      student => student.id
+      student =>
+        String(student.id)
     );
   }
 
@@ -212,28 +323,26 @@
     const roundData =
       readRoundData();
 
+    const savedRound =
+      roundData[
+        selectedClassKey
+      ];
+
     const savedIds =
-      Array.isArray(
-        roundData[selectedClassKey]
-      )
-        ? roundData[
-            selectedClassKey
-          ]
+      Array.isArray(savedRound)
+        ? savedRound.map(String)
         : [];
 
     remainingStudentIds =
       savedIds.filter(
         studentId =>
-          validIds.has(studentId)
-      );
-
-    const savedRoundWasMissing =
-      !Array.isArray(
-        roundData[selectedClassKey]
+          validIds.has(
+            studentId
+          )
       );
 
     if (
-      savedRoundWasMissing &&
+      !Array.isArray(savedRound) &&
       roster.length > 0
     ) {
       createFreshRound();
@@ -248,10 +357,37 @@
     const roundData =
       readRoundData();
 
-    roundData[selectedClassKey] =
-      [...remainingStudentIds];
+    roundData[
+      selectedClassKey
+    ] = [
+      ...remainingStudentIds
+    ];
 
-    saveRoundData(roundData);
+    saveRoundData(
+      roundData
+    );
+  }
+
+  function setResult(
+    message,
+    isEmpty = true
+  ) {
+    const result =
+      document.getElementById(
+        "student-picker-result"
+      );
+
+    if (!result) {
+      return;
+    }
+
+    result.textContent =
+      message;
+
+    result.classList.toggle(
+      "empty",
+      isEmpty
+    );
   }
 
   function resetRound() {
@@ -264,66 +400,41 @@
 
     createFreshRound();
 
-    const result =
-      document.getElementById(
-        "student-picker-result"
-      );
+    setResult(
+      "Round reset"
+    );
 
-    if (result) {
-      result.textContent =
-        "Round reset";
-
-      result.classList.add(
-        "empty"
-      );
-    }
-
-    updateRoundCount();
+    updateWidgetDisplay();
   }
 
   function pickStudent() {
-    const result =
-      document.getElementById(
-        "student-picker-result"
-      );
-
-    if (!result) {
-      return;
-    }
-
     if (!selectedClassKey) {
-      result.textContent =
-        "Select a class first";
-
-      result.classList.add(
-        "empty"
-      );
-
-      return;
-    }
-
-    if (roster.length === 0) {
-      result.textContent =
-        "No saved roster for this class";
-
-      result.classList.add(
-        "empty"
+      setResult(
+        "Select a class first"
       );
 
       return;
     }
 
     if (
-      remainingStudentIds.length === 0
+      roster.length === 0
     ) {
-      result.textContent =
-        "Everyone has been called";
-
-      result.classList.add(
-        "empty"
+      setResult(
+        "No saved roster for this class"
       );
 
-      updateRoundCount();
+      return;
+    }
+
+    if (
+      remainingStudentIds.length ===
+      0
+    ) {
+      setResult(
+        "Everyone has been called"
+      );
+
+      updateWidgetDisplay();
 
       return;
     }
@@ -349,27 +460,27 @@
     const student =
       roster.find(
         item =>
-          item.id ===
-          selectedStudentId
+          String(item.id) ===
+          String(
+            selectedStudentId
+          )
       );
 
-    result.textContent =
+    setResult(
       student
         ? getStudentDisplayName(
             student
           )
-        : "Student unavailable";
-
-    result.classList.remove(
-      "empty"
+        : "Student unavailable",
+      false
     );
 
-    updateRoundCount();
+    updateWidgetDisplay();
   }
 
   /*
   ==========================================
-  STUDENT PICKER-SPECIFIC STYLES
+  STYLES
   ==========================================
   */
 
@@ -392,56 +503,306 @@
 
     styles.textContent = `
       #${WIDGET_ID} {
+        margin: 0;
+        padding: 15px;
         text-align: left;
+        background: transparent;
+        border: 0;
+        border-top:
+          1px solid
+          rgba(42, 67, 163, 0.12);
+        border-radius: 0;
+        box-shadow: none;
       }
 
       #${WIDGET_ID}[hidden] {
-        display: none;
+        display: none !important;
+      }
+
+      .student-picker-heading {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 12px;
+        color:
+          var(
+            --patriot-red,
+            #cf1b13
+          );
+        font-family:
+          "Literata",
+          Georgia,
+          serif;
+        font-size: 0.98rem;
+        letter-spacing: -0.02em;
+      }
+
+      .student-picker-heading-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 27px;
+        height: 27px;
+        font-family:
+          "Inter",
+          "Segoe UI Emoji",
+          sans-serif;
+        font-size: 1rem;
+        background:
+          rgba(
+            255,
+            226,
+            105,
+            0.3
+          );
+        border-radius: 8px;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-field {
+        margin-bottom: 10px;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-field label {
+        display: block;
+        margin-bottom: 5px;
+        color:
+          var(
+            --patriot-text,
+            #20283a
+          );
+        font-size: 0.74rem;
+        font-weight: 750;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-select {
+        width: 100%;
+        min-height: 39px;
+        padding: 7px 34px 7px 10px;
+        color:
+          var(
+            --patriot-text,
+            #20283a
+          );
+        font-size: 0.79rem;
+        background:
+          rgba(
+            255,
+            255,
+            255,
+            0.82
+          );
+        border:
+          1px solid
+          rgba(
+            42,
+            67,
+            163,
+            0.17
+          );
+        border-radius: 9px;
+        outline: none;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-select:focus {
+        border-color:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+        box-shadow:
+          0 0 0 3px
+          rgba(
+            42,
+            67,
+            163,
+            0.12
+          );
       }
 
       .student-picker-result {
         display: flex;
-        justify-content: center;
         align-items: center;
-        min-height: 95px;
-        margin: 14px 0;
-        padding: 16px;
-        color: var(--navy, #11284a);
-        font-size: clamp(
-          1.4rem,
-          2.6vw,
-          2.2rem
-        );
-        font-weight: 700;
-        text-align: center;
+        justify-content: center;
+        min-height: 78px;
+        margin: 10px 0;
+        padding: 12px;
         overflow-wrap: anywhere;
+        color:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+        font-size:
+          clamp(
+            1.15rem,
+            2.1vw,
+            1.7rem
+          );
+        font-weight: 800;
+        line-height: 1.15;
+        text-align: center;
         background:
-          var(--cream, #f7f2e8);
+          rgba(
+            255,
+            252,
+            233,
+            0.72
+          );
         border:
-          3px solid
-          var(--gold, #d3a84f);
+          2px solid
+          rgba(
+            255,
+            226,
+            105,
+            0.95
+          );
         border-radius: 12px;
       }
 
       .student-picker-result.empty {
-        color: #777777;
-        font-size: 1rem;
+        color: #777f8e;
+        font-size: 0.86rem;
         font-style: italic;
-        font-weight: 400;
+        font-weight: 500;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-button-row {
+        display: grid;
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(0, 1fr)
+          );
+        gap: 7px;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-button {
+        min-width: 0;
+        min-height: 39px;
+        padding: 7px 8px;
+        color: #ffffff;
+        font-size: 0.75rem;
+        font-weight: 750;
+        line-height: 1.15;
+        background:
+          var(
+            --patriot-red,
+            #cf1b13
+          );
+        border: 0;
+        border-radius: 9px;
+        transition:
+          transform 180ms ease,
+          filter 180ms ease,
+          box-shadow 180ms ease;
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-button.secondary {
+        background:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-button:hover:not(
+          :disabled
+        ) {
+        filter: brightness(1.06);
+        box-shadow:
+          0 5px 12px
+          rgba(
+            42,
+            67,
+            163,
+            0.15
+          );
+        transform:
+          translateY(-1px);
+      }
+
+      #${WIDGET_ID}
+        .pc-widget-button:disabled {
+        opacity: 0.42;
+        cursor: not-allowed;
       }
 
       .student-picker-count {
-        margin: 10px 0 0;
+        margin: 9px 0 0;
+        color:
+          var(
+            --patriot-muted,
+            #657087
+          );
+        font-size: 0.72rem;
+        line-height: 1.35;
         text-align: center;
       }
 
       .student-picker-roster-link {
         display: block;
         width: fit-content;
-        margin: 9px auto 0;
-        color: var(--navy, #11284a);
-        font-size: 0.82rem;
-        font-weight: 700;
+        margin: 7px auto 0;
+        color:
+          var(
+            --patriot-blue,
+            #2a43a3
+          );
+        font-size: 0.72rem;
+        font-weight: 750;
+        text-align: center;
+        text-decoration:
+          underline;
+        text-underline-offset: 2px;
+      }
+
+      .student-picker-roster-link:hover {
+        color:
+          var(
+            --patriot-red,
+            #cf1b13
+          );
+      }
+
+      @media (
+        max-width: 1180px
+      ) {
+        #${WIDGET_ID} {
+          border-top: 0;
+          border-left:
+            1px solid
+            rgba(
+              42,
+              67,
+              163,
+              0.12
+            );
+        }
+      }
+
+      @media (
+        max-width: 820px
+      ) {
+        #${WIDGET_ID} {
+          border-top:
+            1px solid
+            rgba(
+              42,
+              67,
+              163,
+              0.12
+            );
+          border-left: 0;
+        }
       }
     `;
 
@@ -452,30 +813,35 @@
 
   /*
   ==========================================
-  WIDGET
+  WIDGET CREATION
   ==========================================
   */
 
+  function getWidgetContainer() {
+    return document.querySelector(
+      ".right-column"
+    );
+  }
+
   function createWidget() {
-    if (
+    const existingWidget =
       document.getElementById(
         WIDGET_ID
-      )
-    ) {
-      return;
+      );
+
+    if (existingWidget) {
+      return existingWidget;
     }
 
-    const rightColumn =
-      document.querySelector(
-        ".right-column"
-      );
+    const container =
+      getWidgetContainer();
 
-    if (!rightColumn) {
+    if (!container) {
       console.warn(
-        "The Student Picker could not find the right classroom column."
+        "The Student Picker could not find the Teaching Tools container."
       );
 
-      return;
+      return null;
     }
 
     const widget =
@@ -483,8 +849,26 @@
         "section"
       );
 
-   widget.innerHTML = `
-  <h2>🎲 Student Picker</h2>
+    widget.id =
+      WIDGET_ID;
+
+    widget.dataset.patriotWidget =
+      WIDGET_NAME;
+
+    widget.hidden = true;
+
+    widget.innerHTML = `
+      <h2 class="student-picker-heading">
+        <span
+          class="student-picker-heading-icon"
+          aria-hidden="true"
+        >
+          🎲
+        </span>
+
+        Student Picker
+      </h2>
+
       <div class="pc-widget-field">
         <label
           for="student-picker-class-select"
@@ -532,7 +916,7 @@
 
       <p
         id="student-picker-count"
-        class="student-picker-count pc-widget-muted"
+        class="student-picker-count"
       >
         No class selected
       </p>
@@ -545,37 +929,58 @@
       </a>
     `;
 
-    rightColumn.appendChild(
+    container.appendChild(
       widget
     );
 
-    document
-      .getElementById(
+    connectWidgetEvents();
+
+    return widget;
+  }
+
+  function connectWidgetEvents() {
+    const classSelector =
+      document.getElementById(
         "student-picker-class-select"
-      )
-      .addEventListener(
+      );
+
+    const pickButton =
+      document.getElementById(
+        "student-picker-pick-button"
+      );
+
+    const resetButton =
+      document.getElementById(
+        "student-picker-reset-button"
+      );
+
+    if (classSelector) {
+      classSelector.addEventListener(
         "change",
         handleClassChange
       );
+    }
 
-    document
-      .getElementById(
-        "student-picker-pick-button"
-      )
-      .addEventListener(
+    if (pickButton) {
+      pickButton.addEventListener(
         "click",
         pickStudent
       );
+    }
 
-    document
-      .getElementById(
-        "student-picker-reset-button"
-      )
-      .addEventListener(
+    if (resetButton) {
+      resetButton.addEventListener(
         "click",
         resetRound
       );
+    }
   }
+
+  /*
+  ==========================================
+  CLASS SELECTOR
+  ==========================================
+  */
 
   function populateClassSelector() {
     const classSelector =
@@ -628,16 +1033,24 @@
       );
 
     if (savedClassExists) {
-      classSelector.value =
+      selectedClassKey =
         savedClass;
 
-      selectedClassKey =
+      classSelector.value =
         savedClass;
 
       loadRosterForClass(
         selectedClassKey
       );
+
+      setResult(
+        "Ready to pick"
+      );
     } else {
+      selectedClassKey = "";
+      roster = [];
+      remainingStudentIds = [];
+
       updateWidgetDisplay();
     }
   }
@@ -652,25 +1065,13 @@
       selectedClassKey
     );
 
-    const result =
-      document.getElementById(
-        "student-picker-result"
-      );
-
-    if (result) {
-      result.textContent =
-        selectedClassKey
-          ? "Ready to pick"
-          : "Select a class";
-
-      result.classList.add(
-        "empty"
-      );
-    }
-
     if (!selectedClassKey) {
       roster = [];
       remainingStudentIds = [];
+
+      setResult(
+        "Select a class"
+      );
 
       updateWidgetDisplay();
 
@@ -680,7 +1081,19 @@
     loadRosterForClass(
       selectedClassKey
     );
+
+    setResult(
+      roster.length > 0
+        ? "Ready to pick"
+        : "No saved roster for this class"
+    );
   }
+
+  /*
+  ==========================================
+  DISPLAY UPDATES
+  ==========================================
+  */
 
   function updateWidgetDisplay() {
     updateRoundCount();
@@ -699,8 +1112,10 @@
       );
 
     const hasRoster =
-      selectedClassKey &&
-      roster.length > 0;
+      Boolean(
+        selectedClassKey &&
+        roster.length > 0
+      );
 
     if (pickButton) {
       pickButton.disabled =
@@ -730,7 +1145,9 @@
       return;
     }
 
-    if (roster.length === 0) {
+    if (
+      roster.length === 0
+    ) {
       countDisplay.textContent =
         "No saved roster for this class";
 
@@ -753,50 +1170,84 @@
   ==========================================
   */
 
-  function showWidget() {
-    const widget =
-      document.getElementById(
-        WIDGET_ID
-      );
-
-    if (widget) {
-      widget.hidden = false;
-    }
-  }
-
-  function hideWidget() {
-    const widget =
-      document.getElementById(
-        WIDGET_ID
-      );
-
-    if (widget) {
-      widget.hidden = true;
-    }
-  }
-
   function setWidgetVisibility(
     enabled
   ) {
-    if (enabled) {
-      showWidget();
-    } else {
-      hideWidget();
-    }
-  }
-
-  function handlePickerChange(
-    event
-  ) {
-    const enabled =
-      Boolean(
-        event.detail &&
-        event.detail.enabled
+    const widget =
+      document.getElementById(
+        WIDGET_ID
       );
 
+    if (!widget) {
+      return;
+    }
+
+    widget.hidden =
+      !Boolean(enabled);
+  }
+
+  function showWidget() {
     setWidgetVisibility(
-      enabled
+      true
     );
+  }
+
+  function hideWidget() {
+    setWidgetVisibility(
+      false
+    );
+  }
+
+  function handleWidgetChange(
+    event
+  ) {
+    const detail =
+      event.detail || {};
+
+    if (
+      detail.widgetId !==
+      WIDGET_NAME
+    ) {
+      return;
+    }
+
+    setWidgetVisibility(
+      detail.enabled
+    );
+  }
+
+  /*
+  ==========================================
+  DATA REFRESH
+  ==========================================
+  */
+
+  function refreshWidgetData() {
+    populateClassSelector();
+  }
+
+  function handleStorageChange(
+    event
+  ) {
+    if (
+      event.key ===
+        PROFILE_STORAGE_KEY ||
+      event.key ===
+        ROSTER_STORAGE_KEY ||
+      event.key ===
+        ACTIVE_CLASS_STORAGE_KEY
+    ) {
+      refreshWidgetData();
+    }
+
+    if (
+      event.key ===
+      WIDGET_SETTINGS_STORAGE_KEY
+    ) {
+      setWidgetVisibility(
+        readInitialVisibility()
+      );
+    }
   }
 
   /*
@@ -809,22 +1260,24 @@
     show: showWidget,
     hide: hideWidget,
     pick: pickStudent,
-    resetRound: resetRound,
+    resetRound,
+    refresh:
+      refreshWidgetData,
 
-    toggle:
-      function () {
-        const widget =
-          document.getElementById(
-            WIDGET_ID
-          );
+    toggle() {
+      const widget =
+        document.getElementById(
+          WIDGET_ID
+        );
 
-        if (!widget) {
-          return;
-        }
-
-        widget.hidden =
-          !widget.hidden;
+      if (!widget) {
+        return;
       }
+
+      setWidgetVisibility(
+        widget.hidden
+      );
+    }
   };
 
   /*
@@ -835,12 +1288,33 @@
 
   function initialize() {
     addStyles();
-    createWidget();
+
+    const widget =
+      createWidget();
+
+    if (!widget) {
+      return;
+    }
+
     populateClassSelector();
 
+    setWidgetVisibility(
+      readInitialVisibility()
+    );
+
     document.addEventListener(
-      "patriotPickerChange",
-      handlePickerChange
+      "patriotWidgetChange",
+      handleWidgetChange
+    );
+
+    document.addEventListener(
+      "patriotActiveClassChange",
+      refreshWidgetData
+    );
+
+    window.addEventListener(
+      "storage",
+      handleStorageChange
     );
   }
 
