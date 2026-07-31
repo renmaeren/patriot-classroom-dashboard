@@ -175,8 +175,8 @@ Enter one announcement per line.
       ========================================
       */
 
-      body.patriot-announcements-active {
-        padding-bottom: 52px;
+            body.patriot-announcements-active {
+        padding-bottom: 46px;
       }
 
       .patriot-announcement-bar {
@@ -187,28 +187,48 @@ Enter one announcement per line.
         z-index: 3900;
         display: none;
         align-items: center;
-        height: 52px;
+        height: 46px;
         overflow: hidden;
         color: #ffffff;
+        font-family:
+          "Inter",
+          "Segoe UI",
+          Arial,
+          sans-serif;
         background:
           linear-gradient(
             90deg,
-            rgba(17, 40, 74, 0.98),
-            rgba(26, 57, 99, 0.98)
+            #24385f 0%,
+            #2d4474 52%,
+            #24385f 100%
           );
         border-top:
-          3px solid #d3a84f;
+          2px solid #ffe269;
         box-shadow:
-          0 -4px 16px
-          rgba(0, 0, 0, 0.2);
+          0 -5px 18px
+          rgba(
+            32,
+            40,
+            58,
+            0.16
+          );
         backdrop-filter:
-          blur(8px);
+          blur(14px);
         -webkit-backdrop-filter:
-          blur(8px);
+          blur(14px);
       }
 
       .patriot-announcement-bar.visible {
         display: flex;
+      }
+
+      .patriot-announcement-bar,
+      .patriot-announcement-bar * {
+        font-family:
+          "Inter",
+          "Segoe UI",
+          Arial,
+          sans-serif;
       }
 
       .patriot-announcement-label {
@@ -219,20 +239,41 @@ Enter one announcement per line.
         align-self: stretch;
         flex: 0 0 auto;
         gap: 7px;
-        padding: 0 15px;
-        color: #11284a;
-        font-size: 0.84rem;
+        min-width: 166px;
+        padding: 0 16px;
+        color: #1f3157;
+        font-size: 0.69rem;
         font-weight: 800;
-        letter-spacing: 0.4px;
+        line-height: 1;
+        letter-spacing: 0.055em;
         text-transform: uppercase;
-        background: #d3a84f;
+        background:
+          linear-gradient(
+            135deg,
+            #ffe269,
+            #e9c65b
+          );
+        border-right:
+          1px solid
+          rgba(
+            255,
+            255,
+            255,
+            0.22
+          );
         box-shadow:
-          5px 0 12px
-          rgba(0, 0, 0, 0.16);
+          4px 0 12px
+          rgba(
+            26,
+            39,
+            67,
+            0.14
+          );
       }
 
       .patriot-announcement-label-icon {
-        font-size: 1.15rem;
+        font-size: 0.92rem;
+        line-height: 1;
       }
 
       .patriot-announcement-window {
@@ -257,7 +298,7 @@ Enter one announcement per line.
           patriot-announcement-scroll
           var(
             --patriot-announcement-speed,
-            34s
+            38s
           )
           linear
           infinite;
@@ -271,27 +312,34 @@ Enter one announcement per line.
       .patriot-announcement-group {
         display: flex;
         align-items: center;
-        justify-content: space-around;
         flex: 0 0 auto;
         min-width: 100vw;
         height: 100%;
-        padding: 0 82px 0 30px;
+        padding:
+          0
+          76px
+          0
+          24px;
       }
 
       .patriot-announcement-item {
         display: inline-flex;
         align-items: center;
         flex: 0 0 auto;
-        gap: 11px;
-        padding: 0 30px;
-        font-size: 1.05rem;
-        font-weight: 700;
-        letter-spacing: 0.2px;
+        gap: 10px;
+        padding:
+          0
+          25px;
+        color: #ffffff;
+        font-size: 0.82rem;
+        font-weight: 650;
+        line-height: 1;
+        letter-spacing: 0.01em;
       }
 
       .patriot-announcement-divider {
-        color: #d3a84f;
-        font-size: 1.1rem;
+        color: #ffe269;
+        font-size: 0.68rem;
       }
 
       .patriot-announcement-controls {
@@ -301,47 +349,71 @@ Enter one announcement per line.
         align-items: center;
         align-self: stretch;
         flex: 0 0 auto;
-        gap: 6px;
-        padding: 0 9px;
+        gap: 5px;
+        padding:
+          0
+          8px;
         background:
           linear-gradient(
             90deg,
-            rgba(17, 40, 74, 0),
-            rgba(17, 40, 74, 0.98) 28%
+            rgba(
+              36,
+              56,
+              95,
+              0
+            ),
+            rgba(
+              36,
+              56,
+              95,
+              0.98
+            ) 28%
           );
       }
 
       .patriot-announcement-control {
-        display: flex;
+        display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 34px;
-        height: 34px;
+        width: 30px;
+        height: 30px;
         padding: 0;
         color: #ffffff;
-        font-size: 1rem;
+        font-size: 0.78rem;
+        line-height: 1;
         background:
-          rgba(255, 255, 255, 0.12);
+          rgba(
+            255,
+            255,
+            255,
+            0.10
+          );
         border:
           1px solid
-          rgba(255, 255, 255, 0.35);
+          rgba(
+            255,
+            255,
+            255,
+            0.28
+          );
         border-radius: 8px;
         cursor: pointer;
         transition:
-          background 0.16s ease,
-          transform 0.16s ease;
+          background 160ms ease,
+          border-color 160ms ease,
+          transform 160ms ease;
       }
 
       .patriot-announcement-control:hover {
-        background:
-          rgba(179, 38, 46, 0.95);
-        transform: scale(1.04);
+        background: #cf1b13;
+        border-color: #cf1b13;
+        transform:
+          translateY(-1px);
       }
 
-      .patriot-announcement-control:
-      focus-visible {
+      .patriot-announcement-control:focus-visible {
         outline:
-          3px solid #d3a84f;
+          3px solid #ffe269;
         outline-offset: 2px;
       }
 
@@ -501,15 +573,18 @@ Enter one announcement per line.
         max-width: 700px
       ) {
         body.patriot-announcements-active {
-          padding-bottom: 48px;
+          padding-bottom: 44px;
         }
 
         .patriot-announcement-bar {
-          height: 48px;
+          height: 44px;
         }
 
         .patriot-announcement-label {
-          padding: 0 10px;
+          min-width: auto;
+          padding:
+            0
+            11px;
         }
 
         .patriot-announcement-label-text {
@@ -517,12 +592,19 @@ Enter one announcement per line.
         }
 
         .patriot-announcement-item {
-          padding: 0 22px;
-          font-size: 0.92rem;
+          padding:
+            0
+            18px;
+          font-size: 0.76rem;
         }
 
         .patriot-announcement-group {
-          padding-right: 74px;
+          padding-right: 68px;
+        }
+
+        .patriot-announcement-control {
+          width: 29px;
+          height: 29px;
         }
 
         .patriot-announcement-editor {
