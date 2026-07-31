@@ -10,6 +10,9 @@ Quick links to frequently used websites.
 LEFT SIDE:
 Switches for showing or hiding classroom
 widgets on the Teach page.
+
+Both toolbar tabs can be dragged vertically.
+Their positions are saved for each teacher.
 */
 
 (function () {
@@ -18,6 +21,12 @@ widgets on the Teach page.
 
   const WIDGET_STORAGE_KEY =
     "patriotTeachWidgetPreferences";
+
+  const QUICK_LINK_TAB_POSITION_KEY =
+    "patriotQuickLinkTabPosition";
+
+  const WIDGET_TAB_POSITION_KEY =
+    "patriotWidgetTabPosition";
 
   /*
   ==========================================
@@ -128,6 +137,282 @@ widgets on the Teach page.
     }
   }
 
+  function clamp(value, minimum, maximum) {
+    return Math.min(
+      Math.max(value, minimum),
+      maximum
+    );
+  }
+
+  function isSmallScreen() {
+    return window.matchMedia(
+      "(max-width: 700px)"
+    ).matches;
+  }
+
+  /*
+  ==========================================
+  DRAGGABLE EDGE TABS
+  ==========================================
+  */
+
+  function makeEdgeTabDraggable(
+    tab,
+    storageKey
+  ) {
+    const EDGE_PADDING = 12;
+    const DRAG_THRESHOLD = 6;
+
+    let pointerId = null;
+    let startY = 0;
+    let currentY = 0;
+    let dragging = false;
+    let suppressNextClick = false;
+
+    function getVerticalLimits() {
+      const tabHeight =
+        tab.offsetHeight || 62;
+
+      const minimum =
+        EDGE_PADDING +
+        tabHeight / 2;
+
+      const maximum =
+        window.innerHeight -
+        EDGE_PADDING -
+        tabHeight / 2;
+
+      return {
+        minimum,
+        maximum: Math.max(
+          minimum,
+          maximum
+        )
+      };
+    }
+
+    function readSavedPosition() {
+      const savedValue =
+        localStorage.getItem(storageKey);
+
+      if (savedValue === null) {
+        return 0.5;
+      }
+
+      const parsedValue =
+        Number(savedValue);
+
+      if (!Number.isFinite(parsedValue)) {
+        return 0.5;
+      }
+
+      return clamp(
+        parsedValue,
+        0,
+        1
+      );
+    }
+
+    function savePosition(centerY) {
+      const {
+        minimum,
+        maximum
+      } = getVerticalLimits();
+
+      const availableDistance =
+        maximum - minimum;
+
+      const position =
+        availableDistance > 0
+          ? (
+              centerY - minimum
+            ) / availableDistance
+          : 0.5;
+
+      localStorage.setItem(
+        storageKey,
+        String(
+          clamp(position, 0, 1)
+        )
+      );
+    }
+
+    function applySavedPosition() {
+      if (isSmallScreen()) {
+        tab.style.top = "50%";
+        return;
+      }
+
+      const {
+        minimum,
+        maximum
+      } = getVerticalLimits();
+
+      const savedPosition =
+        readSavedPosition();
+
+      const centerY =
+        minimum +
+        savedPosition *
+          (maximum - minimum);
+
+      tab.style.top =
+        `${centerY}px`;
+    }
+
+    function moveTab(clientY) {
+      const {
+        minimum,
+        maximum
+      } = getVerticalLimits();
+
+      const centerY =
+        clamp(
+          clientY,
+          minimum,
+          maximum
+        );
+
+      tab.style.top =
+        `${centerY}px`;
+
+      return centerY;
+    }
+
+    tab.addEventListener(
+      "pointerdown",
+      event => {
+        if (
+          isSmallScreen() ||
+          event.button !== 0
+        ) {
+          return;
+        }
+
+        pointerId =
+          event.pointerId;
+
+        startY =
+          event.clientY;
+
+        currentY =
+          event.clientY;
+
+        dragging = false;
+
+        tab.setPointerCapture(
+          pointerId
+        );
+      }
+    );
+
+    tab.addEventListener(
+      "pointermove",
+      event => {
+        if (
+          pointerId === null ||
+          event.pointerId !== pointerId
+        ) {
+          return;
+        }
+
+        currentY =
+          event.clientY;
+
+        const distanceMoved =
+          Math.abs(
+            currentY - startY
+          );
+
+        if (
+          !dragging &&
+          distanceMoved >=
+            DRAG_THRESHOLD
+        ) {
+          dragging = true;
+          tab.classList.add(
+            "dragging"
+          );
+        }
+
+        if (!dragging) {
+          return;
+        }
+
+        event.preventDefault();
+
+        moveTab(currentY);
+      }
+    );
+
+    function finishDragging(event) {
+      if (
+        pointerId === null ||
+        event.pointerId !== pointerId
+      ) {
+        return;
+      }
+
+      if (
+        tab.hasPointerCapture(
+          pointerId
+        )
+      ) {
+        tab.releasePointerCapture(
+          pointerId
+        );
+      }
+
+      if (dragging) {
+        const finalCenterY =
+          moveTab(currentY);
+
+        savePosition(
+          finalCenterY
+        );
+
+        suppressNextClick = true;
+
+        window.setTimeout(
+          () => {
+            suppressNextClick = false;
+          },
+          0
+        );
+      }
+
+      pointerId = null;
+      dragging = false;
+
+      tab.classList.remove(
+        "dragging"
+      );
+    }
+
+    tab.addEventListener(
+      "pointerup",
+      finishDragging
+    );
+
+    tab.addEventListener(
+      "pointercancel",
+      finishDragging
+    );
+
+    window.addEventListener(
+      "resize",
+      applySavedPosition
+    );
+
+    applySavedPosition();
+
+    return {
+      shouldIgnoreClick() {
+        return suppressNextClick;
+      }
+    };
+  }
+
   /*
   ==========================================
   WIDGET SETTINGS
@@ -218,7 +503,10 @@ widgets on the Teach page.
         background: rgba(17, 40, 74, 0.82);
         border: 1px solid rgba(255, 255, 255, 0.28);
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
-        cursor: pointer;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
         backdrop-filter: blur(7px);
         -webkit-backdrop-filter: blur(7px);
         transform: translateY(-50%);
@@ -232,6 +520,16 @@ widgets on the Teach page.
         width: 49px;
         background: rgba(179, 38, 46, 0.94);
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+      }
+
+      .patriot-edge-tab.dragging {
+        width: 49px;
+        cursor: grabbing;
+        background: rgba(179, 38, 46, 0.96);
+        box-shadow: 0 5px 16px rgba(0, 0, 0, 0.3);
+        transition:
+          background 0.18s ease,
+          box-shadow 0.18s ease;
       }
 
       .patriot-edge-tab img {
@@ -505,8 +803,11 @@ widgets on the Teach page.
 
       @media (max-width: 700px) {
         .patriot-edge-tab {
+          top: 50% !important;
           width: 41px;
           height: 58px;
+          cursor: pointer;
+          touch-action: auto;
         }
 
         .patriot-edge-tab img {
@@ -649,7 +950,7 @@ widgets on the Teach page.
     );
 
     tab.title =
-      "Classroom Quick Links";
+      "Click to open. Drag up or down to move.";
 
     const panel =
       document.createElement("aside");
@@ -691,6 +992,12 @@ widgets on the Teach page.
         "classroom-toolbar-close"
       );
 
+    const dragController =
+      makeEdgeTabDraggable(
+        tab,
+        QUICK_LINK_TAB_POSITION_KEY
+      );
+
     function openToolbar() {
       panel.classList.add("open");
       tab.style.display = "none";
@@ -713,7 +1020,15 @@ widgets on the Teach page.
 
     tab.addEventListener(
       "click",
-      openToolbar
+      () => {
+        if (
+          dragController.shouldIgnoreClick()
+        ) {
+          return;
+        }
+
+        openToolbar();
+      }
     );
 
     closeButton.addEventListener(
@@ -889,7 +1204,7 @@ widgets on the Teach page.
     );
 
     tab.title =
-      "Classroom Widgets";
+      "Click to open. Drag up or down to move.";
 
     const panel =
       document.createElement("aside");
@@ -945,6 +1260,12 @@ widgets on the Teach page.
         "teach-widget-close"
       );
 
+    const dragController =
+      makeEdgeTabDraggable(
+        tab,
+        WIDGET_TAB_POSITION_KEY
+      );
+
     function openToolbar() {
       panel.classList.add("open");
       tab.style.display = "none";
@@ -967,7 +1288,15 @@ widgets on the Teach page.
 
     tab.addEventListener(
       "click",
-      openToolbar
+      () => {
+        if (
+          dragController.shouldIgnoreClick()
+        ) {
+          return;
+        }
+
+        openToolbar();
+      }
     );
 
     closeButton.addEventListener(
