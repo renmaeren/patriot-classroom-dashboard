@@ -1291,404 +1291,511 @@ Empty optional components are not displayed.
   );
 }
   /*
-  ==========================================
-  LESSON FLOW CREATION
-  ==========================================
-  */
+==========================================
+LESSON FLOW CREATION
+==========================================
+*/
 
-  function createStageHeading(title) {
-    const heading =
-      document.createElement(
-        "div"
-      );
+function getStageIcon(stageTitle) {
+  const stageIcons = {
+    Opening: "🔔",
+    Learning: "📚",
+    Closing: "✓",
+    "Lesson Support": "✦"
+  };
 
-    heading.className =
-      "lesson-flow-stage";
+  return (
+    stageIcons[stageTitle] ||
+    "•"
+  );
+}
 
-    heading.textContent =
-      title;
+function createStageHeading(title) {
+  const heading =
+    document.createElement(
+      "div"
+    );
 
-    return heading;
+  heading.className =
+    "lesson-flow-stage";
+
+  heading.innerHTML = `
+    <span
+      aria-hidden="true"
+      style="
+        margin-right: 6px;
+        font-size: 0.72rem;
+      "
+    >
+      ${escapeHtml(
+        getStageIcon(title)
+      )}
+    </span>
+
+    <span>
+      ${escapeHtml(title)}
+    </span>
+  `;
+
+  return heading;
+}
+
+function createTextSection(
+  title,
+  icon,
+  value
+) {
+  if (!hasContent(value)) {
+    return null;
   }
 
-  function createTextSection(
-    title,
-    icon,
-    value
-  ) {
-    if (!hasContent(value)) {
-      return null;
-    }
+  const section =
+    document.createElement(
+      "section"
+    );
 
-    const section =
-      document.createElement(
-        "section"
-      );
+  section.className =
+    "lesson-flow-section";
 
-    section.className =
-      "lesson-flow-section";
+  section.innerHTML = `
+    <h3 class="lesson-flow-heading">
+      <span
+        class="lesson-flow-icon"
+        aria-hidden="true"
+      >
+        ${escapeHtml(icon)}
+      </span>
 
-    section.innerHTML = `
-      <h3 class="lesson-flow-heading">
-        <span
-          class="lesson-flow-icon"
-          aria-hidden="true"
-        >
-          ${escapeHtml(icon)}
-        </span>
-
+      <span>
         ${escapeHtml(title)}
-      </h3>
+      </span>
+    </h3>
 
-      <p class="lesson-text">
-        ${escapeHtml(value)}
-      </p>
-    `;
+    <p class="lesson-text">
+      ${escapeHtml(value)}
+    </p>
+  `;
 
-    return section;
+  return section;
+}
+
+function createAgendaSection(
+  agendaText
+) {
+  if (!hasContent(agendaText)) {
+    return null;
   }
 
-  function createAgendaSection(
-    agendaText
-  ) {
-    if (!hasContent(agendaText)) {
-      return null;
-    }
+  const items =
+    cleanText(agendaText)
+      .split("\n")
+      .map(item =>
+        item.trim()
+      )
+      .filter(Boolean);
 
-    const items =
-      cleanText(agendaText)
-        .split("\n")
-        .map(item =>
-          item.trim()
-        )
-        .filter(Boolean);
+  if (!items.length) {
+    return null;
+  }
 
-    if (!items.length) {
-      return null;
-    }
+  const section =
+    document.createElement(
+      "section"
+    );
 
-    const section =
-      document.createElement(
-        "section"
-      );
+  section.className =
+    "lesson-flow-section";
 
-    section.className =
-      "lesson-flow-section";
+  section.innerHTML = `
+    <h3 class="lesson-flow-heading">
+      <span
+        class="lesson-flow-icon"
+        aria-hidden="true"
+      >
+        ≡
+      </span>
 
-    section.innerHTML = `
-      <h3 class="lesson-flow-heading">
-        <span
-          class="lesson-flow-icon"
-          aria-hidden="true"
-        >
-          ≡
-        </span>
-
+      <span>
         Agenda
-      </h3>
+      </span>
+    </h3>
 
-      <ol class="agenda-list">
-        ${items
-          .map(item => {
-            return `
-              <li>
-                ${escapeHtml(item)}
-              </li>
-            `;
-          })
-          .join("")}
-      </ol>
-    `;
+    <ol class="agenda-list">
+      ${items
+        .map(item => {
+          return `
+            <li>
+              ${escapeHtml(item)}
+            </li>
+          `;
+        })
+        .join("")}
+    </ol>
+  `;
 
-    return section;
+  return section;
+}
+
+function createVocabularySection(
+  vocabularyText
+) {
+  if (!hasContent(vocabularyText)) {
+    return null;
   }
 
-  function getProfileInformation(
-    lesson
-  ) {
-    let title =
-      firstContent(
-        lesson.profileComponent
-      );
+  const items =
+    cleanText(vocabularyText)
+      .split("\n")
+      .map(item =>
+        item.trim()
+      )
+      .filter(Boolean);
 
-    let description =
-      firstContent(
-        lesson.profileFocus
-      );
-
-    if (
-      typeof window.findProfile ===
-        "function" &&
-      lesson.profileId &&
-      lesson.profileId !== "none"
-    ) {
-      const profile =
-        window.findProfile(
-          lesson.profileId
-        );
-
-      if (profile) {
-        title =
-          firstContent(
-            title,
-            profile.title
-          );
-
-        description =
-          firstContent(
-            description,
-            profile.shortDescription
-          );
-      }
-    }
-
-    if (
-      !title &&
-      lesson.profileId &&
-      lesson.profileId !== "none"
-    ) {
-      title =
-        lesson.profileId;
-    }
-
-    return {
-      title,
-      description
-    };
+  if (!items.length) {
+    return null;
   }
 
-  function createProfileSection(
-    lesson
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "lesson-flow-section";
+
+  section.innerHTML = `
+    <h3 class="lesson-flow-heading">
+      <span
+        class="lesson-flow-icon"
+        aria-hidden="true"
+      >
+        Aa
+      </span>
+
+      <span>
+        Vocabulary
+      </span>
+    </h3>
+
+    <div
+      class="lesson-text"
+      style="
+        display: grid;
+        gap: 4px;
+      "
+    >
+      ${items
+        .map(item => {
+          return `
+            <div>
+              ${escapeHtml(item)}
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+
+  return section;
+}
+
+function getProfileInformation(
+  lesson
+) {
+  let title =
+    firstContent(
+      lesson.profileComponent
+    );
+
+  let description =
+    firstContent(
+      lesson.profileFocus
+    );
+
+  if (
+    typeof window.findProfile ===
+      "function" &&
+    lesson.profileId &&
+    lesson.profileId !== "none"
   ) {
     const profile =
-      getProfileInformation(
-        lesson
+      window.findProfile(
+        lesson.profileId
       );
 
-    if (
-      !hasContent(profile.title) &&
-      !hasContent(
+    if (profile) {
+      title =
+        firstContent(
+          title,
+          profile.title
+        );
+
+      description =
+        firstContent(
+          description,
+          profile.shortDescription
+        );
+    }
+  }
+
+  if (
+    !title &&
+    lesson.profileId &&
+    lesson.profileId !== "none"
+  ) {
+    title =
+      lesson.profileId;
+  }
+
+  return {
+    title,
+    description
+  };
+}
+
+function createProfileSection(
+  lesson
+) {
+  const profile =
+    getProfileInformation(
+      lesson
+    );
+
+  if (
+    !hasContent(profile.title) &&
+    !hasContent(
+      profile.description
+    )
+  ) {
+    return null;
+  }
+
+  const section =
+    document.createElement(
+      "section"
+    );
+
+  section.className =
+    "lesson-flow-section";
+
+  section.innerHTML = `
+    <h3 class="lesson-flow-heading">
+      <span
+        class="lesson-flow-icon"
+        aria-hidden="true"
+      >
+        ★
+      </span>
+
+      <span>
+        Profile of a Patriot
+      </span>
+    </h3>
+
+    ${
+      hasContent(profile.title)
+        ? `
+          <div class="profile-title">
+            ${escapeHtml(
+              profile.title
+            )}
+          </div>
+        `
+        : ""
+    }
+
+    ${
+      hasContent(
         profile.description
       )
-    ) {
-      return null;
+        ? `
+          <p class="profile-description">
+            ${escapeHtml(
+              profile.description
+            )}
+          </p>
+        `
+        : ""
     }
+  `;
 
-    const section =
-      document.createElement(
-        "section"
-      );
+  return section;
+}
 
-    section.className =
-      "lesson-flow-section";
+function appendStage(
+  container,
+  stageTitle,
+  sections
+) {
+  const populatedSections =
+    sections.filter(Boolean);
 
-    section.innerHTML = `
-      <h3 class="lesson-flow-heading">
-        <span
-          class="lesson-flow-icon"
-          aria-hidden="true"
-        >
-          ★
-        </span>
-
-        Profile of a Patriot
-      </h3>
-
-      ${
-        hasContent(profile.title)
-          ? `
-            <div class="profile-title">
-              ${escapeHtml(
-                profile.title
-              )}
-            </div>
-          `
-          : ""
-      }
-
-      ${
-        hasContent(
-          profile.description
-        )
-          ? `
-            <p class="profile-description">
-              ${escapeHtml(
-                profile.description
-              )}
-            </p>
-          `
-          : ""
-      }
-    `;
-
-    return section;
+  if (!populatedSections.length) {
+    return;
   }
 
-  function appendStage(
-    container,
-    stageTitle,
-    sections
-  ) {
-    const populatedSections =
-      sections.filter(Boolean);
+  container.appendChild(
+    createStageHeading(
+      stageTitle
+    )
+  );
 
-    if (!populatedSections.length) {
-      return;
+  populatedSections.forEach(
+    section => {
+      container.appendChild(
+        section
+      );
     }
+  );
+}
 
-    container.appendChild(
-      createStageHeading(
-        stageTitle
+function createEmptyLessonMessage(
+  message
+) {
+  const empty =
+    document.createElement(
+      "div"
+    );
+
+  empty.className =
+    "lesson-flow-empty";
+
+  empty.innerHTML = `
+    <div
+      aria-hidden="true"
+      style="
+        margin-bottom: 6px;
+        font-size: 1.15rem;
+      "
+    >
+      📋
+    </div>
+
+    <div>
+      ${escapeHtml(message)}
+    </div>
+  `;
+
+  return empty;
+}
+
+function displayLessonFlow(lesson) {
+  const lessonBody =
+    document.querySelector(
+      "#lesson-flow-panel .command-panel-body"
+    );
+
+  if (!lessonBody) {
+    return;
+  }
+
+  lessonBody.className =
+    "command-panel-body lesson-flow-body";
+
+  lessonBody.innerHTML = "";
+
+  if (!lesson) {
+    lessonBody.appendChild(
+      createEmptyLessonMessage(
+        "Choose a saved lesson from the Library or create one in Planner."
       )
     );
 
-    populatedSections.forEach(
-      section => {
-        container.appendChild(
-          section
-        );
-      }
-    );
+    return;
   }
 
-  function displayLessonFlow(lesson) {
-    const lessonBody =
-      document.querySelector(
-        "#lesson-flow-panel .command-panel-body"
-      );
+  appendStage(
+    lessonBody,
+    "Opening",
+    [
+      createTextSection(
+        "Bell Ringer",
+        "📌",
+        lesson.bellRinger
+      ),
 
-    if (!lessonBody) {
-      return;
-    }
+      createTextSection(
+        "Essential Question",
+        "?",
+        lesson.essentialQuestion
+      ),
 
-    lessonBody.className =
-      "command-panel-body lesson-flow-body";
+      createTextSection(
+        "I Can",
+        "🎯",
+        lesson.learningTarget
+      ),
 
-    lessonBody.innerHTML = "";
+      createProfileSection(
+        lesson
+      ),
 
-    if (!lesson) {
-      const empty =
-        document.createElement(
-          "p"
-        );
+      createTextSection(
+        "Success Criteria",
+        "✓",
+        lesson.successCriteria
+      )
+    ]
+  );
 
-      empty.className =
-        "lesson-flow-empty";
+  appendStage(
+    lessonBody,
+    "Learning",
+    [
+      createAgendaSection(
+        lesson.agenda
+      ),
 
-      empty.textContent =
-        "Choose a saved lesson from the Library or create one in Planner.";
+      createVocabularySection(
+        lesson.vocabulary
+      )
+    ]
+  );
 
-      lessonBody.appendChild(
-        empty
-      );
+  appendStage(
+    lessonBody,
+    "Closing",
+    [
+      createTextSection(
+        "Exit Ticket",
+        "↗",
+        lesson.exitTicket
+      ),
 
-      return;
-    }
+      createTextSection(
+        "Homework",
+        "⌂",
+        lesson.homework
+      )
+    ]
+  );
 
-    appendStage(
-      lessonBody,
-      "Opening",
-      [
-        createTextSection(
-          "Bell Ringer",
-          "📌",
-          lesson.bellRinger
-        ),
+  appendStage(
+    lessonBody,
+    "Lesson Support",
+    [
+      createTextSection(
+        "Why Are We Learning This?",
+        "💡",
+        lesson.whyLearning
+      ),
 
-        createTextSection(
-          "Essential Question",
-          "?",
-          lesson.essentialQuestion
-        ),
+      createTextSection(
+        "Materials Needed",
+        "▣",
+        lesson.materials
+      )
+    ]
+  );
 
-        createTextSection(
-          "I Can",
-          "🎯",
-          lesson.learningTarget
-        ),
-
-        createProfileSection(
-          lesson
-        ),
-
-        createTextSection(
-          "Success Criteria",
-          "✓",
-          lesson.successCriteria
-        )
-      ]
+  if (!lessonBody.children.length) {
+    lessonBody.appendChild(
+      createEmptyLessonMessage(
+        "This lesson does not contain any displayable lesson components."
+      )
     );
-
-    appendStage(
-      lessonBody,
-      "Learning",
-      [
-        createAgendaSection(
-          lesson.agenda
-        ),
-
-        createTextSection(
-          "Vocabulary",
-          "Aa",
-          lesson.vocabulary
-        )
-      ]
-    );
-
-    appendStage(
-      lessonBody,
-      "Closing",
-      [
-        createTextSection(
-          "Exit Ticket",
-          "↗",
-          lesson.exitTicket
-        ),
-
-        createTextSection(
-          "Homework",
-          "⌂",
-          lesson.homework
-        )
-      ]
-    );
-
-    appendStage(
-      lessonBody,
-      "Additional",
-      [
-        createTextSection(
-          "Why Are We Learning This?",
-          "💡",
-          lesson.whyLearning
-        ),
-
-        createTextSection(
-          "Materials Needed",
-          "▣",
-          lesson.materials
-        )
-      ]
-    );
-
-    if (!lessonBody.children.length) {
-      const empty =
-        document.createElement(
-          "p"
-        );
-
-      empty.className =
-        "lesson-flow-empty";
-
-      empty.textContent =
-        "This lesson does not contain displayable lesson components.";
-
-      lessonBody.appendChild(
-        empty
-      );
-    }
   }
-
+}
   /*
   ==========================================
   RESOURCE DISPLAY CREATION
