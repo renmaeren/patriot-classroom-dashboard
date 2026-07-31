@@ -1,0 +1,1730 @@
+/*
+==========================================
+PATRIOT COMMAND
+Shared Layout System
+==========================================
+
+PURPOSE
+
+This file standardizes:
+- Page width
+- Page spacing
+- Headers
+- Section gaps
+- Card and panel padding
+- Two-column layouts
+- Dashboard grids
+- Planner layouts
+- Settings layouts
+- Teach workspace proportions
+- Responsive behavior
+
+LOAD ORDER
+
+1. Existing page stylesheet
+2. patriot-design-system.css
+3. layout.css
+
+This file should load LAST so the shared
+layout rules can correct older spacing.
+*/
+
+/*
+==========================================
+LAYOUT TOKENS
+==========================================
+*/
+
+:root {
+  --pc-content-width: 1800px;
+
+  --pc-edge-space:
+    clamp(
+      10px,
+      1.4vw,
+      24px
+    );
+
+  --pc-page-top-space:
+    clamp(
+      10px,
+      1.2vw,
+      18px
+    );
+
+  --pc-page-bottom-space:
+    clamp(
+      24px,
+      4vw,
+      54px
+    );
+
+  --pc-section-gap:
+    clamp(
+      12px,
+      1.25vw,
+      20px
+    );
+
+  --pc-card-gap:
+    clamp(
+      10px,
+      1vw,
+      16px
+    );
+
+  --pc-panel-padding:
+    clamp(
+      13px,
+      1.15vw,
+      18px
+    );
+
+  --pc-header-padding-x:
+    clamp(
+      16px,
+      1.7vw,
+      26px
+    );
+
+  --pc-header-padding-y:
+    clamp(
+      14px,
+      1.45vw,
+      21px
+    );
+
+  --pc-column-small:
+    minmax(
+      250px,
+      0.72fr
+    );
+
+  --pc-column-medium:
+    minmax(
+      300px,
+      0.9fr
+    );
+
+  --pc-column-main:
+    minmax(
+      0,
+      2fr
+    );
+}
+
+/*
+==========================================
+GLOBAL WIDTH CONTROL
+==========================================
+*/
+
+.patriot-page-shell,
+.page-shell,
+.dashboard-shell,
+.teach-shell,
+.planner-shell,
+.library-shell,
+.settings-shell,
+.students-shell,
+.about-shell,
+.app-shell {
+  width:
+    min(
+      calc(
+        100% -
+        (
+          var(--pc-edge-space) *
+          2
+        )
+      ),
+      var(--pc-content-width)
+    );
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.patriot-page-content,
+.page-content,
+.dashboard-content,
+.teach-content,
+.planner-content,
+.library-content,
+.settings-content,
+.students-content,
+.about-content,
+.app-content {
+  width: 100%;
+  padding-bottom:
+    var(--pc-page-bottom-space);
+}
+
+/*
+==========================================
+DIRECT MAIN ELEMENT SUPPORT
+==========================================
+*/
+
+body.patriot-page-dashboard
+  > main,
+body.patriot-page-teach
+  > main,
+body.patriot-page-plan
+  > main,
+body.patriot-page-library
+  > main,
+body.patriot-page-settings
+  > main {
+  width:
+    min(
+      calc(
+        100% -
+        (
+          var(--pc-edge-space) *
+          2
+        )
+      ),
+      var(--pc-content-width)
+    );
+  margin-right: auto;
+  margin-left: auto;
+  padding-bottom:
+    var(--pc-page-bottom-space);
+}
+
+/*
+==========================================
+STANDARD PAGE HEADER
+==========================================
+*/
+
+.patriot-page-header,
+.page-header,
+.dashboard-header,
+.teach-header,
+.planner-header,
+.library-header,
+.settings-header,
+.students-header,
+.about-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap:
+    clamp(
+      14px,
+      2vw,
+      28px
+    );
+
+  width:
+    min(
+      calc(
+        100% -
+        (
+          var(--pc-edge-space) *
+          2
+        )
+      ),
+      var(--pc-content-width)
+    );
+
+  min-height: 94px;
+  margin:
+    var(--pc-page-top-space)
+    auto
+    var(--pc-section-gap);
+
+  padding:
+    var(--pc-header-padding-y)
+    var(--pc-header-padding-x);
+}
+
+.patriot-page-header-copy,
+.page-header-copy,
+.dashboard-header-copy,
+.teach-header-copy,
+.planner-header-copy,
+.library-header-copy,
+.settings-header-copy,
+.students-header-copy,
+.about-header-copy {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.patriot-page-header-actions,
+.page-header-actions,
+.dashboard-header-actions,
+.teach-header-actions,
+.planner-header-actions,
+.library-header-actions,
+.settings-header-actions,
+.students-header-actions,
+.about-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.patriot-page-header h1,
+.page-header h1,
+.dashboard-header h1,
+.teach-header h1,
+.planner-header h1,
+.library-header h1,
+.settings-header h1,
+.students-header h1,
+.about-header h1 {
+  margin: 0;
+}
+
+.patriot-page-header p,
+.page-header p,
+.dashboard-header p,
+.teach-header p,
+.planner-header p,
+.library-header p,
+.settings-header p,
+.students-header p,
+.about-header p {
+  max-width: 760px;
+  margin:
+    5px
+    0
+    0;
+}
+
+/*
+==========================================
+SHARED SECTION RHYTHM
+==========================================
+*/
+
+.patriot-page-content
+  > * +
+  *,
+.page-content
+  > * +
+  *,
+.dashboard-content
+  > * +
+  *,
+.teach-content
+  > * +
+  *,
+.planner-content
+  > * +
+  *,
+.library-content
+  > * +
+  *,
+.settings-content
+  > * +
+  *,
+.students-content
+  > * +
+  *,
+.about-content
+  > * +
+  * {
+  margin-top:
+    var(--pc-section-gap);
+}
+
+.patriot-section,
+.page-section,
+.dashboard-section,
+.teach-section,
+.planner-section,
+.library-section,
+.settings-section,
+.students-section,
+.about-section {
+  margin: 0;
+}
+
+.patriot-section-header,
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding:
+    10px
+    var(--pc-panel-padding);
+}
+
+.patriot-section-header h2,
+.patriot-section-header h3,
+.section-header h2,
+.section-header h3 {
+  margin: 0;
+}
+
+.patriot-section-body,
+.section-body {
+  padding:
+    var(--pc-panel-padding);
+}
+
+/*
+==========================================
+PANEL AND CARD NORMALIZATION
+==========================================
+*/
+
+.patriot-panel,
+.patriot-card,
+.glass-panel,
+.card,
+.panel,
+.widget,
+.dashboard-section,
+.planner-section,
+.library-section,
+.settings-section,
+.students-section,
+.about-section {
+  min-width: 0;
+}
+
+.patriot-card,
+.card {
+  padding:
+    var(--pc-panel-padding);
+}
+
+.patriot-panel-header,
+.panel-header,
+.card-header {
+  min-height: 48px;
+  padding:
+    10px
+    var(--pc-panel-padding);
+}
+
+.patriot-panel-body,
+.panel-body,
+.card-body {
+  padding:
+    var(--pc-panel-padding);
+}
+
+.patriot-panel-footer,
+.panel-footer,
+.card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding:
+    10px
+    var(--pc-panel-padding);
+  border-top:
+    1px solid
+    var(
+      --patriot-line,
+      rgba(
+        42,
+        67,
+        163,
+        0.12
+      )
+    );
+}
+
+.card-grid,
+.panel-grid,
+.widget-grid,
+.dashboard-grid,
+.quick-link-grid,
+.resource-grid,
+.settings-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        min(
+          100%,
+          240px
+        ),
+        1fr
+      )
+    );
+  gap:
+    var(--pc-card-gap);
+}
+
+.card-stack,
+.panel-stack,
+.widget-stack,
+.section-stack {
+  display: grid;
+  gap:
+    var(--pc-card-gap);
+}
+
+/*
+==========================================
+COMMON TWO-COLUMN LAYOUTS
+==========================================
+*/
+
+.patriot-two-column,
+.page-two-column,
+.dashboard-two-column,
+.planner-two-column,
+.library-two-column,
+.settings-two-column {
+  display: grid;
+  grid-template-columns:
+    var(--pc-column-medium)
+    var(--pc-column-main);
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+.patriot-sidebar-layout,
+.sidebar-layout {
+  display: grid;
+  grid-template-columns:
+    var(--pc-column-small)
+    minmax(
+      0,
+      1fr
+    );
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+.patriot-main-column,
+.main-column,
+.content-column {
+  min-width: 0;
+}
+
+.patriot-side-column,
+.side-column,
+.sidebar {
+  min-width: 0;
+}
+
+/*
+==========================================
+DASHBOARD
+==========================================
+*/
+
+body.patriot-page-dashboard
+.dashboard-content,
+body.patriot-page-dashboard
+.page-content {
+  display: grid;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-dashboard
+.dashboard-summary,
+body.patriot-page-dashboard
+.summary-strip,
+body.patriot-page-dashboard
+.status-strip {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        150px,
+        1fr
+      )
+    );
+  gap: 0;
+}
+
+body.patriot-page-dashboard
+.dashboard-summary
+  > *,
+body.patriot-page-dashboard
+.summary-strip
+  > *,
+body.patriot-page-dashboard
+.status-strip
+  > * {
+  min-width: 0;
+}
+
+body.patriot-page-dashboard
+.dashboard-summary
+  > * +
+  *,
+body.patriot-page-dashboard
+.summary-strip
+  > * +
+  *,
+body.patriot-page-dashboard
+.status-strip
+  > * +
+  * {
+  border-left:
+    1px solid
+    var(
+      --patriot-line,
+      rgba(
+        42,
+        67,
+        163,
+        0.12
+      )
+    );
+}
+
+body.patriot-page-dashboard
+.dashboard-main-grid {
+  display: grid;
+  grid-template-columns:
+    minmax(
+      0,
+      1.55fr
+    )
+    minmax(
+      280px,
+      0.8fr
+    );
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-dashboard
+.dashboard-card-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fit,
+      minmax(
+        min(
+          100%,
+          260px
+        ),
+        1fr
+      )
+    );
+  gap:
+    var(--pc-card-gap);
+}
+
+/*
+==========================================
+TEACH PAGE
+==========================================
+*/
+
+body.patriot-page-teach
+.teach-content,
+body.patriot-page-teach
+.page-content {
+  display: grid;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-teach
+.schedule-strip {
+  width: 100%;
+  margin: 0;
+}
+
+body.patriot-page-teach
+.teach-command-center {
+  display: grid;
+  grid-template-columns:
+    minmax(
+      235px,
+      0.62fr
+    )
+    minmax(
+      0,
+      2.15fr
+    )
+    minmax(
+      235px,
+      0.62fr
+    );
+  align-items: stretch;
+  gap:
+    var(--pc-section-gap);
+  width: 100%;
+}
+
+body.patriot-page-teach
+.command-panel,
+body.patriot-page-teach
+.lesson-workspace {
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.patriot-page-teach
+.command-panel {
+  display: flex;
+  flex-direction: column;
+}
+
+body.patriot-page-teach
+.command-panel-header,
+body.patriot-page-teach
+.lesson-workspace-header {
+  flex: 0 0 auto;
+}
+
+body.patriot-page-teach
+.command-panel-body {
+  flex: 1 1 auto;
+  padding:
+    var(--pc-panel-padding);
+}
+
+body.patriot-page-teach
+.lesson-workspace {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height:
+    clamp(
+      490px,
+      65vh,
+      760px
+    );
+}
+
+body.patriot-page-teach
+.lesson-window {
+  position: relative;
+  flex: 1 1 auto;
+  min-height:
+    clamp(
+      390px,
+      54vh,
+      660px
+    );
+  overflow: hidden;
+}
+
+body.patriot-page-teach
+#lesson-frame {
+  width: 100%;
+  height: 100%;
+  min-height:
+    clamp(
+      390px,
+      54vh,
+      660px
+    );
+  border: 0;
+}
+
+body.patriot-page-teach
+.lesson-placeholder {
+  min-height:
+    clamp(
+      390px,
+      54vh,
+      660px
+    );
+}
+
+body.patriot-page-teach
+.lesson-flow-section {
+  margin: 0;
+}
+
+body.patriot-page-teach
+.lesson-flow-section
+  + .lesson-flow-section {
+  border-top:
+    1px solid
+    var(
+      --patriot-line,
+      rgba(
+        42,
+        67,
+        163,
+        0.12
+      )
+    );
+}
+
+body.patriot-page-teach
+.lesson-flow-section
+  > :last-child {
+  margin-bottom: 0;
+}
+
+body.patriot-page-teach
+.teaching-tools-grid,
+body.patriot-page-teach
+.tool-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+  gap: 7px;
+}
+
+body.patriot-page-teach
+.resource-tabs {
+  flex: 0 0 auto;
+}
+
+body.patriot-page-teach
+#announcement-bar,
+body.patriot-page-teach
+.announcement-bar,
+body.patriot-page-teach
+.announcements-bar {
+  width: 100%;
+}
+
+/*
+==========================================
+PLANNER
+==========================================
+*/
+
+body.patriot-page-plan
+.planner-content,
+body.patriot-page-plan
+.page-content {
+  display: grid;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-plan
+.planner-toolbar,
+body.patriot-page-plan
+.plan-toolbar,
+body.patriot-page-plan
+.calendar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding:
+    10px
+    var(--pc-panel-padding);
+}
+
+body.patriot-page-plan
+.planner-toolbar-actions,
+body.patriot-page-plan
+.calendar-toolbar-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+body.patriot-page-plan
+.planner-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(
+      260px,
+      0.72fr
+    )
+    minmax(
+      0,
+      2fr
+    );
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-plan
+.planner-sidebar {
+  display: grid;
+  gap:
+    var(--pc-card-gap);
+}
+
+body.patriot-page-plan
+.planner-main {
+  min-width: 0;
+}
+
+body.patriot-page-plan
+.calendar-grid,
+body.patriot-page-plan
+.planner-calendar {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/*
+==========================================
+LIBRARY
+==========================================
+*/
+
+body.patriot-page-library
+.library-content,
+body.patriot-page-library
+.page-content {
+  display: grid;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-library
+.library-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 9px;
+  padding:
+    10px
+    var(--pc-panel-padding);
+}
+
+body.patriot-page-library
+.library-toolbar-group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+body.patriot-page-library
+.library-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(
+      220px,
+      0.55fr
+    )
+    minmax(
+      0,
+      2fr
+    );
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-library
+.library-sidebar {
+  display: grid;
+  gap:
+    var(--pc-card-gap);
+}
+
+body.patriot-page-library
+.library-resource-grid,
+body.patriot-page-library
+.lesson-library-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      auto-fill,
+      minmax(
+        min(
+          100%,
+          270px
+        ),
+        1fr
+      )
+    );
+  gap:
+    var(--pc-card-gap);
+}
+
+/*
+==========================================
+SETTINGS
+==========================================
+*/
+
+body.patriot-page-settings
+.settings-content,
+body.patriot-page-settings
+.page-content {
+  display: grid;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-settings
+.settings-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(
+      210px,
+      0.48fr
+    )
+    minmax(
+      0,
+      2fr
+    );
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-settings
+.settings-navigation,
+body.patriot-page-settings
+.settings-sidebar {
+  position: sticky;
+  top: 76px;
+  display: grid;
+  gap: 5px;
+}
+
+body.patriot-page-settings
+.settings-main {
+  display: grid;
+  min-width: 0;
+  gap:
+    var(--pc-section-gap);
+}
+
+body.patriot-page-settings
+.settings-section {
+  overflow: hidden;
+}
+
+body.patriot-page-settings
+.settings-form-grid,
+body.patriot-page-settings
+.form-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+  gap:
+    13px
+    15px;
+}
+
+body.patriot-page-settings
+.form-group.full-width,
+body.patriot-page-settings
+.field-group.full-width,
+body.patriot-page-settings
+.form-row.full-width {
+  grid-column:
+    1 /
+    -1;
+}
+
+body.patriot-page-settings
+.settings-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+/*
+==========================================
+STUDENTS AND ROSTERS
+==========================================
+*/
+
+body.patriot-page-settings
+.students-layout,
+.students-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(
+      250px,
+      0.7fr
+    )
+    minmax(
+      0,
+      2fr
+    );
+  align-items: start;
+  gap:
+    var(--pc-section-gap);
+}
+
+.roster-list,
+.student-list {
+  display: grid;
+  gap: 7px;
+}
+
+.roster-toolbar,
+.student-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/*
+==========================================
+FORMS AND CONTROLS
+==========================================
+*/
+
+.form-row {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(
+        0,
+        1fr
+      )
+    );
+  gap: 13px;
+}
+
+.form-actions,
+.modal-actions,
+.dialog-actions,
+.panel-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.inline-controls,
+.toolbar-controls,
+.filter-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.inline-controls
+  input,
+.inline-controls
+  select,
+.toolbar-controls
+  input,
+.toolbar-controls
+  select,
+.filter-controls
+  input,
+.filter-controls
+  select {
+  width: auto;
+  min-width: 130px;
+}
+
+/*
+==========================================
+TABLE CONTAINERS
+==========================================
+*/
+
+.table-wrap,
+.table-container,
+.responsive-table {
+  width: 100%;
+  overflow-x: auto;
+  border-radius:
+    var(
+      --patriot-radius-medium,
+      14px
+    );
+}
+
+.table-wrap table,
+.table-container table,
+.responsive-table table {
+  min-width: 680px;
+}
+
+/*
+==========================================
+MODALS
+==========================================
+*/
+
+.modal,
+.dialog {
+  width:
+    min(
+      calc(
+        100% -
+        (
+          var(--pc-edge-space) *
+          2
+        )
+      ),
+      680px
+    );
+  max-height:
+    calc(
+      100vh -
+      32px
+    );
+  overflow-y: auto;
+}
+
+.modal-header,
+.dialog-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 52px;
+  padding:
+    11px
+    var(--pc-panel-padding);
+}
+
+.modal-body,
+.dialog-body {
+  padding:
+    var(--pc-panel-padding);
+}
+
+.modal-footer,
+.dialog-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding:
+    11px
+    var(--pc-panel-padding);
+}
+
+/*
+==========================================
+FLOATING WIDGETS AND TOOL PANELS
+==========================================
+*/
+
+.pc-widget,
+[data-patriot-widget] {
+  max-width:
+    min(
+      360px,
+      calc(
+        100vw -
+        22px
+      )
+    );
+}
+
+.widgets-panel,
+.tools-panel,
+.widget-panel,
+.tool-panel {
+  width:
+    min(
+      320px,
+      calc(
+        100vw -
+        18px
+      )
+    );
+  max-height:
+    calc(
+      100vh -
+      92px
+    );
+  overflow-y: auto;
+}
+
+.widgets-panel-body,
+.tools-panel-body,
+.widget-panel-body,
+.tool-panel-body {
+  display: grid;
+  gap: 8px;
+  padding: 10px;
+}
+
+.random-groups-controls,
+.student-picker-controls,
+.widget-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.random-groups-controls
+  label,
+.student-picker-controls
+  label,
+.widget-controls
+  label {
+  font-size: 0.73rem;
+}
+
+.random-groups-controls
+  input,
+.random-groups-controls
+  select,
+.student-picker-controls
+  input,
+.student-picker-controls
+  select,
+.widget-controls
+  input,
+.widget-controls
+  select {
+  min-height: 36px;
+  font-size: 0.76rem;
+}
+
+/*
+==========================================
+RESPONSIVE: LARGE TABLETS
+==========================================
+*/
+
+@media (
+  max-width: 1180px
+) {
+  body.patriot-page-teach
+  .teach-command-center {
+    grid-template-columns:
+      minmax(
+        220px,
+        0.65fr
+      )
+      minmax(
+        0,
+        1.8fr
+      );
+  }
+
+  body.patriot-page-teach
+  .teach-command-center
+    > :nth-child(3) {
+    grid-column:
+      1 /
+      -1;
+  }
+
+  body.patriot-page-teach
+  .teach-command-center
+    > :nth-child(3)
+    .command-panel-body {
+    display: grid;
+    grid-template-columns:
+      repeat(
+        auto-fit,
+        minmax(
+          190px,
+          1fr
+        )
+      );
+    gap: 9px;
+  }
+
+  body.patriot-page-dashboard
+  .dashboard-main-grid {
+    grid-template-columns:
+      minmax(
+        0,
+        1.4fr
+      )
+      minmax(
+        250px,
+        0.72fr
+      );
+  }
+}
+
+/*
+==========================================
+RESPONSIVE: TABLETS
+==========================================
+*/
+
+@media (
+  max-width: 900px
+) {
+  :root {
+    --pc-edge-space: 10px;
+    --pc-section-gap: 12px;
+  }
+
+  .patriot-two-column,
+  .page-two-column,
+  .dashboard-two-column,
+  .planner-two-column,
+  .library-two-column,
+  .settings-two-column,
+  .patriot-sidebar-layout,
+  .sidebar-layout,
+  body.patriot-page-dashboard
+  .dashboard-main-grid,
+  body.patriot-page-plan
+  .planner-layout,
+  body.patriot-page-library
+  .library-layout,
+  body.patriot-page-settings
+  .settings-layout,
+  body.patriot-page-settings
+  .students-layout,
+  .students-layout {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  body.patriot-page-settings
+  .settings-navigation,
+  body.patriot-page-settings
+  .settings-sidebar {
+    position: static;
+    display: flex;
+    align-items: center;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+
+  body.patriot-page-teach
+  .teach-command-center {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  body.patriot-page-teach
+  .teach-command-center
+    > :nth-child(3) {
+    grid-column: auto;
+  }
+
+  body.patriot-page-teach
+  .lesson-workspace {
+    order: -1;
+  }
+
+  body.patriot-page-teach
+  .command-panel-body,
+  body.patriot-page-teach
+  .teach-command-center
+    > :nth-child(3)
+    .command-panel-body {
+    display: grid;
+    grid-template-columns:
+      repeat(
+        auto-fit,
+        minmax(
+          220px,
+          1fr
+        )
+      );
+    gap: 9px;
+  }
+}
+
+/*
+==========================================
+RESPONSIVE: MOBILE
+==========================================
+*/
+
+@media (
+  max-width: 700px
+) {
+  .patriot-page-header,
+  .page-header,
+  .dashboard-header,
+  .teach-header,
+  .planner-header,
+  .library-header,
+  .settings-header,
+  .students-header,
+  .about-header {
+    align-items: flex-start;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .patriot-page-header-actions,
+  .page-header-actions,
+  .dashboard-header-actions,
+  .teach-header-actions,
+  .planner-header-actions,
+  .library-header-actions,
+  .settings-header-actions,
+  .students-header-actions,
+  .about-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .form-row,
+  body.patriot-page-settings
+  .settings-form-grid,
+  body.patriot-page-settings
+  .form-grid {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  .card-grid,
+  .panel-grid,
+  .widget-grid,
+  .dashboard-grid,
+  .quick-link-grid,
+  .resource-grid,
+  .settings-grid,
+  body.patriot-page-library
+  .library-resource-grid,
+  body.patriot-page-library
+  .lesson-library-grid {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  body.patriot-page-dashboard
+  .dashboard-summary,
+  body.patriot-page-dashboard
+  .summary-strip,
+  body.patriot-page-dashboard
+  .status-strip {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(
+          0,
+          1fr
+        )
+      );
+  }
+
+  body.patriot-page-dashboard
+  .dashboard-summary
+    > * +
+    *,
+  body.patriot-page-dashboard
+  .summary-strip
+    > * +
+    *,
+  body.patriot-page-dashboard
+  .status-strip
+    > * +
+    * {
+    border-left: 0;
+  }
+
+  body.patriot-page-teach
+  .command-panel-body,
+  body.patriot-page-teach
+  .teach-command-center
+    > :nth-child(3)
+    .command-panel-body {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  body.patriot-page-teach
+  .teaching-tools-grid,
+  body.patriot-page-teach
+  .tool-grid {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  .inline-controls,
+  .toolbar-controls,
+  .filter-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .inline-controls
+    input,
+  .inline-controls
+    select,
+  .toolbar-controls
+    input,
+  .toolbar-controls
+    select,
+  .filter-controls
+    input,
+  .filter-controls
+    select {
+    width: 100%;
+  }
+}
+
+/*
+==========================================
+RESPONSIVE: SMALL MOBILE
+==========================================
+*/
+
+@media (
+  max-width: 460px
+) {
+  :root {
+    --pc-panel-padding: 12px;
+    --pc-header-padding-x: 14px;
+    --pc-header-padding-y: 13px;
+  }
+
+  body.patriot-page-dashboard
+  .dashboard-summary,
+  body.patriot-page-dashboard
+  .summary-strip,
+  body.patriot-page-dashboard
+  .status-strip {
+    grid-template-columns:
+      minmax(
+        0,
+        1fr
+      );
+  }
+
+  .patriot-page-header-actions
+    > *,
+  .page-header-actions
+    > *,
+  .dashboard-header-actions
+    > *,
+  .teach-header-actions
+    > *,
+  .planner-header-actions
+    > *,
+  .library-header-actions
+    > *,
+  .settings-header-actions
+    > *,
+  .students-header-actions
+    > *,
+  .about-header-actions
+    > * {
+    flex:
+      1
+      1
+      auto;
+  }
+
+  .form-actions,
+  .modal-actions,
+  .dialog-actions,
+  .panel-actions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .form-actions
+    > *,
+  .modal-actions
+    > *,
+  .dialog-actions
+    > *,
+  .panel-actions
+    > * {
+    width: 100%;
+  }
+
+  body.patriot-page-teach
+  .lesson-workspace {
+    min-height: 430px;
+  }
+
+  body.patriot-page-teach
+  .lesson-window,
+  body.patriot-page-teach
+  #lesson-frame,
+  body.patriot-page-teach
+  .lesson-placeholder {
+    min-height: 340px;
+  }
+}
+
+/*
+==========================================
+PRINT
+==========================================
+*/
+
+@media print {
+  .patriot-nav,
+  .page-header-actions,
+  .patriot-page-header-actions,
+  .widgets-panel,
+  .tools-panel,
+  .widget-panel,
+  .tool-panel,
+  [data-patriot-widget] {
+    display: none !important;
+  }
+
+  body,
+  body::before,
+  body::after {
+    background:
+      #ffffff !important;
+  }
+
+  .patriot-page-shell,
+  .page-shell,
+  main {
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .patriot-panel,
+  .patriot-card,
+  .glass-panel,
+  .card,
+  .panel {
+    break-inside: avoid;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+  }
+}
