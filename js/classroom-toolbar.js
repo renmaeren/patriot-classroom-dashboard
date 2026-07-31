@@ -1,20 +1,25 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Classroom Toolbars
+Classroom Edge Controls
 ==========================================
 
-RIGHT SIDE:
-Quick links to frequently used websites.
+RIGHT EDGE:
+- Classroom Widgets
+- Quick Links
 
-LEFT SIDE:
-Classroom widgets and teaching tools.
+Both buttons:
+- Stay on the right side
+- Can be dragged vertically
+- Remember their positions
+- Open matching right-side panels
 
-Both toolbar tabs can be dragged vertically.
-Their positions are saved for each teacher.
+Only one edge panel opens at a time.
 */
 
 (function () {
+  "use strict";
+
   const QUICK_LINK_STORAGE_KEY =
     "patriotClassroomToolbar";
 
@@ -22,15 +27,31 @@ Their positions are saved for each teacher.
     "patriotTeachWidgetPreferences";
 
   const QUICK_LINK_TAB_POSITION_KEY =
-    "patriotQuickLinkTabPosition";
+    "patriotQuickLinkTabRightPosition";
 
   const WIDGET_TAB_POSITION_KEY =
-    "patriotWidgetTabPosition";
+    "patriotWidgetTabRightPosition";
 
   const WHITEBOARD_SCRIPT_PATH =
     "js/classroom-whiteboard.js";
 
+  const COLORS = {
+    blue: "#2A43A3",
+    red: "#CF1B13",
+    cream: "#FFFCE9",
+    white: "#FFFFFF",
+    gold: "#FFE269",
+    text: "#20283A",
+    muted: "#657087"
+  };
+
   let whiteboardLoadPromise = null;
+
+  let quickLinkTab = null;
+  let quickLinkPanel = null;
+
+  let widgetTab = null;
+  let widgetPanel = null;
 
   /*
   ==========================================
@@ -42,26 +63,34 @@ Their positions are saved for each teacher.
     {
       id: "campus",
       name: "Infinite Campus",
-      icon: "Assets/Icons/InfiniteCampus.png",
-      url: "https://allenky.infinitecampus.org/campus/allen.jsp"
+      icon:
+        "Assets/Icons/InfiniteCampus.png",
+      url:
+        "https://allenky.infinitecampus.org/campus/allen.jsp"
     },
     {
       id: "youtube",
       name: "YouTube",
-      icon: "Assets/Icons/YouTube.png",
-      url: "https://www.youtube.com"
+      icon:
+        "Assets/Icons/YouTube.png",
+      url:
+        "https://www.youtube.com"
     },
     {
       id: "gmail",
       name: "Gmail",
-      icon: "Assets/Icons/gmail.png",
-      url: "https://mail.google.com"
+      icon:
+        "Assets/Icons/gmail.png",
+      url:
+        "https://mail.google.com"
     },
     {
       id: "drive",
       name: "Google Drive",
-      icon: "Assets/Icons/Drive.png",
-      url: "https://drive.google.com"
+      icon:
+        "Assets/Icons/Drive.png",
+      url:
+        "https://drive.google.com"
     }
   ];
 
@@ -112,7 +141,7 @@ Their positions are saved for each teacher.
     {
       id: "whiteboard",
       name: "Whiteboard",
-      icon: "🖊️",
+      icon: "✎",
       type: "action"
     }
   ];
@@ -132,7 +161,10 @@ Their positions are saved for each teacher.
       .replaceAll("'", "&#039;");
   }
 
-  function safelyReadJson(key, fallback) {
+  function safelyReadJson(
+    key,
+    fallback
+  ) {
     const savedValue =
       localStorage.getItem(key);
 
@@ -141,7 +173,9 @@ Their positions are saved for each teacher.
     }
 
     try {
-      return JSON.parse(savedValue);
+      return JSON.parse(
+        savedValue
+      );
     } catch (error) {
       console.error(
         `Saved settings for ${key} could not be read.`,
@@ -152,9 +186,16 @@ Their positions are saved for each teacher.
     }
   }
 
-  function clamp(value, minimum, maximum) {
+  function clamp(
+    value,
+    minimum,
+    maximum
+  ) {
     return Math.min(
-      Math.max(value, minimum),
+      Math.max(
+        value,
+        minimum
+      ),
       maximum
     );
   }
@@ -167,17 +208,143 @@ Their positions are saved for each teacher.
 
   /*
   ==========================================
-  WHITEBOARD LOADER
+  PANEL COORDINATION
+  ==========================================
+  */
+
+  function hideEdgeTabs() {
+    if (widgetTab) {
+      widgetTab.classList.add(
+        "panel-active"
+      );
+    }
+
+    if (quickLinkTab) {
+      quickLinkTab.classList.add(
+        "panel-active"
+      );
+    }
+  }
+
+  function showEdgeTabs() {
+    if (widgetTab) {
+      widgetTab.classList.remove(
+        "panel-active"
+      );
+    }
+
+    if (quickLinkTab) {
+      quickLinkTab.classList.remove(
+        "panel-active"
+      );
+    }
+  }
+
+  function closeQuickLinks(
+    restoreTabs = true
+  ) {
+    if (!quickLinkPanel) {
+      return;
+    }
+
+    quickLinkPanel.classList.remove(
+      "open"
+    );
+
+    if (quickLinkTab) {
+      quickLinkTab.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+    }
+
+    if (restoreTabs) {
+      showEdgeTabs();
+    }
+  }
+
+  function closeWidgets(
+    restoreTabs = true
+  ) {
+    if (!widgetPanel) {
+      return;
+    }
+
+    widgetPanel.classList.remove(
+      "open"
+    );
+
+    if (widgetTab) {
+      widgetTab.setAttribute(
+        "aria-expanded",
+        "false"
+      );
+    }
+
+    if (restoreTabs) {
+      showEdgeTabs();
+    }
+  }
+
+  function closeAllPanels() {
+    closeQuickLinks(false);
+    closeWidgets(false);
+    showEdgeTabs();
+  }
+
+  function openQuickLinks() {
+    closeWidgets(false);
+
+    if (!quickLinkPanel) {
+      return;
+    }
+
+    hideEdgeTabs();
+
+    quickLinkPanel.classList.add(
+      "open"
+    );
+
+    quickLinkTab.setAttribute(
+      "aria-expanded",
+      "true"
+    );
+  }
+
+  function openWidgets() {
+    closeQuickLinks(false);
+
+    if (!widgetPanel) {
+      return;
+    }
+
+    hideEdgeTabs();
+
+    widgetPanel.classList.add(
+      "open"
+    );
+
+    widgetTab.setAttribute(
+      "aria-expanded",
+      "true"
+    );
+  }
+
+  /*
+  ==========================================
+  WHITEBOARD
   ==========================================
   */
 
   function openWhiteboard() {
     if (
       window.PatriotWhiteboard &&
-      typeof window.PatriotWhiteboard.open ===
+      typeof
+        window.PatriotWhiteboard.open ===
         "function"
     ) {
       window.PatriotWhiteboard.open();
+
       return Promise.resolve();
     }
 
@@ -191,7 +358,10 @@ Their positions are saved for each teacher.
 
     whiteboardLoadPromise =
       new Promise(
-        (resolve, reject) => {
+        (
+          resolve,
+          reject
+        ) => {
           const existingScript =
             document.querySelector(
               `script[src="${WHITEBOARD_SCRIPT_PATH}"]`
@@ -218,7 +388,9 @@ Their positions are saved for each teacher.
           }
 
           const script =
-            document.createElement("script");
+            document.createElement(
+              "script"
+            );
 
           script.src =
             WHITEBOARD_SCRIPT_PATH;
@@ -249,7 +421,8 @@ Their positions are saved for each teacher.
         .then(() => {
           if (
             !window.PatriotWhiteboard ||
-            typeof window.PatriotWhiteboard.open !==
+            typeof
+              window.PatriotWhiteboard.open !==
               "function"
           ) {
             throw new Error(
@@ -266,7 +439,7 @@ Their positions are saved for each teacher.
           );
 
           window.alert(
-            "The whiteboard could not be opened. Make sure js/classroom-whiteboard.js has been added to the project."
+            "The whiteboard could not be opened. Make sure js/classroom-whiteboard.js is in the project."
           );
 
           throw error;
@@ -281,13 +454,14 @@ Their positions are saved for each teacher.
 
   /*
   ==========================================
-  DRAGGABLE EDGE TABS
+  DRAGGABLE RIGHT-EDGE BUTTONS
   ==========================================
   */
 
   function makeEdgeTabDraggable(
     tab,
-    storageKey
+    storageKey,
+    defaultPosition
   ) {
     const EDGE_PADDING = 12;
     const DRAG_THRESHOLD = 6;
@@ -300,7 +474,7 @@ Their positions are saved for each teacher.
 
     function getVerticalLimits() {
       const tabHeight =
-        tab.offsetHeight || 62;
+        tab.offsetHeight || 54;
 
       const minimum =
         EDGE_PADDING +
@@ -313,10 +487,11 @@ Their positions are saved for each teacher.
 
       return {
         minimum,
-        maximum: Math.max(
-          minimum,
-          maximum
-        )
+        maximum:
+          Math.max(
+            minimum,
+            maximum
+          )
       };
     }
 
@@ -327,14 +502,18 @@ Their positions are saved for each teacher.
         );
 
       if (savedValue === null) {
-        return 0.5;
+        return defaultPosition;
       }
 
       const parsedValue =
         Number(savedValue);
 
-      if (!Number.isFinite(parsedValue)) {
-        return 0.5;
+      if (
+        !Number.isFinite(
+          parsedValue
+        )
+      ) {
+        return defaultPosition;
       }
 
       return clamp(
@@ -344,7 +523,9 @@ Their positions are saved for each teacher.
       );
     }
 
-    function savePosition(centerY) {
+    function savePosition(
+      centerY
+    ) {
       const {
         minimum,
         maximum
@@ -356,21 +537,36 @@ Their positions are saved for each teacher.
       const position =
         availableDistance > 0
           ? (
-              centerY - minimum
-            ) / availableDistance
-          : 0.5;
+              centerY -
+              minimum
+            ) /
+            availableDistance
+          : defaultPosition;
 
       localStorage.setItem(
         storageKey,
         String(
-          clamp(position, 0, 1)
+          clamp(
+            position,
+            0,
+            1
+          )
         )
       );
     }
 
     function applySavedPosition() {
       if (isSmallScreen()) {
-        tab.style.top = "50%";
+        const mobilePosition =
+          defaultPosition < 0.5
+            ? 0.42
+            : 0.58;
+
+        tab.style.top =
+          `${
+            mobilePosition * 100
+          }%`;
+
         return;
       }
 
@@ -382,13 +578,18 @@ Their positions are saved for each teacher.
       const centerY =
         minimum +
         readSavedPosition() *
-          (maximum - minimum);
+        (
+          maximum -
+          minimum
+        );
 
       tab.style.top =
         `${centerY}px`;
     }
 
-    function moveTab(clientY) {
+    function moveTab(
+      clientY
+    ) {
       const {
         minimum,
         maximum
@@ -439,7 +640,8 @@ Their positions are saved for each teacher.
       event => {
         if (
           pointerId === null ||
-          event.pointerId !== pointerId
+          event.pointerId !==
+            pointerId
         ) {
           return;
         }
@@ -449,7 +651,8 @@ Their positions are saved for each teacher.
 
         const distanceMoved =
           Math.abs(
-            currentY - startY
+            currentY -
+            startY
           );
 
         if (
@@ -470,14 +673,19 @@ Their positions are saved for each teacher.
 
         event.preventDefault();
 
-        moveTab(currentY);
+        moveTab(
+          currentY
+        );
       }
     );
 
-    function finishDragging(event) {
+    function finishDragging(
+      event
+    ) {
       if (
         pointerId === null ||
-        event.pointerId !== pointerId
+        event.pointerId !==
+          pointerId
       ) {
         return;
       }
@@ -494,7 +702,9 @@ Their positions are saved for each teacher.
 
       if (dragging) {
         const finalCenterY =
-          moveTab(currentY);
+          moveTab(
+            currentY
+          );
 
         savePosition(
           finalCenterY
@@ -504,7 +714,8 @@ Their positions are saved for each teacher.
 
         window.setTimeout(
           () => {
-            suppressNextClick = false;
+            suppressNextClick =
+              false;
           },
           0
         );
@@ -551,7 +762,8 @@ Their positions are saved for each teacher.
   function getToggleWidgets() {
     return classroomWidgets.filter(
       widget =>
-        widget.type === "toggle"
+        widget.type ===
+        "toggle"
     );
   }
 
@@ -594,10 +806,14 @@ Their positions are saved for each teacher.
     };
   }
 
-  function saveWidgetSettings(settings) {
+  function saveWidgetSettings(
+    settings
+  ) {
     localStorage.setItem(
       WIDGET_STORAGE_KEY,
-      JSON.stringify(settings)
+      JSON.stringify(
+        settings
+      )
     );
   }
 
@@ -617,7 +833,9 @@ Their positions are saved for each teacher.
     }
 
     const style =
-      document.createElement("style");
+      document.createElement(
+        "style"
+      );
 
     style.id =
       "classroom-toolbar-styles";
@@ -625,147 +843,247 @@ Their positions are saved for each teacher.
     style.textContent = `
       /*
       ========================================
-      SHARED TOOLBAR STYLES
+      RIGHT EDGE BUTTONS
       ========================================
       */
 
       .patriot-edge-tab {
         position: fixed;
-        top: 50%;
-        z-index: 4001;
+        right: 0;
+        z-index: 6100;
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 44px;
-        height: 62px;
+        width: 46px;
+        height: 56px;
         padding: 8px;
-        color: #ffffff;
-        background: rgba(17, 40, 74, 0.82);
-        border: 1px solid rgba(255, 255, 255, 0.28);
-        box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+        color: ${COLORS.white};
+        background:
+          rgba(42, 67, 163, 0.82);
+        border:
+          1px solid
+          rgba(255, 255, 255, 0.32);
+        border-right: 0;
+        border-radius:
+          14px 0 0 14px;
+        box-shadow:
+          0 7px 22px
+          rgba(32, 40, 58, 0.18);
         cursor: grab;
         touch-action: none;
         user-select: none;
         -webkit-user-select: none;
-        backdrop-filter: blur(7px);
-        -webkit-backdrop-filter: blur(7px);
-        transform: translateY(-50%);
+        backdrop-filter:
+          blur(16px);
+        -webkit-backdrop-filter:
+          blur(16px);
+        transform:
+          translateY(-50%);
         transition:
-          width 0.18s ease,
-          background 0.18s ease,
-          box-shadow 0.18s ease;
+          width 180ms ease,
+          opacity 180ms ease,
+          visibility 180ms ease,
+          background 180ms ease,
+          box-shadow 180ms ease,
+          transform 180ms ease;
       }
 
       .patriot-edge-tab:hover {
-        width: 49px;
-        background: rgba(179, 38, 46, 0.94);
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+        width: 51px;
+        background:
+          rgba(207, 27, 19, 0.94);
+        box-shadow:
+          0 9px 26px
+          rgba(32, 40, 58, 0.24);
       }
 
       .patriot-edge-tab.dragging {
-        width: 49px;
+        width: 51px;
         cursor: grabbing;
-        background: rgba(179, 38, 46, 0.96);
-        box-shadow: 0 5px 16px rgba(0, 0, 0, 0.3);
+        background:
+          rgba(207, 27, 19, 0.97);
+        box-shadow:
+          0 11px 30px
+          rgba(32, 40, 58, 0.28);
+      }
+
+      .patriot-edge-tab.panel-active {
+        visibility: hidden;
+        opacity: 0;
+        pointer-events: none;
+        transform:
+          translateY(-50%)
+          translateX(18px);
       }
 
       .patriot-edge-tab img {
         display: block;
-        width: 29px;
-        height: 29px;
+        width: 30px;
+        height: 30px;
         object-fit: contain;
         pointer-events: none;
       }
 
-      .patriot-edge-panel {
-        position: fixed;
-        top: 50%;
-        z-index: 4000;
-        color: #ffffff;
-        background: rgba(17, 40, 74, 0.9);
-        border: 1px solid rgba(255, 255, 255, 0.24);
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.23);
-        backdrop-filter: blur(9px);
-        -webkit-backdrop-filter: blur(9px);
-        transform: translateY(-50%);
-      }
-
-      .patriot-toolbar-close {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 32px;
-        padding: 0;
-        color: #ffffff;
-        font-size: 1.25rem;
-        font-weight: bold;
-        background: rgba(255, 255, 255, 0.13);
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .patriot-toolbar-close:hover {
-        background: rgba(179, 38, 46, 0.95);
+      .classroom-toolbar-tab img,
+      .teach-widget-tab img {
+        filter:
+          brightness(0)
+          invert(1);
       }
 
       /*
       ========================================
-      RIGHT QUICK-LINK TOOLBAR
+      RIGHT-SIDE GLASS PANELS
       ========================================
       */
 
-      .classroom-toolbar-tab {
-        right: 0;
-        border-right: 0;
-        border-radius: 13px 0 0 13px;
+      .patriot-edge-panel {
+        position: fixed;
+        top: 50%;
+        right: 12px;
+        z-index: 6200;
+        visibility: hidden;
+        opacity: 0;
+        color: ${COLORS.text};
+        background:
+          rgba(255, 255, 255, 0.88);
+        border:
+          1px solid
+          rgba(255, 255, 255, 0.9);
+        border-radius: 20px;
+        box-shadow:
+          0 20px 52px
+          rgba(32, 40, 58, 0.22);
+        backdrop-filter:
+          blur(22px);
+        -webkit-backdrop-filter:
+          blur(22px);
+        transform:
+          translateY(-50%)
+          translateX(34px);
+        transition:
+          visibility 200ms ease,
+          opacity 200ms ease,
+          transform 200ms ease;
       }
 
-      .classroom-toolbar-tab img,
-      .teach-widget-tab img {
-        filter: brightness(0) invert(1);
+      .patriot-edge-panel.open {
+        visibility: visible;
+        opacity: 1;
+        transform:
+          translateY(-50%)
+          translateX(0);
       }
+
+      .patriot-panel-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding:
+          13px 13px
+          11px 16px;
+        border-bottom:
+          1px solid
+          rgba(42, 67, 163, 0.12);
+      }
+
+      .patriot-panel-title {
+        margin: 0;
+        color: ${COLORS.text};
+        font-family:
+          "Literata",
+          Georgia,
+          serif;
+        font-size: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .patriot-toolbar-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+        width: 32px;
+        height: 32px;
+        padding: 0;
+        color: ${COLORS.blue};
+        font-size: 1.2rem;
+        font-weight: bold;
+        background:
+          rgba(42, 67, 163, 0.08);
+        border: 0;
+        border-radius: 9px;
+        cursor: pointer;
+      }
+
+      .patriot-toolbar-close:hover {
+        color: ${COLORS.white};
+        background:
+          ${COLORS.red};
+      }
+
+      /*
+      ========================================
+      QUICK LINKS PANEL
+      ========================================
+      */
 
       .classroom-toolbar-panel {
-        right: -90px;
-        width: 76px;
-        padding: 10px 8px;
-        border-right: 0;
-        border-radius: 14px 0 0 14px;
-        transition: right 0.24s ease;
+        width: 94px;
+        padding-bottom: 11px;
       }
 
-      .classroom-toolbar-panel.open {
-        right: 0;
+      .classroom-toolbar-panel
+        .patriot-panel-header {
+        justify-content: center;
+        padding:
+          10px 8px 8px;
+      }
+
+      .classroom-toolbar-panel
+        .patriot-panel-title {
+        display: none;
       }
 
       .classroom-toolbar-links {
         display: grid;
         justify-content: center;
         gap: 8px;
+        padding:
+          10px 10px 0;
       }
 
       .classroom-toolbar-link {
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 54px;
+        width: 58px;
         height: 54px;
         padding: 7px;
-        background: rgba(255, 255, 255, 0.96);
-        border: 1px solid rgba(255, 255, 255, 0.62);
-        border-radius: 11px;
-        box-shadow: 0 2px 7px rgba(0, 0, 0, 0.13);
+        background:
+          rgba(255, 255, 255, 0.94);
+        border:
+          1px solid
+          rgba(42, 67, 163, 0.1);
+        border-radius: 13px;
+        box-shadow:
+          0 5px 13px
+          rgba(42, 67, 163, 0.08);
         transition:
-          transform 0.16s ease,
-          background 0.16s ease,
-          box-shadow 0.16s ease;
+          transform 170ms ease,
+          background 170ms ease,
+          box-shadow 170ms ease;
       }
 
       .classroom-toolbar-link:hover {
-        transform: scale(1.05);
-        background: #ffffff;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+        transform:
+          translateY(-2px);
+        background:
+          ${COLORS.white};
+        box-shadow:
+          0 8px 18px
+          rgba(42, 67, 163, 0.14);
       }
 
       .classroom-toolbar-link img {
@@ -782,100 +1100,102 @@ Their positions are saved for each teacher.
         pointer-events: none;
       }
 
-      .classroom-toolbar-close {
-        width: 54px;
-        margin: 9px auto 0;
-      }
-
       /*
       ========================================
-      LEFT WIDGET TOOLBAR
+      WIDGET PANEL
       ========================================
       */
 
-      .teach-widget-tab {
-        left: 0;
-        border-left: 0;
-        border-radius: 0 13px 13px 0;
-      }
-
       .teach-widget-panel {
-        left: -264px;
-        width: 252px;
-        max-height: calc(100vh - 30px);
-        padding: 13px;
+        width: 286px;
+        max-height:
+          calc(100vh - 32px);
         overflow-y: auto;
-        border-left: 0;
-        border-radius: 0 14px 14px 0;
-        transition: left 0.24s ease;
-      }
-
-      .teach-widget-panel.open {
-        left: 0;
-      }
-
-      .teach-widget-heading {
-        margin: 0;
-        color: #ffffff;
-        font-size: 1rem;
       }
 
       .teach-widget-description {
-        margin: 4px 0 11px;
-        color: rgba(255, 255, 255, 0.78);
+        margin:
+          0;
+        padding:
+          10px 16px 4px;
+        color:
+          ${COLORS.muted};
         font-size: 0.76rem;
-        line-height: 1.35;
+        line-height: 1.4;
       }
 
       .teach-widget-options {
         display: grid;
-        gap: 7px;
+        gap: 6px;
+        padding:
+          8px 12px 13px;
       }
 
       .teach-widget-option {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 9px;
         width: 100%;
-        min-height: 42px;
-        padding: 6px 8px;
-        color: #11284a;
+        min-height: 43px;
+        padding: 7px 9px;
+        color:
+          ${COLORS.text};
         font: inherit;
         text-align: left;
-        background: rgba(255, 255, 255, 0.96);
-        border: 0;
-        border-radius: 9px;
+        background:
+          rgba(255, 255, 255, 0.76);
+        border:
+          1px solid
+          rgba(42, 67, 163, 0.09);
+        border-radius: 11px;
         cursor: pointer;
         user-select: none;
+        transition:
+          background 170ms ease,
+          border-color 170ms ease,
+          transform 170ms ease;
       }
 
       .teach-widget-option:hover {
-        background: #ffffff;
+        background:
+          ${COLORS.white};
+        border-color:
+          rgba(42, 67, 163, 0.18);
+        transform:
+          translateX(-2px);
       }
 
       .teach-widget-option:focus-within,
       button.teach-widget-option:focus-visible {
-        outline: 3px solid #d3a84f;
+        outline:
+          3px solid
+          ${COLORS.gold};
         outline-offset: 2px;
       }
 
       .teach-widget-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         flex: 0 0 auto;
-        width: 25px;
-        text-align: center;
-        font-size: 1.15rem;
+        width: 27px;
+        height: 27px;
+        font-size: 1rem;
+        background:
+          rgba(255, 226, 105, 0.24);
+        border-radius: 8px;
       }
 
       .teach-widget-name {
         flex: 1;
-        font-size: 0.84rem;
-        font-weight: bold;
+        font-size: 0.82rem;
+        font-weight: 700;
       }
 
       .teach-widget-toggle {
         position: relative;
         flex: 0 0 auto;
-        width: 40px;
+        width: 39px;
         height: 22px;
       }
 
@@ -889,9 +1209,10 @@ Their positions are saved for each teacher.
       .teach-widget-slider {
         position: absolute;
         inset: 0;
-        background: #a9afb8;
+        background: #aab0bc;
         border-radius: 999px;
-        transition: background 0.18s ease;
+        transition:
+          background 180ms ease;
       }
 
       .teach-widget-slider::before {
@@ -901,42 +1222,50 @@ Their positions are saved for each teacher.
         left: 3px;
         width: 16px;
         height: 16px;
-        background: #ffffff;
+        background:
+          ${COLORS.white};
         border-radius: 50%;
-        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
-        transition: transform 0.18s ease;
+        box-shadow:
+          0 1px 4px
+          rgba(0, 0, 0, 0.26);
+        transition:
+          transform 180ms ease;
       }
 
-      .teach-widget-toggle input:checked +
-      .teach-widget-slider {
-        background: #2f7d4a;
+      .teach-widget-toggle
+        input:checked
+        + .teach-widget-slider {
+        background:
+          ${COLORS.blue};
       }
 
-      .teach-widget-toggle input:checked +
-      .teach-widget-slider::before {
-        transform: translateX(18px);
+      .teach-widget-toggle
+        input:checked
+        + .teach-widget-slider::before {
+        transform:
+          translateX(17px);
       }
 
-      .teach-widget-toggle input:focus-visible +
-      .teach-widget-slider {
-        outline: 3px solid #d3a84f;
+      .teach-widget-toggle
+        input:focus-visible
+        + .teach-widget-slider {
+        outline:
+          3px solid
+          ${COLORS.gold};
         outline-offset: 2px;
       }
 
       .teach-widget-action-label {
         flex: 0 0 auto;
-        padding: 4px 8px;
-        color: #ffffff;
-        font-size: 0.7rem;
-        font-weight: bold;
+        padding: 5px 8px;
+        color:
+          ${COLORS.white};
+        font-size: 0.67rem;
+        font-weight: 750;
         line-height: 1;
-        background: #b3262e;
+        background:
+          ${COLORS.red};
         border-radius: 999px;
-      }
-
-      .teach-widget-close {
-        width: 100%;
-        margin-top: 10px;
       }
 
       /*
@@ -957,49 +1286,72 @@ Their positions are saved for each teacher.
 
       @media (max-width: 700px) {
         .patriot-edge-tab {
-          top: 50% !important;
-          width: 41px;
-          height: 58px;
+          width: 43px;
+          height: 52px;
           cursor: pointer;
           touch-action: auto;
         }
 
+        .patriot-edge-tab:hover {
+          width: 46px;
+        }
+
         .patriot-edge-tab img {
-          width: 26px;
-          height: 26px;
+          width: 27px;
+          height: 27px;
+        }
+
+        .patriot-edge-panel {
+          top: auto;
+          right: 8px;
+          bottom: 72px;
+          left: 8px;
+          width: auto;
+          max-height:
+            calc(100vh - 96px);
+          transform:
+            translateY(20px);
+        }
+
+        .patriot-edge-panel.open {
+          transform:
+            translateY(0);
         }
 
         .classroom-toolbar-panel {
-          width: 70px;
-        }
-
-        .classroom-toolbar-link,
-        .classroom-toolbar-close {
-          width: 48px;
-        }
-
-        .classroom-toolbar-link {
-          height: 48px;
-        }
-
-        .classroom-toolbar-link img {
-          width: 34px;
-          height: 34px;
+          right: 8px;
+          left: auto;
+          width: 92px;
         }
 
         .teach-widget-panel {
-          left: -244px;
-          width: 232px;
+          width: auto;
+        }
+      }
+
+      @media (
+        prefers-reduced-motion:
+        reduce
+      ) {
+        .patriot-edge-tab,
+        .patriot-edge-panel,
+        .classroom-toolbar-link,
+        .teach-widget-option,
+        .teach-widget-slider,
+        .teach-widget-slider::before {
+          transition: none;
         }
       }
     `;
 
-    document.head.appendChild(style);
+    document.head.appendChild(
+      style
+    );
   }
 
   /*
   ==========================================
-  RIGHT QUICK-LINK TOOLBAR
+  QUICK LINKS
   ==========================================
   */
 
@@ -1015,9 +1367,12 @@ Their positions are saved for each teacher.
       : defaultQuickLinks;
   }
 
-  function createQuickLinkButton(tool) {
+  function createQuickLinkButton(
+    tool
+  ) {
     const name =
-      tool.name || "Classroom Tool";
+      tool.name ||
+      "Classroom Tool";
 
     const icon =
       tool.icon || "";
@@ -1075,104 +1430,103 @@ Their positions are saved for each teacher.
           tool.icon
       );
 
-    const tab =
-      document.createElement("button");
+    quickLinkTab =
+      document.createElement(
+        "button"
+      );
 
-    tab.id =
+    quickLinkTab.id =
       "classroom-toolbar-tab";
 
-    tab.className =
+    quickLinkTab.className =
       "patriot-edge-tab classroom-toolbar-tab";
 
-    tab.type = "button";
+    quickLinkTab.type =
+      "button";
 
-    tab.innerHTML = `
+    quickLinkTab.innerHTML = `
       <img
         src="Assets/Icons/tool-tab.png"
         alt=""
       >
     `;
 
-    tab.setAttribute(
+    quickLinkTab.setAttribute(
       "aria-label",
       "Open classroom quick links"
     );
 
-    tab.setAttribute(
+    quickLinkTab.setAttribute(
       "aria-expanded",
       "false"
     );
 
-    tab.title =
-      "Click to open. Drag up or down to move.";
+    quickLinkTab.title =
+      "Quick Links — click to open or drag to move";
 
-    const panel =
-      document.createElement("aside");
+    quickLinkPanel =
+      document.createElement(
+        "aside"
+      );
 
-    panel.id =
+    quickLinkPanel.id =
       "classroom-toolbar-panel";
 
-    panel.className =
+    quickLinkPanel.className =
       "patriot-edge-panel classroom-toolbar-panel";
 
-    panel.setAttribute(
+    quickLinkPanel.setAttribute(
       "aria-label",
       "Classroom quick links"
     );
 
-    panel.innerHTML = `
-      <div class="classroom-toolbar-links">
-        ${tools
-          .map(createQuickLinkButton)
-          .join("")}
+    quickLinkPanel.innerHTML = `
+      <div class="patriot-panel-header">
+        <h2 class="patriot-panel-title">
+          Quick Links
+        </h2>
+
+        <button
+          id="classroom-toolbar-close"
+          class="patriot-toolbar-close"
+          type="button"
+          aria-label="Close classroom quick links"
+          title="Close"
+        >
+          ×
+        </button>
       </div>
 
-      <button
-        id="classroom-toolbar-close"
-        class="patriot-toolbar-close classroom-toolbar-close"
-        type="button"
-        aria-label="Close classroom quick links"
-        title="Close"
-      >
-        ×
-      </button>
+      <div class="classroom-toolbar-links">
+        ${tools
+          .map(
+            createQuickLinkButton
+          )
+          .join("")}
+      </div>
     `;
 
-    document.body.appendChild(tab);
-    document.body.appendChild(panel);
+    document.body.appendChild(
+      quickLinkTab
+    );
+
+    document.body.appendChild(
+      quickLinkPanel
+    );
 
     const closeButton =
-      panel.querySelector(
+      quickLinkPanel.querySelector(
         "#classroom-toolbar-close"
       );
 
     const dragController =
       makeEdgeTabDraggable(
-        tab,
-        QUICK_LINK_TAB_POSITION_KEY
+        quickLinkTab,
+        QUICK_LINK_TAB_POSITION_KEY,
+        0.59
       );
 
-    function openToolbar() {
-      panel.classList.add("open");
-      tab.style.display = "none";
-
-      tab.setAttribute(
-        "aria-expanded",
-        "true"
-      );
-    }
-
-    function closeToolbar() {
-      panel.classList.remove("open");
-      tab.style.display = "flex";
-
-      tab.setAttribute(
-        "aria-expanded",
-        "false"
-      );
-    }
-
-    tab.addEventListener(
+    quickLinkTab.addEventListener(
       "click",
       () => {
         if (
@@ -1181,35 +1535,25 @@ Their positions are saved for each teacher.
           return;
         }
 
-        openToolbar();
+        openQuickLinks();
       }
     );
 
     closeButton.addEventListener(
       "click",
-      closeToolbar
-    );
-
-    document.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Escape" &&
-          panel.classList.contains("open")
-        ) {
-          closeToolbar();
-        }
-      }
+      closeAllPanels
     );
   }
 
   /*
   ==========================================
-  LEFT WIDGET TOOLBAR
+  WIDGET VISIBILITY
   ==========================================
   */
 
-  function findWidgetContainer(widget) {
+  function findWidgetContainer(
+    widget
+  ) {
     if (widget.selector) {
       return document.querySelector(
         widget.selector
@@ -1243,7 +1587,9 @@ Their positions are saved for each teacher.
     enabled
   ) {
     const container =
-      findWidgetContainer(widget);
+      findWidgetContainer(
+        widget
+      );
 
     if (container) {
       container.classList.toggle(
@@ -1272,6 +1618,12 @@ Their positions are saved for each teacher.
       }
     );
   }
+
+  /*
+  ==========================================
+  WIDGET OPTIONS
+  ==========================================
+  */
 
   function createToggleWidgetOption(
     widget,
@@ -1341,7 +1693,10 @@ Their positions are saved for each teacher.
     widget,
     settings
   ) {
-    if (widget.type === "action") {
+    if (
+      widget.type ===
+      "action"
+    ) {
       return createActionWidgetOption(
         widget
       );
@@ -1355,6 +1710,12 @@ Their positions are saved for each teacher.
     );
   }
 
+  /*
+  ==========================================
+  WIDGET PANEL
+  ==========================================
+  */
+
   function createWidgetToolbar() {
     if (
       document.getElementById(
@@ -1367,118 +1728,112 @@ Their positions are saved for each teacher.
     const settings =
       readWidgetSettings();
 
-    const tab =
-      document.createElement("button");
+    widgetTab =
+      document.createElement(
+        "button"
+      );
 
-    tab.id =
+    widgetTab.id =
       "teach-widget-tab";
 
-    tab.className =
+    widgetTab.className =
       "patriot-edge-tab teach-widget-tab";
 
-    tab.type = "button";
+    widgetTab.type =
+      "button";
 
-    tab.innerHTML = `
+    widgetTab.innerHTML = `
       <img
         src="Assets/Icons/widgets.png"
         alt=""
       >
     `;
 
-    tab.setAttribute(
+    widgetTab.setAttribute(
       "aria-label",
       "Open classroom widgets"
     );
 
-    tab.setAttribute(
+    widgetTab.setAttribute(
       "aria-expanded",
       "false"
     );
 
-    tab.title =
-      "Click to open. Drag up or down to move.";
+    widgetTab.title =
+      "Widgets — click to open or drag to move";
 
-    const panel =
-      document.createElement("aside");
+    widgetPanel =
+      document.createElement(
+        "aside"
+      );
 
-    panel.id =
+    widgetPanel.id =
       "teach-widget-panel";
 
-    panel.className =
+    widgetPanel.className =
       "patriot-edge-panel teach-widget-panel";
 
-    panel.setAttribute(
+    widgetPanel.setAttribute(
       "aria-label",
       "Classroom widgets"
     );
 
-    panel.innerHTML = `
-      <h2 class="teach-widget-heading">
-        Classroom Widgets
-      </h2>
+    widgetPanel.innerHTML = `
+      <div class="patriot-panel-header">
+        <h2 class="patriot-panel-title">
+          Classroom Widgets
+        </h2>
+
+        <button
+          id="teach-widget-close"
+          class="patriot-toolbar-close"
+          type="button"
+          aria-label="Close classroom widgets"
+          title="Close"
+        >
+          ×
+        </button>
+      </div>
 
       <p class="teach-widget-description">
-        Turn widgets on or open a teaching tool.
-        Your choices will be remembered.
+        Turn classroom widgets on or open
+        a teaching tool. Your choices are saved.
       </p>
 
       <div class="teach-widget-options">
         ${classroomWidgets
-          .map(widget =>
-            createWidgetOption(
-              widget,
-              settings
-            )
+          .map(
+            widget =>
+              createWidgetOption(
+                widget,
+                settings
+              )
           )
           .join("")}
       </div>
-
-      <button
-        id="teach-widget-close"
-        class="patriot-toolbar-close teach-widget-close"
-        type="button"
-        aria-label="Close classroom widgets"
-        title="Close"
-      >
-        ×
-      </button>
     `;
 
-    document.body.appendChild(tab);
-    document.body.appendChild(panel);
+    document.body.appendChild(
+      widgetTab
+    );
+
+    document.body.appendChild(
+      widgetPanel
+    );
 
     const closeButton =
-      panel.querySelector(
+      widgetPanel.querySelector(
         "#teach-widget-close"
       );
 
     const dragController =
       makeEdgeTabDraggable(
-        tab,
-        WIDGET_TAB_POSITION_KEY
+        widgetTab,
+        WIDGET_TAB_POSITION_KEY,
+        0.43
       );
 
-    function openToolbar() {
-      panel.classList.add("open");
-      tab.style.display = "none";
-
-      tab.setAttribute(
-        "aria-expanded",
-        "true"
-      );
-    }
-
-    function closeToolbar() {
-      panel.classList.remove("open");
-      tab.style.display = "flex";
-
-      tab.setAttribute(
-        "aria-expanded",
-        "false"
-      );
-    }
-
-    tab.addEventListener(
+    widgetTab.addEventListener(
       "click",
       () => {
         if (
@@ -1487,16 +1842,16 @@ Their positions are saved for each teacher.
           return;
         }
 
-        openToolbar();
+        openWidgets();
       }
     );
 
     closeButton.addEventListener(
       "click",
-      closeToolbar
+      closeAllPanels
     );
 
-    panel.addEventListener(
+    widgetPanel.addEventListener(
       "change",
       event => {
         const checkbox =
@@ -1514,8 +1869,10 @@ Their positions are saved for each teacher.
         const widget =
           classroomWidgets.find(
             item =>
-              item.id === widgetId &&
-              item.type === "toggle"
+              item.id ===
+                widgetId &&
+              item.type ===
+                "toggle"
           );
 
         if (!widget) {
@@ -1525,7 +1882,9 @@ Their positions are saved for each teacher.
         const updatedSettings =
           readWidgetSettings();
 
-        updatedSettings[widgetId] =
+        updatedSettings[
+          widgetId
+        ] =
           checkbox.checked;
 
         saveWidgetSettings(
@@ -1539,7 +1898,7 @@ Their positions are saved for each teacher.
       }
     );
 
-    panel.addEventListener(
+    widgetPanel.addEventListener(
       "click",
       event => {
         const actionButton =
@@ -1552,29 +1911,23 @@ Their positions are saved for each teacher.
         }
 
         const action =
-          actionButton.dataset.widgetAction;
+          actionButton.dataset
+            .widgetAction;
 
-        if (action === "whiteboard") {
-          closeToolbar();
+        if (
+          action ===
+          "whiteboard"
+        ) {
+          closeAllPanels();
 
           openWhiteboard().catch(
             () => {
-              // Error message is handled
-              // inside openWhiteboard.
+              /*
+              Error messaging is handled
+              inside openWhiteboard.
+              */
             }
           );
-        }
-      }
-    );
-
-    document.addEventListener(
-      "keydown",
-      event => {
-        if (
-          event.key === "Escape" &&
-          panel.classList.contains("open")
-        ) {
-          closeToolbar();
         }
       }
     );
@@ -1586,18 +1939,73 @@ Their positions are saved for each teacher.
 
   /*
   ==========================================
+  GLOBAL EVENTS
+  ==========================================
+  */
+
+  function connectGlobalEvents() {
+    document.addEventListener(
+      "keydown",
+      event => {
+        if (
+          event.key ===
+          "Escape"
+        ) {
+          closeAllPanels();
+        }
+      }
+    );
+
+    document.addEventListener(
+      "click",
+      event => {
+        const clickedPanel =
+          event.target.closest(
+            ".patriot-edge-panel"
+          );
+
+        const clickedTab =
+          event.target.closest(
+            ".patriot-edge-tab"
+          );
+
+        if (
+          !clickedPanel &&
+          !clickedTab &&
+          (
+            quickLinkPanel?.classList.contains(
+              "open"
+            ) ||
+            widgetPanel?.classList.contains(
+              "open"
+            )
+          )
+        ) {
+          closeAllPanels();
+        }
+      }
+    );
+  }
+
+  /*
+  ==========================================
   START
   ==========================================
   */
 
   function startToolbars() {
     addToolbarStyles();
+
     createQuickLinkToolbar();
+
     createWidgetToolbar();
+
+    connectGlobalEvents();
   }
 
   if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ) {
     document.addEventListener(
       "DOMContentLoaded",
