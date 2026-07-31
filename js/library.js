@@ -100,7 +100,9 @@ Lesson Library with Calendar
       String(value).trim();
 
     if (
-      /^\d{4}-\d{2}-\d{2}$/.test(text)
+      /^\d{4}-\d{2}-\d{2}$/.test(
+        text
+      )
     ) {
       return text;
     }
@@ -210,6 +212,12 @@ Lesson Library with Calendar
       .replaceAll("'", "&#039;");
   }
 
+  function hasContent(value) {
+    return Boolean(
+      String(value || "").trim()
+    );
+  }
+
   function parseResources(value) {
     if (!value) {
       return [];
@@ -227,6 +235,14 @@ Lesson Library with Calendar
     } catch (error) {
       return [];
     }
+  }
+
+  function getLessonResources(lesson) {
+    return (
+      lesson.lessonResources ??
+      lesson.resources ??
+      []
+    );
   }
 
   function getResourceLabel(type) {
@@ -248,12 +264,17 @@ Lesson Library with Calendar
   }
 
   function createResourceLinks(
-    resourceText
+    resourceValue
   ) {
     const resources =
       parseResources(
-        resourceText
-      );
+        resourceValue
+      ).filter(resource => {
+        return (
+          resource &&
+          resource.url
+        );
+      });
 
     if (
       resources.length === 0
@@ -268,12 +289,6 @@ Lesson Library with Calendar
     return `
       <div class="lesson-resource-links">
         ${resources
-          .filter(resource => {
-            return (
-              resource &&
-              resource.url
-            );
-          })
           .map(resource => {
             const label =
               resource.label ||
@@ -295,6 +310,88 @@ Lesson Library with Calendar
             `;
           })
           .join("")}
+      </div>
+    `;
+  }
+
+  function createDetailSection(
+    title,
+    value
+  ) {
+    if (!hasContent(value)) {
+      return "";
+    }
+
+    return `
+      <div class="lesson-detail-section">
+        <h4>
+          ${escapeHtml(title)}
+        </h4>
+
+        <p>
+          ${escapeHtml(value)}
+        </p>
+      </div>
+    `;
+  }
+
+  function createProfileSection(
+    lesson
+  ) {
+    const component =
+      lesson.profileComponent;
+
+    const focus =
+      lesson.profileFocus;
+
+    if (
+      !hasContent(component) &&
+      !hasContent(focus)
+    ) {
+      return "";
+    }
+
+    return `
+      <div class="lesson-detail-section">
+        <h4>
+          Profile of a Patriot
+        </h4>
+
+        ${
+          hasContent(component)
+            ? `
+              <p>
+                ${escapeHtml(component)}
+              </p>
+            `
+            : ""
+        }
+
+        ${
+          hasContent(focus)
+            ? `
+              <p>
+                ${escapeHtml(focus)}
+              </p>
+            `
+            : ""
+        }
+      </div>
+    `;
+  }
+
+  function createResourcesSection(
+    lesson
+  ) {
+    return `
+      <div class="lesson-detail-section">
+        <h4>
+          Resources
+        </h4>
+
+        ${createResourceLinks(
+          getLessonResources(lesson)
+        )}
       </div>
     `;
   }
@@ -360,12 +457,17 @@ Lesson Library with Calendar
       lesson.course,
       lesson.periods,
       lesson.bellRinger,
-      lesson.agenda,
+      lesson.essentialQuestion,
       lesson.learningTarget,
-      lesson.successCriteria,
-      lesson.standards,
       lesson.profileComponent,
       lesson.profileFocus,
+      lesson.agenda,
+      lesson.vocabulary,
+      lesson.exitTicket,
+      lesson.homework,
+      lesson.successCriteria,
+      lesson.whyLearning,
+      lesson.standards,
       lesson.materials,
       lesson.teacherNotes
     ]
@@ -380,7 +482,7 @@ Lesson Library with Calendar
 
     card.innerHTML = `
       <div class="lesson-card-heading">
-        <div>
+        <div class="lesson-card-copy">
           <h3>
             ${escapeHtml(title)}
           </h3>
@@ -411,7 +513,7 @@ Lesson Library with Calendar
 
         <div class="lesson-card-actions">
           <button
-            class="lesson-teach-button"
+            class="lesson-preview-button lesson-teach-button"
             type="button"
           >
             Teach
@@ -441,128 +543,73 @@ Lesson Library with Calendar
       </div>
 
       <div class="lesson-details">
-        <div class="lesson-detail-section">
-          <h4>Bell Ringer</h4>
+        ${createDetailSection(
+          "Bell Ringer",
+          lesson.bellRinger
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.bellRinger ||
-              "Not entered"
-            )}
-          </p>
-        </div>
+        ${createDetailSection(
+          "Essential Question",
+          lesson.essentialQuestion
+        )}
 
-        <div class="lesson-detail-section">
-          <h4>Agenda</h4>
+        ${createDetailSection(
+          "I Can / Learning Target",
+          lesson.learningTarget
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.agenda ||
-              "Not entered"
-            )}
-          </p>
-        </div>
+        ${createProfileSection(
+          lesson
+        )}
 
-        <div class="lesson-detail-section">
-          <h4>
-            I Can / Learning Target
-          </h4>
+        ${createDetailSection(
+          "Agenda",
+          lesson.agenda
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.learningTarget ||
-              "Not entered"
-            )}
-          </p>
-        </div>
+        ${createDetailSection(
+          "Vocabulary",
+          lesson.vocabulary
+        )}
 
-        <div class="lesson-detail-section">
-          <h4>Why We Are Learning</h4>
+        ${createResourcesSection(
+          lesson
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.whyLearning ||
-              "Not entered"
-            )}
-          </p>
-        </div>
+        ${createDetailSection(
+          "Exit Ticket",
+          lesson.exitTicket
+        )}
 
-        <div class="lesson-detail-section">
-          <h4>Success Criteria</h4>
+        ${createDetailSection(
+          "Homework",
+          lesson.homework
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.successCriteria ||
-              "Not entered"
-            )}
-          </p>
-        </div>
+        ${createDetailSection(
+          "Success Criteria",
+          lesson.successCriteria
+        )}
 
-        <div class="lesson-detail-section">
-          <h4>Standards</h4>
+        ${createDetailSection(
+          "Why Are We Learning This?",
+          lesson.whyLearning
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.standards ||
-              "Not entered"
-            )}
-          </p>
-        </div>
+        ${createDetailSection(
+          "Standards",
+          lesson.standards
+        )}
 
-        <div class="lesson-detail-section">
-          <h4>
-            Profile of a Patriot
-          </h4>
+        ${createDetailSection(
+          "Materials Needed",
+          lesson.materials
+        )}
 
-          <p>
-            ${escapeHtml(
-              lesson.profileComponent ||
-              "Not entered"
-            )}
-          </p>
-
-          ${
-            lesson.profileFocus
-              ? `
-                <p>
-                  ${escapeHtml(
-                    lesson.profileFocus
-                  )}
-                </p>
-              `
-              : ""
-          }
-        </div>
-
-        <div class="lesson-detail-section">
-          <h4>Materials</h4>
-
-          <p>
-            ${escapeHtml(
-              lesson.materials ||
-              "Not entered"
-            )}
-          </p>
-        </div>
-
-        <div class="lesson-detail-section">
-          <h4>Teacher Notes</h4>
-
-          <p>
-            ${escapeHtml(
-              lesson.teacherNotes ||
-              "Not entered"
-            )}
-          </p>
-        </div>
-
-        <div class="lesson-detail-section">
-          <h4>Resources</h4>
-
-          ${createResourceLinks(
-            lesson.lessonResources
-          )}
-        </div>
+        ${createDetailSection(
+          "Teacher Notes",
+          lesson.teacherNotes
+        )}
       </div>
     `;
 
@@ -1235,7 +1282,10 @@ Lesson Library with Calendar
 
     const newestLessonDate =
       lessonDates.sort(
-        (firstDate, secondDate) => {
+        (
+          firstDate,
+          secondDate
+        ) => {
           return (
             secondDate.getTime() -
             firstDate.getTime()
