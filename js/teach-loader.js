@@ -783,26 +783,32 @@ Empty optional components are not displayed.
   border-radius: 6px;
 }
 
-    .lesson-text,
-    .profile-description {
-      width: 100%;
-      margin: 0;
-    
-      color:
-        var(
-          --teach-ink,
-          #20283a
-        );
-    
-      font-size: 0.74rem;
-      font-weight: 500;
-      line-height: 1.42;
-    
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-      word-break: normal;
+    .lesson-flow-section .lesson-text,
+      .lesson-flow-section .profile-description {
+        display: block;
+        width: 100%;
+        min-width: 0;
+      
+        margin: 0 !important;
+        padding: 0 !important;
+      
+        color:
+          var(
+            --teach-ink,
+            #20283a
+          );
+      
+        font-size: 0.72rem;
+        font-weight: 500;
+        line-height: 1.4;
+      
+        text-align: left !important;
+        text-indent: 0 !important;
+      
+        white-space: pre-wrap;
+        overflow-wrap: break-word;
+        word-break: normal;
     }
-
     .profile-title {
       margin: 0 0 2px;
     
