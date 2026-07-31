@@ -695,6 +695,12 @@ body.patriot-page-teach
 }
 
 body.patriot-page-teach
+.lesson-flow-panel
+.command-panel-body {
+  padding: 0;
+}
+
+body.patriot-page-teach
 .lesson-workspace {
   position: relative;
   display: flex;
