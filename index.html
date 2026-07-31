@@ -15,45 +15,33 @@
 
   <title>Dashboard | Patriot Command</title>
 
-  <!--
-  ==========================================
-  SHARED PATRIOT COMMAND STYLES
-  ==========================================
-  -->
-
   <link
     rel="stylesheet"
-    href="css/patriot-design-system.css?v=1"
+    href="css/patriot-design-system.css?v=2"
   >
 
   <link
     rel="stylesheet"
-    href="css/layout.css?v=1"
+    href="css/layout.css?v=2"
   >
-
-  <!--
-  ==========================================
-  DASHBOARD-SPECIFIC STYLES
-  ==========================================
-  -->
 
   <style>
     /*
-    ========================================
+    ==========================================
     DASHBOARD PAGE
-    ========================================
+    ==========================================
     */
 
     .dashboard-page {
       display: grid;
-      gap: var(--pc-section-gap);
-      padding-bottom: var(--pc-page-bottom-space);
+      gap: 12px;
+      padding-bottom: 28px;
     }
 
     /*
-    ========================================
-    HERO HEADER
-    ========================================
+    ==========================================
+    COMPACT DASHBOARD HEADER
+    ==========================================
     */
 
     .dashboard-hero {
@@ -63,27 +51,25 @@
         minmax(0, 1fr)
         auto;
       align-items: center;
-      gap: 24px;
-      min-height: 132px;
-      margin-top: var(--pc-page-top-space);
-      padding:
-        clamp(20px, 2vw, 30px)
-        clamp(20px, 2.5vw, 38px);
+      gap: 20px;
+      min-height: 98px;
+      margin-top: 12px;
+      padding: 17px 24px;
       overflow: hidden;
       background:
         linear-gradient(
           112deg,
-          rgba(207, 27, 19, 0.82) 0%,
-          rgba(255, 255, 255, 0.93) 48%,
-          rgba(42, 67, 163, 0.82) 100%
+          rgba(207, 27, 19, 0.52) 0%,
+          rgba(255, 255, 255, 0.92) 50%,
+          rgba(42, 67, 163, 0.5) 100%
         );
       border:
         1px solid
         rgba(255, 255, 255, 0.88);
-      border-radius:
-        var(--patriot-radius-large);
+      border-radius: 16px;
       box-shadow:
-        var(--patriot-shadow-medium);
+        0 8px 24px
+        rgba(42, 67, 163, 0.1);
       isolation: isolate;
     }
 
@@ -94,30 +80,27 @@
       z-index: -2;
       background:
         radial-gradient(
-          circle at 12% 20%,
-          rgba(255, 255, 255, 0.3),
-          transparent 34%
+          circle at 11% 10%,
+          rgba(255, 255, 255, 0.34),
+          transparent 32%
         ),
         radial-gradient(
-          circle at 88% 15%,
-          rgba(255, 255, 255, 0.24),
-          transparent 32%
+          circle at 90% 5%,
+          rgba(255, 255, 255, 0.26),
+          transparent 30%
         );
     }
 
     .dashboard-hero::after {
       content: "";
       position: absolute;
-      inset:
-        auto
-        -80px
-        -130px
-        auto;
+      right: -45px;
+      bottom: -110px;
       z-index: -1;
-      width: 300px;
-      height: 300px;
+      width: 210px;
+      height: 210px;
       background:
-        rgba(255, 255, 255, 0.13);
+        rgba(255, 255, 255, 0.12);
       border-radius: 50%;
     }
 
@@ -126,12 +109,12 @@
     }
 
     .dashboard-eyebrow {
-      margin: 0 0 4px;
+      margin: 0 0 2px;
       color: var(--patriot-blue);
-      font-size: 0.69rem;
+      font-size: 0.63rem;
       font-weight: 800;
       text-transform: uppercase;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.11em;
     }
 
     .dashboard-title {
@@ -139,210 +122,49 @@
       color: var(--patriot-ink);
       font-size:
         clamp(
-          1.9rem,
-          3.2vw,
-          3rem
+          1.65rem,
+          2.6vw,
+          2.35rem
         );
-      line-height: 1.08;
+      line-height: 1.06;
     }
 
     .dashboard-tagline {
-      margin: 7px 0 0;
+      margin: 4px 0 0;
       color: var(--patriot-text);
-      font-size:
-        clamp(
-          0.82rem,
-          1.2vw,
-          0.98rem
-        );
+      font-size: 0.81rem;
       font-weight: 650;
     }
 
     .dashboard-date-card {
-      min-width: 205px;
-      padding: 13px 17px;
+      min-width: 190px;
+      padding: 10px 14px;
       text-align: right;
       background:
-        rgba(255, 255, 255, 0.7);
+        rgba(255, 255, 255, 0.68);
       border:
         1px solid
-        rgba(255, 255, 255, 0.82);
-      border-radius:
-        var(--patriot-radius-medium);
+        rgba(255, 255, 255, 0.84);
+      border-radius: 11px;
       box-shadow:
-        var(--patriot-shadow-small);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+        0 3px 12px
+        rgba(42, 67, 163, 0.08);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
     }
 
     #today-date {
       margin: 0;
       color: var(--patriot-text);
-      font-size: 0.78rem;
+      font-size: 0.75rem;
       font-weight: 700;
       line-height: 1.4;
     }
 
     /*
-    ========================================
-    GREETING AND CURRENT CLASS
-    ========================================
-    */
-
-    .dashboard-primary-grid {
-      display: grid;
-      grid-template-columns:
-        minmax(0, 0.82fr)
-        minmax(0, 1.65fr);
-      align-items: stretch;
-      gap: var(--pc-section-gap);
-    }
-
-    .greeting-panel,
-    .current-class {
-      min-width: 0;
-      margin: 0;
-      overflow: hidden;
-      border-radius:
-        var(--patriot-radius-large);
-      box-shadow:
-        var(--patriot-shadow-medium);
-    }
-
-    .greeting-panel {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      padding:
-        clamp(20px, 2vw, 30px);
-      background:
-        rgba(255, 255, 255, 0.77);
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.88);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-    }
-
-    .greeting-label {
-      margin: 0 0 5px;
-      color: var(--patriot-red);
-      font-size: 0.68rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-
-    #greeting-text {
-      margin: 0;
-      font-size:
-        clamp(
-          1.35rem,
-          2.2vw,
-          2rem
-        );
-      line-height: 1.18;
-    }
-
-    .greeting-description {
-      margin: 9px 0 0;
-      color: var(--patriot-muted);
-      font-size: 0.83rem;
-      line-height: 1.48;
-    }
-
-    .current-class {
-      position: relative;
-      display: grid;
-      align-content: center;
-      min-height: 190px;
-      padding:
-        clamp(22px, 2.5vw, 34px);
-      color: var(--patriot-white);
-      background:
-        linear-gradient(
-          128deg,
-          #203b89 0%,
-          var(--patriot-blue) 58%,
-          #172c6d 100%
-        );
-      border:
-        1px solid
-        rgba(255, 255, 255, 0.18);
-      border-bottom:
-        5px solid
-        var(--patriot-gold);
-    }
-
-    .current-class::after {
-      content: "";
-      position: absolute;
-      top: -80px;
-      right: -55px;
-      width: 230px;
-      height: 230px;
-      pointer-events: none;
-      background:
-        rgba(255, 255, 255, 0.06);
-      border-radius: 50%;
-    }
-
-    .status-label {
-      position: relative;
-      z-index: 1;
-      margin: 0 0 6px;
-      color: var(--patriot-gold);
-      font-size: 0.68rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
-    }
-
-    #period-name {
-      position: relative;
-      z-index: 1;
-      color: var(--patriot-white);
-      font-family: var(--patriot-heading-font);
-      font-size:
-        clamp(
-          1.5rem,
-          2.7vw,
-          2.45rem
-        );
-      font-weight: 650;
-      line-height: 1.14;
-      letter-spacing: -0.025em;
-    }
-
-    #course-name {
-      position: relative;
-      z-index: 1;
-      margin-top: 4px;
-      color:
-        rgba(255, 255, 255, 0.9);
-      font-size:
-        clamp(
-          0.9rem,
-          1.45vw,
-          1.15rem
-        );
-      font-weight: 650;
-    }
-
-    #time-message {
-      position: relative;
-      z-index: 1;
-      margin-top: 12px;
-      color:
-        rgba(255, 255, 255, 0.76);
-      font-size: 0.78rem;
-      font-weight: 600;
-    }
-
-    /*
-    ========================================
+    ==========================================
     SETUP WARNING
-    ========================================
+    ==========================================
     */
 
     .setup-warning {
@@ -351,19 +173,19 @@
       justify-content: space-between;
       gap: 14px;
       margin: 0;
-      padding: 12px 15px;
+      padding: 10px 13px;
       color: #6c4300;
-      font-size: 0.81rem;
+      font-size: 0.77rem;
       font-weight: 650;
       background:
-        rgba(255, 226, 105, 0.34);
+        rgba(255, 226, 105, 0.3);
       border:
         1px solid
-        rgba(211, 168, 79, 0.52);
-      border-radius:
-        var(--patriot-radius-medium);
+        rgba(211, 168, 79, 0.48);
+      border-radius: 11px;
       box-shadow:
-        var(--patriot-shadow-small);
+        0 3px 12px
+        rgba(42, 67, 163, 0.07);
     }
 
     .setup-warning.show {
@@ -378,24 +200,185 @@
     }
 
     /*
-    ========================================
+    ==========================================
+    GREETING AND SCHEDULE
+    ==========================================
+    */
+
+    .dashboard-primary-grid {
+      display: grid;
+      grid-template-columns:
+        minmax(260px, 0.76fr)
+        minmax(0, 1.7fr);
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    .greeting-panel,
+    .current-class {
+      min-width: 0;
+      margin: 0;
+      overflow: hidden;
+      border-radius: 15px;
+      box-shadow:
+        0 8px 24px
+        rgba(42, 67, 163, 0.1);
+    }
+
+    .greeting-panel {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: 134px;
+      padding: 18px 21px;
+      background:
+        rgba(255, 255, 255, 0.76);
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .greeting-label {
+      margin: 0 0 3px;
+      color: var(--patriot-red);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    #greeting-text {
+      margin: 0;
+      font-size:
+        clamp(
+          1.2rem,
+          1.8vw,
+          1.65rem
+        );
+      line-height: 1.17;
+    }
+
+    .greeting-description {
+      margin: 7px 0 0;
+      color: var(--patriot-muted);
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .current-class {
+      position: relative;
+      display: grid;
+      align-content: center;
+      min-height: 134px;
+      padding: 20px 24px;
+      color: var(--patriot-white);
+      background:
+        linear-gradient(
+          128deg,
+          #29439b 0%,
+          var(--patriot-blue) 58%,
+          #22377e 100%
+        );
+      border:
+        1px solid
+        rgba(255, 255, 255, 0.16);
+      border-bottom:
+        4px solid
+        var(--patriot-gold);
+    }
+
+    .current-class::after {
+      content: "";
+      position: absolute;
+      top: -80px;
+      right: -45px;
+      width: 190px;
+      height: 190px;
+      pointer-events: none;
+      background:
+        rgba(255, 255, 255, 0.06);
+      border-radius: 50%;
+    }
+
+    .status-label {
+      position: relative;
+      z-index: 1;
+      margin: 0 0 4px;
+      color: var(--patriot-gold);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+    }
+
+    #period-name {
+      position: relative;
+      z-index: 1;
+      color: var(--patriot-white);
+      font-family:
+        var(
+          --patriot-heading-font,
+          "Literata",
+          Georgia,
+          serif
+        );
+      font-size:
+        clamp(
+          1.35rem,
+          2.1vw,
+          1.95rem
+        );
+      font-weight: 650;
+      line-height: 1.14;
+      letter-spacing: -0.022em;
+    }
+
+    #course-name {
+      position: relative;
+      z-index: 1;
+      margin-top: 3px;
+      color:
+        rgba(255, 255, 255, 0.9);
+      font-size:
+        clamp(
+          0.82rem,
+          1.2vw,
+          1rem
+        );
+      font-weight: 650;
+    }
+
+    #time-message {
+      position: relative;
+      z-index: 1;
+      margin-top: 8px;
+      color:
+        rgba(255, 255, 255, 0.76);
+      font-size: 0.72rem;
+      font-weight: 600;
+    }
+
+    /*
+    ==========================================
     QUICK ACTIONS
-    ========================================
+    ==========================================
     */
 
     .dashboard-actions-panel {
-      padding: var(--pc-panel-padding);
+      padding: 14px;
       background:
         rgba(255, 255, 255, 0.72);
       border:
         1px solid
         rgba(255, 255, 255, 0.86);
-      border-radius:
-        var(--patriot-radius-large);
+      border-radius: 15px;
       box-shadow:
-        var(--patriot-shadow-medium);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
+        0 8px 24px
+        rgba(42, 67, 163, 0.1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     .dashboard-section-heading {
@@ -403,18 +386,18 @@
       align-items: center;
       justify-content: space-between;
       gap: 14px;
-      margin-bottom: 12px;
+      margin-bottom: 9px;
     }
 
     .dashboard-section-heading h2 {
       margin: 0;
-      font-size: 1.08rem;
+      font-size: 0.98rem;
     }
 
     .dashboard-section-heading p {
       margin: 0;
       color: var(--patriot-muted);
-      font-size: 0.73rem;
+      font-size: 0.69rem;
     }
 
     .home-actions {
@@ -424,16 +407,16 @@
           3,
           minmax(0, 1fr)
         );
-      gap: var(--pc-card-gap);
+      gap: 10px;
     }
 
     .home-button {
       position: relative;
       display: flex;
       align-items: center;
-      gap: 11px;
-      min-height: 82px;
-      padding: 15px 17px;
+      gap: 10px;
+      min-height: 70px;
+      padding: 12px 14px;
       overflow: hidden;
       color: var(--patriot-ink);
       text-decoration: none;
@@ -441,28 +424,31 @@
         rgba(255, 255, 255, 0.86);
       border:
         1px solid
-        var(--patriot-line);
-      border-radius:
-        var(--patriot-radius-medium);
+        var(
+          --patriot-line,
+          rgba(42, 67, 163, 0.12)
+        );
+      border-radius: 11px;
       box-shadow:
-        var(--patriot-shadow-small);
+        0 3px 12px
+        rgba(42, 67, 163, 0.07);
       transition:
-        color var(--patriot-transition),
-        background var(--patriot-transition),
-        border-color var(--patriot-transition),
-        box-shadow var(--patriot-transition),
-        transform var(--patriot-transition);
+        color 180ms ease,
+        background 180ms ease,
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
     }
 
     .home-button::after {
       content: "→";
       margin-left: auto;
       color: var(--patriot-blue);
-      font-size: 1.05rem;
+      font-size: 0.98rem;
       font-weight: 800;
       transition:
-        color var(--patriot-transition),
-        transform var(--patriot-transition);
+        color 180ms ease,
+        transform 180ms ease;
     }
 
     .home-button:hover {
@@ -470,13 +456,9 @@
       background: var(--patriot-blue);
       border-color: var(--patriot-blue);
       box-shadow:
-        var(--patriot-shadow-hover);
-      transform: translateY(-2px);
-    }
-
-    .home-button:hover::after {
-      color: var(--patriot-gold);
-      transform: translateX(3px);
+        0 8px 20px
+        rgba(42, 67, 163, 0.16);
+      transform: translateY(-1px);
     }
 
     .home-button.primary:hover {
@@ -489,24 +471,28 @@
       border-color: #2f6f4b;
     }
 
+    .home-button:hover::after {
+      color: var(--patriot-gold);
+      transform: translateX(2px);
+    }
+
     .home-button-icon {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex: 0 0 auto;
-      width: 42px;
-      height: 42px;
-      font-size: 1.3rem;
+      width: 37px;
+      height: 37px;
+      font-size: 1.12rem;
       background:
-        var(--patriot-blue-soft);
-      border-radius:
-        var(--patriot-radius-small);
+        rgba(42, 67, 163, 0.09);
+      border-radius: 9px;
     }
 
     .home-button.primary
     .home-button-icon {
       background:
-        var(--patriot-red-soft);
+        rgba(207, 27, 19, 0.09);
     }
 
     .home-button.settings
@@ -529,53 +515,54 @@
 
     .home-button-title {
       font-family:
-        var(--patriot-heading-font);
-      font-size: 0.94rem;
+        var(
+          --patriot-heading-font,
+          "Literata",
+          Georgia,
+          serif
+        );
+      font-size: 0.86rem;
       font-weight: 650;
       line-height: 1.2;
     }
 
     .home-button-description {
       color: var(--patriot-muted);
-      font-size: 0.7rem;
+      font-size: 0.66rem;
       font-weight: 550;
-      line-height: 1.35;
+      line-height: 1.32;
     }
 
     .home-button:hover
     .home-button-description {
       color:
-        rgba(255, 255, 255, 0.74);
+        rgba(255, 255, 255, 0.76);
     }
 
     /*
-    ========================================
+    ==========================================
     FOOTNOTE
-    ========================================
+    ==========================================
     */
 
     .dashboard-note {
       margin: 0;
-      padding: 0 4px;
+      padding: 1px 4px 0;
       color: var(--patriot-muted);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       text-align: center;
     }
 
     /*
-    ========================================
+    ==========================================
     RESPONSIVE
-    ========================================
+    ==========================================
     */
 
     @media (max-width: 900px) {
       .dashboard-primary-grid {
         grid-template-columns:
           minmax(0, 1fr);
-      }
-
-      .greeting-panel {
-        min-height: 140px;
       }
 
       .home-actions {
@@ -588,6 +575,7 @@
       .dashboard-hero {
         grid-template-columns:
           minmax(0, 1fr);
+        gap: 10px;
         min-height: 0;
       }
 
@@ -608,23 +596,23 @@
       .greeting-panel,
       .current-class,
       .dashboard-actions-panel {
-        border-radius:
-          var(--patriot-radius-medium);
+        border-radius: 12px;
       }
 
-      .current-class {
-        min-height: 170px;
+      .current-class,
+      .greeting-panel {
+        min-height: 122px;
       }
 
       .dashboard-section-heading {
         align-items: flex-start;
         flex-direction: column;
-        gap: 3px;
+        gap: 2px;
       }
 
       .home-button {
-        min-height: 76px;
-        padding: 13px;
+        min-height: 66px;
+        padding: 11px 12px;
       }
     }
   </style>
@@ -632,12 +620,6 @@
 
 <body class="patriot-page-dashboard">
   <main class="dashboard-page">
-    <!--
-    ========================================
-    DASHBOARD HERO
-    ========================================
-    -->
-
     <header class="dashboard-hero">
       <div class="dashboard-hero-copy">
         <p class="dashboard-eyebrow">
@@ -660,12 +642,6 @@
       </div>
     </header>
 
-    <!--
-    ========================================
-    SETUP NOTICE
-    ========================================
-    -->
-
     <div
       id="setup-warning"
       class="setup-warning"
@@ -680,12 +656,6 @@
         Open Settings
       </a>
     </div>
-
-    <!--
-    ========================================
-    GREETING AND SCHEDULE
-    ========================================
-    -->
 
     <section class="dashboard-primary-grid">
       <div class="greeting-panel">
@@ -723,12 +693,6 @@
         <div id="time-message"></div>
       </section>
     </section>
-
-    <!--
-    ========================================
-    QUICK ACTIONS
-    ========================================
-    -->
 
     <section class="dashboard-actions-panel">
       <div class="dashboard-section-heading">
@@ -816,19 +780,7 @@
     </p>
   </main>
 
-  <!--
-  ==========================================
-  DATA
-  ==========================================
-  -->
-
-  <script src="data/schedules.js"></script>
-
-  <!--
-  ==========================================
-  DASHBOARD LOGIC
-  ==========================================
-  -->
+  <script src="data/schedules.js?v=2"></script>
 
   <script>
     (function () {
@@ -845,6 +797,34 @@
         "7th Period": "7th Period",
         "8th Period": "8th Period"
       };
+
+      /*
+      ========================================
+      SCHEDULE ACCESS
+      ========================================
+
+      schedules.js declares bellSchedule with
+      const, so it should be referenced directly
+      instead of through window.bellSchedule.
+      */
+
+      function getBellSchedule() {
+        if (
+          typeof bellSchedule !==
+          "undefined" &&
+          Array.isArray(bellSchedule)
+        ) {
+          return bellSchedule;
+        }
+
+        return [];
+      }
+
+      /*
+      ========================================
+      TEACHER PROFILE
+      ========================================
+      */
 
       function readTeacherProfile() {
         const savedProfile =
@@ -913,6 +893,12 @@
             }
           );
       }
+
+      /*
+      ========================================
+      TIME HELPERS
+      ========================================
+      */
 
       function timeToDate(timeText) {
         const [hours, minutes] =
@@ -987,16 +973,14 @@
         );
       }
 
-      function getInstructionalPeriods() {
-        if (
-          !Array.isArray(
-            window.bellSchedule
-          )
-        ) {
-          return [];
-        }
+      /*
+      ========================================
+      SCHEDULE HELPERS
+      ========================================
+      */
 
-        return window.bellSchedule.filter(
+      function getInstructionalPeriods() {
+        return getBellSchedule().filter(
           period =>
             Object.prototype
               .hasOwnProperty
@@ -1008,15 +992,7 @@
       }
 
       function findCurrentPeriod(now) {
-        if (
-          !Array.isArray(
-            window.bellSchedule
-          )
-        ) {
-          return null;
-        }
-
-        return window.bellSchedule.find(
+        return getBellSchedule().find(
           period => {
             const start =
               timeToDate(
@@ -1094,6 +1070,12 @@
           "Refresh the page or check data/schedules.js.";
       }
 
+      /*
+      ========================================
+      DASHBOARD UPDATE
+      ========================================
+      */
+
       function updateCurrentClass() {
         const now =
           new Date();
@@ -1101,23 +1083,19 @@
         const profile =
           readTeacherProfile();
 
+        const schedule =
+          getBellSchedule();
+
         updateGreeting(profile);
 
-        const setupWarning =
-          document.getElementById(
-            "setup-warning"
-          );
-
-        setupWarning.classList.toggle(
+        document.getElementById(
+          "setup-warning"
+        ).classList.toggle(
           "show",
           !profile
         );
 
-        if (
-          !Array.isArray(
-            window.bellSchedule
-          )
-        ) {
+        if (schedule.length === 0) {
           showScheduleUnavailable();
           return;
         }
@@ -1284,12 +1262,6 @@
     })();
   </script>
 
-  <!--
-  ==========================================
-  SHARED NAVIGATION
-  ==========================================
-  -->
-
-  <script src="js/navigation.js?v=2"></script>
+  <script src="js/navigation.js?v=3"></script>
 </body>
 </html>
