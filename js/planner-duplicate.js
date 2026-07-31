@@ -141,6 +141,38 @@ Load Duplicate or Editable Lesson
       value || "";
   }
 
+  function setOptionalField(
+    checkboxId,
+    fieldId,
+    value
+  ) {
+    const checkbox =
+      document.getElementById(
+        checkboxId
+      );
+
+    if (!checkbox) {
+      return;
+    }
+
+    const hasValue =
+      Boolean(
+        String(value || "").trim()
+      );
+
+    checkbox.checked =
+      hasValue;
+
+    checkbox.dispatchEvent(
+      new Event("change")
+    );
+
+    setValue(
+      fieldId,
+      value
+    );
+  }
+
   function chooseOptionByText(
     select,
     text
@@ -565,8 +597,31 @@ Load Duplicate or Editable Lesson
     );
 
     setValue(
+      "essential-question",
+      lesson.essentialQuestion
+    );
+
+    setValue(
       "agenda",
       lesson.agenda
+    );
+
+    setOptionalField(
+      "include-vocabulary",
+      "vocabulary",
+      lesson.vocabulary
+    );
+
+    setOptionalField(
+      "include-exit-ticket",
+      "exit-ticket",
+      lesson.exitTicket
+    );
+
+    setOptionalField(
+      "include-homework",
+      "homework",
+      lesson.homework
     );
 
     setValue(
@@ -633,7 +688,7 @@ Load Duplicate or Editable Lesson
     }, 100);
 
     fillResources(
-      lesson.lessonResources ||
+      lesson.lessonResources ??
       lesson.resources
     );
 
