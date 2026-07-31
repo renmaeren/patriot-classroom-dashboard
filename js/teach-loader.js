@@ -747,18 +747,18 @@ Empty optional components are not displayed.
     }
 
     .lesson-flow-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-
-  width: 19px;
-  height: 19px;
-
-  color:
-    var(
-      --teach-blue,
-      #2a43a3
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    
+      width: 19px;
+      height: 19px;
+    
+      color:
+        var(
+          --teach-blue,
+          #2a43a3
     );
 
   font-family:
@@ -786,7 +786,6 @@ Empty optional components are not displayed.
     .lesson-text,
     .profile-description {
       width: 100%;
-      min-width: 0;
       margin: 0;
     
       color:
@@ -795,9 +794,9 @@ Empty optional components are not displayed.
           #20283a
         );
     
-      font-size: 0.68rem;
+      font-size: 0.74rem;
       font-weight: 500;
-      line-height: 1.34;
+      line-height: 1.42;
     
       white-space: pre-wrap;
       overflow-wrap: anywhere;
