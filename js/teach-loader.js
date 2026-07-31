@@ -680,7 +680,7 @@ Empty optional components are not displayed.
       position: absolute;
       top: 9px;
       bottom: 9px;
-      left: 5px;
+      left: 1px;
       width: 3px;
     
       background:
@@ -938,11 +938,12 @@ LESSON FLOW ALIGNMENT CORRECTION
   display: block;
 
   margin: 0 !important;
+
   padding:
-    9px
-    12px
-    9px
-    16px;
+    7px
+    10px
+    8px
+    11px;
 
   text-align: left;
 }
@@ -950,6 +951,7 @@ LESSON FLOW ALIGNMENT CORRECTION
 .lesson-flow-heading {
   display: flex;
   align-items: center;
+  gap: 5px;
 
   width: 100%;
   min-width: 0;
@@ -957,7 +959,7 @@ LESSON FLOW ALIGNMENT CORRECTION
   margin:
     0
     0
-    4px;
+    3px;
 
   padding: 0;
 
@@ -981,37 +983,43 @@ LESSON FLOW ALIGNMENT CORRECTION
 .lesson-flow-section .profile-description {
   display: block;
 
-  width: 100%;
+  width: auto;
   min-width: 0;
 
   margin:
-    0 !important;
+    0
+    0
+    0
+    24px !important;
 
-  padding:
-    0 !important;
+  padding: 0 !important;
 
-  text-align:
-    left !important;
+  text-align: left !important;
+  text-indent: 0 !important;
 
-  text-indent:
-    0 !important;
+  white-space: pre-line;
 
-  overflow-wrap:
-    break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
 
-  word-break:
-    normal;
+.lesson-flow-section .profile-title {
+  margin-bottom:
+    3px !important;
 }
 
 .lesson-flow-section .agenda-list {
-  width: 100%;
+  width: auto;
   min-width: 0;
 
   margin:
-    0 !important;
+    0
+    0
+    0
+    24px !important;
 
   padding-left:
-    18px !important;
+    16px !important;
 
   text-align:
     left !important;
