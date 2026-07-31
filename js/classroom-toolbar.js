@@ -66,13 +66,13 @@ widgets on the Teach page.
       selector: ".timer-card",
       defaultEnabled: true
     },
-   {
-  id: "announcements",
-  name: "Announcements",
-  icon: "📣",
-  selector: "#announcement-bar",
-  defaultEnabled: false
-},
+    {
+      id: "announcements",
+      name: "Announcements",
+      icon: "📣",
+      selector: "#announcement-bar",
+      defaultEnabled: false
+    },
     {
       id: "picker",
       name: "Student Picker",
@@ -211,12 +211,11 @@ widgets on the Teach page.
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 46px;
-        height: 68px;
+        width: 44px;
+        height: 62px;
         padding: 8px;
         color: #ffffff;
-        font-size: 1.45rem;
-        background: rgba(17, 40, 74, 0.76);
+        background: rgba(17, 40, 74, 0.82);
         border: 1px solid rgba(255, 255, 255, 0.28);
         box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
         cursor: pointer;
@@ -225,12 +224,22 @@ widgets on the Teach page.
         transform: translateY(-50%);
         transition:
           width 0.18s ease,
-          background 0.18s ease;
+          background 0.18s ease,
+          box-shadow 0.18s ease;
       }
 
       .patriot-edge-tab:hover {
-        width: 51px;
-        background: rgba(179, 38, 46, 0.9);
+        width: 49px;
+        background: rgba(179, 38, 46, 0.94);
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.24);
+      }
+
+      .patriot-edge-tab img {
+        display: block;
+        width: 29px;
+        height: 29px;
+        object-fit: contain;
+        pointer-events: none;
       }
 
       .patriot-edge-panel {
@@ -238,7 +247,7 @@ widgets on the Teach page.
         top: 50%;
         z-index: 4000;
         color: #ffffff;
-        background: rgba(17, 40, 74, 0.84);
+        background: rgba(17, 40, 74, 0.9);
         border: 1px solid rgba(255, 255, 255, 0.24);
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.23);
         backdrop-filter: blur(9px);
@@ -250,14 +259,14 @@ widgets on the Teach page.
         display: flex;
         align-items: center;
         justify-content: center;
-        height: 34px;
+        height: 32px;
         padding: 0;
         color: #ffffff;
-        font-size: 1.3rem;
+        font-size: 1.25rem;
         font-weight: bold;
         background: rgba(255, 255, 255, 0.13);
-        border: 1px solid rgba(255, 255, 255, 0.32);
-        border-radius: 9px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        border-radius: 8px;
         cursor: pointer;
       }
 
@@ -274,24 +283,19 @@ widgets on the Teach page.
       .classroom-toolbar-tab {
         right: 0;
         border-right: 0;
-        border-radius: 14px 0 0 14px;
+        border-radius: 13px 0 0 13px;
       }
 
       .classroom-toolbar-tab img {
-        display: block;
-        width: 28px;
-        height: 28px;
-        object-fit: contain;
         filter: brightness(0) invert(1);
-        pointer-events: none;
       }
 
       .classroom-toolbar-panel {
-        right: -94px;
-        width: 80px;
-        padding: 12px 10px;
+        right: -90px;
+        width: 76px;
+        padding: 10px 8px;
         border-right: 0;
-        border-radius: 15px 0 0 15px;
+        border-radius: 14px 0 0 14px;
         transition: right 0.24s ease;
       }
 
@@ -302,7 +306,7 @@ widgets on the Teach page.
       .classroom-toolbar-links {
         display: grid;
         justify-content: center;
-        gap: 10px;
+        gap: 8px;
       }
 
       .classroom-toolbar-link {
@@ -310,12 +314,12 @@ widgets on the Teach page.
         display: flex;
         align-items: center;
         justify-content: center;
-        width: 56px;
-        height: 56px;
+        width: 54px;
+        height: 54px;
         padding: 7px;
-        background: rgba(255, 255, 255, 0.94);
+        background: rgba(255, 255, 255, 0.96);
         border: 1px solid rgba(255, 255, 255, 0.62);
-        border-radius: 12px;
+        border-radius: 11px;
         box-shadow: 0 2px 7px rgba(0, 0, 0, 0.13);
         transition:
           transform 0.16s ease,
@@ -324,15 +328,15 @@ widgets on the Teach page.
       }
 
       .classroom-toolbar-link:hover {
-        transform: scale(1.06);
+        transform: scale(1.05);
         background: #ffffff;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
       }
 
       .classroom-toolbar-link img {
         display: block;
-        width: 40px;
-        height: 40px;
+        width: 39px;
+        height: 39px;
         object-fit: contain;
         pointer-events: none;
       }
@@ -344,8 +348,8 @@ widgets on the Teach page.
       }
 
       .classroom-toolbar-close {
-        width: 56px;
-        margin: 11px auto 0;
+        width: 54px;
+        margin: 9px auto 0;
       }
 
       /*
@@ -357,37 +361,21 @@ widgets on the Teach page.
       .teach-widget-tab {
         left: 0;
         border-left: 0;
-        border-radius: 0 14px 14px 0;
+        border-radius: 0 13px 13px 0;
       }
 
-      .teach-widget-tab-label {
-        writing-mode: vertical-rl;
-        transform: rotate(180deg);
-        color: #ffffff;
-        font-size: 0.72rem;
-        font-weight: bold;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-        pointer-events: none;
+      .teach-widget-tab img {
+        filter: brightness(0) invert(1);
       }
- 
-.teach-widget-tab-icon {
-  display: block;
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  pointer-events: none;
-}
-    
-.teach-widget-panel {
-        left: -292px;
-        width: 280px;
+
+      .teach-widget-panel {
+        left: -264px;
+        width: 252px;
         max-height: calc(100vh - 30px);
-        padding: 16px;
+        padding: 13px;
         overflow-y: auto;
         border-left: 0;
-        border-radius: 0 15px 15px 0;
+        border-radius: 0 14px 14px 0;
         transition: left 0.24s ease;
       }
 
@@ -398,30 +386,30 @@ widgets on the Teach page.
       .teach-widget-heading {
         margin: 0;
         color: #ffffff;
-        font-size: 1.05rem;
+        font-size: 1rem;
       }
 
       .teach-widget-description {
-        margin: 5px 0 14px;
+        margin: 4px 0 11px;
         color: rgba(255, 255, 255, 0.78);
-        font-size: 0.8rem;
+        font-size: 0.76rem;
         line-height: 1.35;
       }
 
       .teach-widget-options {
         display: grid;
-        gap: 8px;
+        gap: 7px;
       }
 
       .teach-widget-option {
         display: flex;
         align-items: center;
-        gap: 10px;
-        min-height: 48px;
-        padding: 8px 10px;
+        gap: 8px;
+        min-height: 42px;
+        padding: 6px 8px;
         color: #11284a;
-        background: rgba(255, 255, 255, 0.94);
-        border-radius: 10px;
+        background: rgba(255, 255, 255, 0.96);
+        border-radius: 9px;
         cursor: pointer;
         user-select: none;
       }
@@ -432,22 +420,22 @@ widgets on the Teach page.
 
       .teach-widget-icon {
         flex: 0 0 auto;
-        width: 27px;
+        width: 25px;
         text-align: center;
-        font-size: 1.25rem;
+        font-size: 1.15rem;
       }
 
       .teach-widget-name {
         flex: 1;
-        font-size: 0.9rem;
+        font-size: 0.84rem;
         font-weight: bold;
       }
 
       .teach-widget-toggle {
         position: relative;
         flex: 0 0 auto;
-        width: 42px;
-        height: 24px;
+        width: 40px;
+        height: 22px;
       }
 
       .teach-widget-toggle input {
@@ -470,8 +458,8 @@ widgets on the Teach page.
         position: absolute;
         top: 3px;
         left: 3px;
-        width: 18px;
-        height: 18px;
+        width: 16px;
+        height: 16px;
         background: #ffffff;
         border-radius: 50%;
         box-shadow: 0 1px 4px rgba(0, 0, 0, 0.28);
@@ -496,7 +484,7 @@ widgets on the Teach page.
 
       .teach-widget-close {
         width: 100%;
-        margin-top: 13px;
+        margin-top: 10px;
       }
 
       /*
@@ -517,31 +505,36 @@ widgets on the Teach page.
 
       @media (max-width: 700px) {
         .patriot-edge-tab {
-          width: 42px;
-          height: 62px;
+          width: 41px;
+          height: 58px;
+        }
+
+        .patriot-edge-tab img {
+          width: 26px;
+          height: 26px;
         }
 
         .classroom-toolbar-panel {
-          width: 74px;
+          width: 70px;
         }
 
         .classroom-toolbar-link,
         .classroom-toolbar-close {
-          width: 50px;
+          width: 48px;
         }
 
         .classroom-toolbar-link {
-          height: 50px;
+          height: 48px;
         }
 
         .classroom-toolbar-link img {
-          width: 35px;
-          height: 35px;
+          width: 34px;
+          height: 34px;
         }
 
         .teach-widget-panel {
-          left: -272px;
-          width: 260px;
+          left: -244px;
+          width: 232px;
         }
       }
     `;
@@ -794,26 +787,12 @@ widgets on the Teach page.
     const container =
       findWidgetContainer(widget);
 
-    /*
-    Timer and Agenda already exist in
-    classroom.html, so they can be shown
-    or hidden immediately.
-    */
-
     if (container) {
       container.classList.toggle(
         "patriot-widget-hidden",
         !enabled
       );
     }
-
-    /*
-    Picker, Points, and Groups will be
-    inserted by teach-loader.js.
-
-    This event tells that file which
-    widgets should be loaded or removed.
-    */
 
     sendWidgetEvent(
       widget.id,
@@ -892,13 +871,12 @@ widgets on the Teach page.
 
     tab.type = "button";
 
-   tab.innerHTML = `
-  <img
-    src="Assets/Icons/tool-tab.png"
-    alt=""
-    class="teach-widget-tab-icon"
-  >
-`;
+    tab.innerHTML = `
+      <img
+        src="Assets/Icons/widgets.png"
+        alt=""
+      >
+    `;
 
     tab.setAttribute(
       "aria-label",
@@ -933,7 +911,7 @@ widgets on the Teach page.
       </h2>
 
       <p class="teach-widget-description">
-        Turn on as many tools as you need.
+        Turn tools on or off.
         Your choices will be remembered.
       </p>
 
@@ -953,6 +931,7 @@ widgets on the Teach page.
         class="patriot-toolbar-close teach-widget-close"
         type="button"
         aria-label="Close classroom widget choices"
+        title="Close"
       >
         ×
       </button>
@@ -1049,11 +1028,6 @@ widgets on the Teach page.
         }
       }
     );
-
-    /*
-    Apply saved choices after the page
-    and current cards have loaded.
-    */
 
     applyAllWidgetSettings(settings);
   }
