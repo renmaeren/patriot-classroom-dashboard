@@ -8,8 +8,7 @@ RIGHT SIDE:
 Quick links to frequently used websites.
 
 LEFT SIDE:
-Switches for showing or hiding classroom
-widgets on the Teach page.
+Classroom widgets and teaching tools.
 
 Both toolbar tabs can be dragged vertically.
 Their positions are saved for each teacher.
@@ -27,6 +26,11 @@ Their positions are saved for each teacher.
 
   const WIDGET_TAB_POSITION_KEY =
     "patriotWidgetTabPosition";
+
+  const WHITEBOARD_SCRIPT_PATH =
+    "js/classroom-whiteboard.js";
+
+  let whiteboardLoadPromise = null;
 
   /*
   ==========================================
@@ -73,32 +77,43 @@ Their positions are saved for each teacher.
       name: "Classroom Timer",
       icon: "⏱",
       selector: ".timer-card",
-      defaultEnabled: true
+      defaultEnabled: true,
+      type: "toggle"
     },
     {
       id: "announcements",
       name: "Announcements",
       icon: "📣",
       selector: "#announcement-bar",
-      defaultEnabled: false
+      defaultEnabled: false,
+      type: "toggle"
     },
     {
       id: "picker",
       name: "Student Picker",
       icon: "🎲",
-      defaultEnabled: false
+      defaultEnabled: false,
+      type: "toggle"
     },
     {
       id: "points",
       name: "Review Game Points",
       icon: "🏆",
-      defaultEnabled: false
+      defaultEnabled: false,
+      type: "toggle"
     },
     {
       id: "groups",
       name: "Random Groups",
       icon: "👥",
-      defaultEnabled: false
+      defaultEnabled: false,
+      type: "toggle"
+    },
+    {
+      id: "whiteboard",
+      name: "Whiteboard",
+      icon: "🖊️",
+      type: "action"
     }
   ];
 
@@ -152,6 +167,120 @@ Their positions are saved for each teacher.
 
   /*
   ==========================================
+  WHITEBOARD LOADER
+  ==========================================
+  */
+
+  function openWhiteboard() {
+    if (
+      window.PatriotWhiteboard &&
+      typeof window.PatriotWhiteboard.open ===
+        "function"
+    ) {
+      window.PatriotWhiteboard.open();
+      return Promise.resolve();
+    }
+
+    if (whiteboardLoadPromise) {
+      return whiteboardLoadPromise.then(
+        () => {
+          window.PatriotWhiteboard.open();
+        }
+      );
+    }
+
+    whiteboardLoadPromise =
+      new Promise(
+        (resolve, reject) => {
+          const existingScript =
+            document.querySelector(
+              `script[src="${WHITEBOARD_SCRIPT_PATH}"]`
+            );
+
+          if (existingScript) {
+            existingScript.addEventListener(
+              "load",
+              resolve,
+              {
+                once: true
+              }
+            );
+
+            existingScript.addEventListener(
+              "error",
+              reject,
+              {
+                once: true
+              }
+            );
+
+            return;
+          }
+
+          const script =
+            document.createElement("script");
+
+          script.src =
+            WHITEBOARD_SCRIPT_PATH;
+
+          script.defer = true;
+
+          script.addEventListener(
+            "load",
+            resolve,
+            {
+              once: true
+            }
+          );
+
+          script.addEventListener(
+            "error",
+            reject,
+            {
+              once: true
+            }
+          );
+
+          document.body.appendChild(
+            script
+          );
+        }
+      )
+        .then(() => {
+          if (
+            !window.PatriotWhiteboard ||
+            typeof window.PatriotWhiteboard.open !==
+              "function"
+          ) {
+            throw new Error(
+              "Whiteboard controls were not created."
+            );
+          }
+        })
+        .catch(error => {
+          whiteboardLoadPromise = null;
+
+          console.error(
+            "The classroom whiteboard could not be opened.",
+            error
+          );
+
+          window.alert(
+            "The whiteboard could not be opened. Make sure js/classroom-whiteboard.js has been added to the project."
+          );
+
+          throw error;
+        });
+
+    return whiteboardLoadPromise.then(
+      () => {
+        window.PatriotWhiteboard.open();
+      }
+    );
+  }
+
+  /*
+  ==========================================
   DRAGGABLE EDGE TABS
   ==========================================
   */
@@ -193,7 +322,9 @@ Their positions are saved for each teacher.
 
     function readSavedPosition() {
       const savedValue =
-        localStorage.getItem(storageKey);
+        localStorage.getItem(
+          storageKey
+        );
 
       if (savedValue === null) {
         return 0.5;
@@ -248,12 +379,9 @@ Their positions are saved for each teacher.
         maximum
       } = getVerticalLimits();
 
-      const savedPosition =
-        readSavedPosition();
-
       const centerY =
         minimum +
-        savedPosition *
+        readSavedPosition() *
           (maximum - minimum);
 
       tab.style.top =
@@ -330,6 +458,7 @@ Their positions are saved for each teacher.
             DRAG_THRESHOLD
         ) {
           dragging = true;
+
           tab.classList.add(
             "dragging"
           );
@@ -419,13 +548,24 @@ Their positions are saved for each teacher.
   ==========================================
   */
 
+  function getToggleWidgets() {
+    return classroomWidgets.filter(
+      widget =>
+        widget.type === "toggle"
+    );
+  }
+
   function getDefaultWidgetSettings() {
     const settings = {};
 
-    classroomWidgets.forEach(widget => {
-      settings[widget.id] =
-        widget.defaultEnabled;
-    });
+    getToggleWidgets().forEach(
+      widget => {
+        settings[widget.id] =
+          Boolean(
+            widget.defaultEnabled
+          );
+      }
+    );
 
     return settings;
   }
@@ -527,9 +667,6 @@ Their positions are saved for each teacher.
         cursor: grabbing;
         background: rgba(179, 38, 46, 0.96);
         box-shadow: 0 5px 16px rgba(0, 0, 0, 0.3);
-        transition:
-          background 0.18s ease,
-          box-shadow 0.18s ease;
       }
 
       .patriot-edge-tab img {
@@ -584,7 +721,8 @@ Their positions are saved for each teacher.
         border-radius: 13px 0 0 13px;
       }
 
-      .classroom-toolbar-tab img {
+      .classroom-toolbar-tab img,
+      .teach-widget-tab img {
         filter: brightness(0) invert(1);
       }
 
@@ -608,7 +746,6 @@ Their positions are saved for each teacher.
       }
 
       .classroom-toolbar-link {
-        position: relative;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -662,10 +799,6 @@ Their positions are saved for each teacher.
         border-radius: 0 13px 13px 0;
       }
 
-      .teach-widget-tab img {
-        filter: brightness(0) invert(1);
-      }
-
       .teach-widget-panel {
         left: -264px;
         width: 252px;
@@ -703,10 +836,14 @@ Their positions are saved for each teacher.
         display: flex;
         align-items: center;
         gap: 8px;
+        width: 100%;
         min-height: 42px;
         padding: 6px 8px;
         color: #11284a;
+        font: inherit;
+        text-align: left;
         background: rgba(255, 255, 255, 0.96);
+        border: 0;
         border-radius: 9px;
         cursor: pointer;
         user-select: none;
@@ -714,6 +851,12 @@ Their positions are saved for each teacher.
 
       .teach-widget-option:hover {
         background: #ffffff;
+      }
+
+      .teach-widget-option:focus-within,
+      button.teach-widget-option:focus-visible {
+        outline: 3px solid #d3a84f;
+        outline-offset: 2px;
       }
 
       .teach-widget-icon {
@@ -778,6 +921,17 @@ Their positions are saved for each teacher.
       .teach-widget-slider {
         outline: 3px solid #d3a84f;
         outline-offset: 2px;
+      }
+
+      .teach-widget-action-label {
+        flex: 0 0 auto;
+        padding: 4px 8px;
+        color: #ffffff;
+        font-size: 0.7rem;
+        font-weight: bold;
+        line-height: 1;
+        background: #b3262e;
+        border-radius: 999px;
       }
 
       .teach-widget-close {
@@ -988,8 +1142,8 @@ Their positions are saved for each teacher.
     document.body.appendChild(panel);
 
     const closeButton =
-      document.getElementById(
-        "classroom-toolbar-close"
+      panel.querySelector(
+        "#classroom-toolbar-close"
       );
 
     const dragController =
@@ -1056,17 +1210,6 @@ Their positions are saved for each teacher.
   */
 
   function findWidgetContainer(widget) {
-    if (widget.id === "agenda") {
-      const agenda =
-        document.querySelector(
-          widget.selector
-        );
-
-      return agenda
-        ? agenda.closest(".card")
-        : null;
-    }
-
     if (widget.selector) {
       return document.querySelector(
         widget.selector
@@ -1118,15 +1261,19 @@ Their positions are saved for each teacher.
   function applyAllWidgetSettings(
     settings
   ) {
-    classroomWidgets.forEach(widget => {
-      applyWidgetVisibility(
-        widget,
-        Boolean(settings[widget.id])
-      );
-    });
+    getToggleWidgets().forEach(
+      widget => {
+        applyWidgetVisibility(
+          widget,
+          Boolean(
+            settings[widget.id]
+          )
+        );
+      }
+    );
   }
 
-  function createWidgetOption(
+  function createToggleWidgetOption(
     widget,
     enabled
   ) {
@@ -1163,6 +1310,51 @@ Their positions are saved for each teacher.
     `;
   }
 
+  function createActionWidgetOption(
+    widget
+  ) {
+    return `
+      <button
+        class="teach-widget-option"
+        type="button"
+        data-widget-action="${escapeHtml(widget.id)}"
+      >
+        <span
+          class="teach-widget-icon"
+          aria-hidden="true"
+        >
+          ${widget.icon}
+        </span>
+
+        <span class="teach-widget-name">
+          ${escapeHtml(widget.name)}
+        </span>
+
+        <span class="teach-widget-action-label">
+          Open
+        </span>
+      </button>
+    `;
+  }
+
+  function createWidgetOption(
+    widget,
+    settings
+  ) {
+    if (widget.type === "action") {
+      return createActionWidgetOption(
+        widget
+      );
+    }
+
+    return createToggleWidgetOption(
+      widget,
+      Boolean(
+        settings[widget.id]
+      )
+    );
+  }
+
   function createWidgetToolbar() {
     if (
       document.getElementById(
@@ -1195,7 +1387,7 @@ Their positions are saved for each teacher.
 
     tab.setAttribute(
       "aria-label",
-      "Choose classroom widgets"
+      "Open classroom widgets"
     );
 
     tab.setAttribute(
@@ -1217,7 +1409,7 @@ Their positions are saved for each teacher.
 
     panel.setAttribute(
       "aria-label",
-      "Choose classroom widgets"
+      "Classroom widgets"
     );
 
     panel.innerHTML = `
@@ -1226,7 +1418,7 @@ Their positions are saved for each teacher.
       </h2>
 
       <p class="teach-widget-description">
-        Turn tools on or off.
+        Turn widgets on or open a teaching tool.
         Your choices will be remembered.
       </p>
 
@@ -1235,7 +1427,7 @@ Their positions are saved for each teacher.
           .map(widget =>
             createWidgetOption(
               widget,
-              Boolean(settings[widget.id])
+              settings
             )
           )
           .join("")}
@@ -1245,7 +1437,7 @@ Their positions are saved for each teacher.
         id="teach-widget-close"
         class="patriot-toolbar-close teach-widget-close"
         type="button"
-        aria-label="Close classroom widget choices"
+        aria-label="Close classroom widgets"
         title="Close"
       >
         ×
@@ -1256,8 +1448,8 @@ Their positions are saved for each teacher.
     document.body.appendChild(panel);
 
     const closeButton =
-      document.getElementById(
-        "teach-widget-close"
+      panel.querySelector(
+        "#teach-widget-close"
       );
 
     const dragController =
@@ -1322,7 +1514,8 @@ Their positions are saved for each teacher.
         const widget =
           classroomWidgets.find(
             item =>
-              item.id === widgetId
+              item.id === widgetId &&
+              item.type === "toggle"
           );
 
         if (!widget) {
@@ -1346,6 +1539,34 @@ Their positions are saved for each teacher.
       }
     );
 
+    panel.addEventListener(
+      "click",
+      event => {
+        const actionButton =
+          event.target.closest(
+            "[data-widget-action]"
+          );
+
+        if (!actionButton) {
+          return;
+        }
+
+        const action =
+          actionButton.dataset.widgetAction;
+
+        if (action === "whiteboard") {
+          closeToolbar();
+
+          openWhiteboard().catch(
+            () => {
+              // Error message is handled
+              // inside openWhiteboard.
+            }
+          );
+        }
+      }
+    );
+
     document.addEventListener(
       "keydown",
       event => {
@@ -1358,7 +1579,9 @@ Their positions are saved for each teacher.
       }
     );
 
-    applyAllWidgetSettings(settings);
+    applyAllWidgetSettings(
+      settings
+    );
   }
 
   /*
