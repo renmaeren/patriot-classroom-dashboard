@@ -8,31 +8,155 @@
     content="width=device-width, initial-scale=1.0"
   >
 
+  <meta
+    name="description"
+    content="Manage teacher information and daily classes in Patriot Command."
+  >
+
   <title>Teacher Settings | Patriot Command</title>
 
+  <link
+    rel="stylesheet"
+    href="css/patriot-design-system.css?v=2"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/layout.css?v=2"
+  >
+
   <style>
+    /*
+    ==========================================
+    SETTINGS PAGE
+    ==========================================
+    */
+
     :root {
-      --navy: #11284a;
-      --red: #b3262e;
-      --cream: #f7f2e8;
-      --white: #ffffff;
-      --gold: #d3a84f;
-      --green: #2f7d4a;
-      --gray: #d7dce3;
-      --text: #24354d;
-      --shadow: rgba(0, 0, 0, 0.16);
+      --settings-blue:
+        var(
+          --patriot-blue,
+          #2a43a3
+        );
+
+      --settings-red:
+        var(
+          --patriot-red,
+          #cf1b13
+        );
+
+      --settings-cream:
+        var(
+          --patriot-cream,
+          #fffce9
+        );
+
+      --settings-gold:
+        var(
+          --patriot-gold,
+          #ffe269
+        );
+
+      --settings-green:
+        #39764d;
+
+      --settings-white:
+        #ffffff;
+
+      --settings-ink:
+        var(
+          --patriot-text,
+          #20283a
+        );
+
+      --settings-muted:
+        var(
+          --patriot-muted,
+          #657087
+        );
+
+      --settings-line:
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+
+      --settings-glass:
+        rgba(
+          255,
+          255,
+          255,
+          0.8
+        );
+
+      --settings-shadow:
+        0 8px 24px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      min-height: 100%;
+      background:
+        var(--settings-cream);
+    }
+
     body {
-      margin: 0;
       min-height: 100vh;
-      font-family: Arial, Helvetica, sans-serif;
-      color: var(--text);
-      background: #e8edf3;
+      margin: 0;
+      color:
+        var(--settings-ink);
+      font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at 8% 2%,
+          rgba(
+            255,
+            226,
+            105,
+            0.2
+          ),
+          transparent 27%
+        ),
+        radial-gradient(
+          circle at 92% 3%,
+          rgba(
+            42,
+            67,
+            163,
+            0.13
+          ),
+          transparent 29%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(
+            255,
+            252,
+            233,
+            0.9
+          ),
+          rgba(
+            255,
+            255,
+            255,
+            0.94
+          )
+        );
     }
 
     button,
@@ -41,152 +165,608 @@
       font: inherit;
     }
 
-    header {
-      padding: 24px 30px;
-      color: var(--white);
-      background: var(--navy);
-      border-bottom: 7px solid var(--red);
+    button {
+      cursor: pointer;
     }
 
-    .header-inner {
-      width: min(950px, 94%);
-      margin: auto;
-    }
+    /*
+    ==========================================
+    COMPACT SETTINGS HEADER
+    ==========================================
+    */
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2rem, 5vw, 3.5rem);
-    }
-
-    .subtitle {
-      margin: 8px 0 0;
-      color: var(--gold);
-      font-weight: bold;
-    }
-
-    main {
-      width: min(950px, 94%);
-      margin: 26px auto;
-    }
-
-    .card {
-      margin-bottom: 22px;
-      padding: 25px;
-      background: var(--white);
+    .settings-page-header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      width:
+        min(
+          1800px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      min-height: 92px;
+      margin:
+        12px
+        auto;
+      padding:
+        16px
+        23px;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          112deg,
+          rgba(
+            255,
+            226,
+            105,
+            0.24
+          ) 0%,
+          rgba(
+            255,
+            255,
+            255,
+            0.93
+          ) 52%,
+          rgba(
+            42,
+            67,
+            163,
+            0.16
+          ) 100%
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
       border-radius: 16px;
-      box-shadow: 0 7px 20px var(--shadow);
+      box-shadow:
+        var(--settings-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
+      isolation: isolate;
     }
 
-    .card h2 {
-      margin: 0 0 18px;
-      padding-bottom: 10px;
-      color: var(--red);
-      border-bottom: 3px solid var(--gold);
+    .settings-page-header::before {
+      content: "";
+      position: absolute;
+      top: -85px;
+      right: -40px;
+      z-index: -1;
+      width: 220px;
+      height: 220px;
+      pointer-events: none;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.07
+        );
+      border-radius: 50%;
+    }
+
+    .settings-header-copy {
+      min-width: 0;
+    }
+
+    .settings-eyebrow {
+      margin:
+        0
+        0
+        2px;
+      color:
+        var(--settings-blue);
+      font-size: 0.62rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+    }
+
+    .settings-page-header h1 {
+      margin: 0;
+      color:
+        var(--settings-ink);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size:
+        clamp(
+          1.55rem,
+          2.4vw,
+          2.15rem
+        );
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+    }
+
+    .settings-page-header p {
+      margin:
+        4px
+        0
+        0;
+      color:
+        var(--settings-muted);
+      font-size: 0.78rem;
+      font-weight: 650;
+    }
+
+    .settings-header-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      width: 48px;
+      height: 48px;
+      font-size: 1.55rem;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.66
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.86
+        );
+      border-radius: 13px;
+      box-shadow:
+        0 4px 14px
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+    }
+
+    /*
+    ==========================================
+    MAIN SETTINGS WORKSPACE
+    ==========================================
+    */
+
+    .settings-main {
+      display: grid;
+      grid-template-columns:
+        minmax(
+          0,
+          0.72fr
+        )
+        minmax(
+          0,
+          1.5fr
+        );
+      align-items: start;
+      gap: 12px;
+      width:
+        min(
+          1500px,
+          calc(
+            100% -
+            24px
+          )
+        );
+      margin:
+        0
+        auto
+        38px;
+    }
+
+    .settings-column {
+      display: grid;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    /*
+    ==========================================
+    CARDS
+    ==========================================
+    */
+
+    .settings-card {
+      min-width: 0;
+      margin: 0;
+      padding:
+        14px
+        16px;
+      background:
+        var(--settings-glass);
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border-radius: 15px;
+      box-shadow:
+        var(--settings-shadow);
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
+    }
+
+    .settings-card-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom:
+        1px solid
+        var(--settings-line);
+    }
+
+    .settings-card h2 {
+      margin: 0;
+      color:
+        var(--settings-red);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 1rem;
+      line-height: 1.2;
+    }
+
+    .settings-card-header p {
+      margin: 0;
+      color:
+        var(--settings-muted);
+      font-size: 0.66rem;
+      text-align: right;
     }
 
     .instructions {
-      margin: 0 0 20px;
-      padding: 14px;
-      line-height: 1.5;
-      background: var(--cream);
-      border-left: 5px solid var(--gold);
+      margin:
+        0
+        0
+        11px;
+      padding:
+        9px
+        11px;
+      color:
+        #4d5870;
+      font-size: 0.69rem;
+      line-height: 1.42;
+      background:
+        rgba(
+          255,
+          226,
+          105,
+          0.18
+        );
+      border-left:
+        3px solid
+        var(--settings-gold);
       border-radius: 8px;
     }
 
+    /*
+    ==========================================
+    ABOUT YOU
+    ==========================================
+    */
+
     .form-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 18px;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap:
+        10px
+        12px;
+    }
+
+    .form-group {
+      min-width: 0;
+    }
+
+    .form-group.full-width {
+      grid-column:
+        1 /
+        -1;
     }
 
     .form-group label {
       display: block;
-      margin-bottom: 7px;
-      font-weight: bold;
+      margin:
+        0
+        0
+        4px;
+      color:
+        var(--settings-ink);
+      font-size: 0.75rem;
+      font-weight: 750;
     }
 
     .form-group input,
     .form-group select {
       width: 100%;
-      padding: 12px;
-      color: var(--text);
-      background: var(--white);
-      border: 2px solid var(--gray);
-      border-radius: 8px;
+      min-height: 38px;
+      padding:
+        8px
+        10px;
+      color:
+        var(--settings-ink);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
+      border-radius: 9px;
+      outline: none;
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+      background:
+        #ffffff;
+      border-color:
+        var(--settings-blue);
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+    }
+
+    /*
+    ==========================================
+    DAILY SCHEDULE
+    ==========================================
+    */
+
+    .schedule-grid {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 8px 12px;
     }
 
     .schedule-row {
       display: grid;
-      grid-template-columns: 120px 1fr;
-      gap: 15px;
+      grid-template-columns:
+        92px
+        minmax(
+          0,
+          1fr
+        );
       align-items: center;
-      margin-bottom: 13px;
+      gap: 9px;
+      min-width: 0;
+      margin: 0;
     }
 
     .period-label {
-      font-weight: bold;
-      color: var(--navy);
+      color:
+        var(--settings-blue);
+      font-size: 0.72rem;
+      font-weight: 750;
     }
 
     .schedule-row input {
       width: 100%;
-      padding: 12px;
-      color: var(--text);
-      border: 2px solid var(--gray);
+      min-width: 0;
+      min-height: 36px;
+      padding:
+        7px
+        9px;
+      color:
+        var(--settings-ink);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
       border-radius: 8px;
+      outline: none;
+      transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease,
+        background 180ms ease;
+    }
+
+    .schedule-row input:focus {
+      background:
+        #ffffff;
+      border-color:
+        var(--settings-blue);
+      box-shadow:
+        0 0 0 3px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
     }
 
     .quick-note {
-      margin: 15px 0 0;
-      color: #5e6672;
-      font-size: 0.9rem;
+      margin:
+        10px
+        0
+        0;
+      color:
+        var(--settings-muted);
+      font-size: 0.65rem;
+      line-height: 1.4;
     }
+
+    /*
+    ==========================================
+    ACTIONS
+    ==========================================
+    */
 
     .actions {
       display: grid;
-      grid-template-columns: 2fr 1fr;
-      gap: 12px;
+      grid-template-columns:
+        minmax(
+          160px,
+          1.5fr
+        )
+        minmax(
+          110px,
+          0.65fr
+        );
+      gap: 8px;
     }
 
     button,
     .home-link {
-      display: block;
-      padding: 14px 18px;
-      color: var(--white);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 39px;
+      padding:
+        8px
+        12px;
+      color:
+        var(--settings-white);
+      font-size: 0.74rem;
+      font-weight: 750;
       text-align: center;
-      font-weight: bold;
       text-decoration: none;
       border: 0;
-      border-radius: 10px;
+      border-radius: 9px;
       cursor: pointer;
-    }
-
-    .save-button {
-      background: var(--green);
-    }
-
-    .reset-button {
-      background: var(--red);
-    }
-
-    .home-link {
-      margin-top: 12px;
-      background: var(--navy);
+      transition:
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
     }
 
     button:hover,
     .home-link:hover {
-      filter: brightness(1.08);
+      box-shadow:
+        0 6px 15px
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+      transform:
+        translateY(-1px);
+    }
+
+    .save-button {
+      background:
+        var(--settings-green);
+    }
+
+    .save-button:hover {
+      background:
+        #2f6842;
+    }
+
+    .reset-button {
+      background:
+        var(--settings-red);
+    }
+
+    .reset-button:hover {
+      background:
+        #ad1711;
+    }
+
+    .home-link {
+      width: 100%;
+      margin-top: 8px;
+      color:
+        var(--settings-blue);
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        var(--settings-blue);
+    }
+
+    .home-link:hover {
+      color:
+        var(--settings-white);
+      background:
+        var(--settings-blue);
     }
 
     .save-message {
       display: none;
-      margin-top: 16px;
-      padding: 13px;
-      color: var(--white);
+      margin-top: 8px;
+      padding:
+        8px
+        10px;
+      color:
+        var(--settings-white);
+      font-size: 0.72rem;
       text-align: center;
-      font-weight: bold;
-      background: var(--green);
+      font-weight: 750;
+      background:
+        var(--settings-green);
       border-radius: 8px;
     }
 
@@ -194,224 +774,428 @@
       display: block;
     }
 
-    @media (max-width: 700px) {
+    /*
+    ==========================================
+    RESPONSIVE
+    ==========================================
+    */
+
+    @media (
+      max-width: 1050px
+    ) {
+      .settings-main {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .schedule-grid {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(
+              0,
+              1fr
+            )
+          );
+      }
+    }
+
+    @media (
+      max-width: 700px
+    ) {
+      .settings-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px;
+      }
+
+      .settings-header-icon {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 42px;
+        height: 42px;
+      }
+
       .form-grid,
+      .schedule-grid,
       .actions {
-        grid-template-columns: 1fr;
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .settings-card-header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 3px;
+      }
+
+      .settings-card-header p {
+        text-align: left;
+      }
+    }
+
+    @media (
+      max-width: 500px
+    ) {
+      .settings-page-header,
+      .settings-main {
+        width:
+          calc(
+            100% -
+            16px
+          );
+      }
+
+      .settings-card {
+        padding: 12px;
+        border-radius: 13px;
       }
 
       .schedule-row {
-        grid-template-columns: 95px 1fr;
+        grid-template-columns:
+          82px
+          minmax(
+            0,
+            1fr
+          );
+      }
+    }
+
+    @media (
+      prefers-reduced-motion:
+      reduce
+    ) {
+      *,
+      *::before,
+      *::after {
+        transition:
+          none !important;
       }
     }
   </style>
 </head>
 
-<body>
-  <header>
-    <div class="header-inner">
-      <h1>Teacher Settings</h1>
+<body class="patriot-page-settings">
+  <!--
+  ==========================================
+  COMPACT PAGE HEADER
+  ==========================================
+  -->
 
-      <p class="subtitle">
-        Complete this once, and Patriot Command will automatically remember your information.
+  <header class="settings-page-header">
+    <div class="settings-header-copy">
+      <p class="settings-eyebrow">
+        Teacher Profile
       </p>
+
+      <h1>
+        Teacher Settings
+      </h1>
+
+      <p>
+        Set your information and daily schedule once.
+      </p>
+    </div>
+
+    <div
+      class="settings-header-icon"
+      aria-hidden="true"
+    >
+      ⚙️
     </div>
   </header>
 
-  <main>
-    <section class="card">
-      <h2>About You</h2>
+  <!--
+  ==========================================
+  SETTINGS WORKSPACE
+  ==========================================
+  -->
+
+  <main class="settings-main">
+    <div class="settings-column">
+      <!--
+      ========================================
+      ABOUT YOU
+      ========================================
+      -->
+
+      <section class="settings-card">
+        <div class="settings-card-header">
+          <h2>
+            About You
+          </h2>
+
+          <p>
+            Saved with your lesson plans.
+          </p>
+        </div>
+
+        <p class="instructions">
+          Enter your basic information. These details normally
+          only need to be entered once.
+        </p>
+
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="teacher-name">
+              Teacher Name
+            </label>
+
+            <input
+              id="teacher-name"
+              type="text"
+              placeholder="Mrs. Renick"
+            >
+          </div>
+
+          <div class="form-group full-width">
+            <label for="teacher-email">
+              School Email
+            </label>
+
+            <input
+              id="teacher-email"
+              type="email"
+              placeholder="name@allen.kyschools.us"
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="teacher-room">
+              Room
+            </label>
+
+            <input
+              id="teacher-room"
+              type="text"
+              placeholder="611 or Library"
+            >
+          </div>
+        </div>
+      </section>
+
+      <!--
+      ========================================
+      SAVE CONTROLS
+      ========================================
+      -->
+
+      <section class="settings-card">
+        <div class="settings-card-header">
+          <h2>
+            Save Changes
+          </h2>
+
+          <p>
+            Updates take effect immediately.
+          </p>
+        </div>
+
+        <div class="actions">
+          <button
+            class="save-button"
+            type="button"
+            onclick="saveTeacherSettings()"
+          >
+            Save Teacher Settings
+          </button>
+
+          <button
+            class="reset-button"
+            type="button"
+            onclick="resetTeacherSettings()"
+          >
+            Reset
+          </button>
+        </div>
+
+        <div
+          id="save-message"
+          class="save-message"
+          role="status"
+        >
+          Settings saved!
+        </div>
+
+        <a
+          class="home-link"
+          href="index.html"
+        >
+          Return to Dashboard
+        </a>
+      </section>
+    </div>
+
+    <!--
+    ========================================
+    DAILY SCHEDULE
+    ========================================
+    -->
+
+    <section class="settings-card">
+      <div class="settings-card-header">
+        <h2>
+          Your Daily Schedule
+        </h2>
+
+        <p>
+          Used for automatic class detection.
+        </p>
+      </div>
 
       <p class="instructions">
-        Enter your basic information. These details will be attached
-        to saved lesson plans and normally will not need to be changed.
+        Enter the course, planning period, study hall, or other
+        assignment for each period. Leave only unused periods blank.
       </p>
 
-      <div class="form-grid">
-        <div class="form-group">
-          <label for="teacher-name">
-            Teacher Name
+      <div class="schedule-grid">
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-1"
+          >
+            1st Period
           </label>
 
           <input
-            id="teacher-name"
+            id="period-1"
             type="text"
-            placeholder="Mrs. Renick"
+            placeholder="Example: English 10"
           >
         </div>
 
-        <div class="form-group">
-          <label for="teacher-email">
-            School Email
-          </label>
-
-          <input
-            id="teacher-email"
-            type="email"
-            placeholder="name@allen.kyschools.us"
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-2"
           >
-        </div>
-
-        <div class="form-group">
-          <label for="teacher-room">
-            Room
+            2nd Period
           </label>
 
           <input
-            id="teacher-room"
+            id="period-2"
             type="text"
-            placeholder="611 or Library"
+            placeholder="Example: English 11"
           >
         </div>
-      </div>
-    </section>
 
-    <section class="card">
-      <h2>Your Daily Schedule</h2>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-3"
+          >
+            3rd Period
+          </label>
 
-      <p class="instructions">
-        Type the course, planning period, study hall, or other assignment
-        for each period. Leave a period blank only when it does not apply.
-      </p>
+          <input
+            id="period-3"
+            type="text"
+            placeholder="Example: Planning"
+          >
+        </div>
 
-      <div class="schedule-row">
-        <label class="period-label" for="period-1">
-          1st Period
-        </label>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-4"
+          >
+            4th Period
+          </label>
 
-        <input
-          id="period-1"
-          type="text"
-          placeholder="Example: English 10"
-        >
-      </div>
+          <input
+            id="period-4"
+            type="text"
+            placeholder="Example: Algebra II"
+          >
+        </div>
 
-      <div class="schedule-row">
-        <label class="period-label" for="period-2">
-          2nd Period
-        </label>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="advisory"
+          >
+            Advisory
+          </label>
 
-        <input
-          id="period-2"
-          type="text"
-          placeholder="Example: English 11"
-        >
-      </div>
+          <input
+            id="advisory"
+            type="text"
+            placeholder="Example: Advisory"
+          >
+        </div>
 
-      <div class="schedule-row">
-        <label class="period-label" for="period-3">
-          3rd Period
-        </label>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-5"
+          >
+            5th Period
+          </label>
 
-        <input
-          id="period-3"
-          type="text"
-          placeholder="Example: Planning"
-        >
-      </div>
+          <input
+            id="period-5"
+            type="text"
+            placeholder="Example: Yearbook"
+          >
+        </div>
 
-      <div class="schedule-row">
-        <label class="period-label" for="period-4">
-          4th Period
-        </label>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-6"
+          >
+            6th Period
+          </label>
 
-        <input
-          id="period-4"
-          type="text"
-          placeholder="Example: Algebra II"
-        >
-      </div>
+          <input
+            id="period-6"
+            type="text"
+            placeholder="Example: Biology"
+          >
+        </div>
 
-      <div class="schedule-row">
-        <label class="period-label" for="advisory">
-          Advisory
-        </label>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-7"
+          >
+            7th Period
+          </label>
 
-        <input
-          id="advisory"
-          type="text"
-          placeholder="Example: Advisory"
-        >
-      </div>
+          <input
+            id="period-7"
+            type="text"
+            placeholder="Example: Study Hall"
+          >
+        </div>
 
-      <div class="schedule-row">
-        <label class="period-label" for="period-5">
-          5th Period
-        </label>
+        <div class="schedule-row">
+          <label
+            class="period-label"
+            for="period-8"
+          >
+            8th Period
+          </label>
 
-        <input
-          id="period-5"
-          type="text"
-          placeholder="Example: Yearbook"
-        >
-      </div>
-
-      <div class="schedule-row">
-        <label class="period-label" for="period-6">
-          6th Period
-        </label>
-
-        <input
-          id="period-6"
-          type="text"
-          placeholder="Example: Biology"
-        >
-      </div>
-
-      <div class="schedule-row">
-        <label class="period-label" for="period-7">
-          7th Period
-        </label>
-
-        <input
-          id="period-7"
-          type="text"
-          placeholder="Example: Study Hall"
-        >
-      </div>
-
-      <div class="schedule-row">
-        <label class="period-label" for="period-8">
-          8th Period
-        </label>
-
-        <input
-          id="period-8"
-          type="text"
-          placeholder="Example: Planning"
-        >
+          <input
+            id="period-8"
+            type="text"
+            placeholder="Example: Planning"
+          >
+        </div>
       </div>
 
       <p class="quick-note">
-        Teachers can type any course name. Common entries may include
-        Planning, Study Hall, Advisory, Yearbook, Library, or a course title.
+        Common entries include Planning, Study Hall, Advisory,
+        Yearbook, Library, or any course title.
       </p>
-    </section>
-
-    <section class="card">
-      <div class="actions">
-        <button
-          class="save-button"
-          onclick="saveTeacherSettings()"
-        >
-          Save Teacher Settings
-        </button>
-
-        <button
-          class="reset-button"
-          onclick="resetTeacherSettings()"
-        >
-          Reset
-        </button>
-      </div>
-
-      <div id="save-message" class="save-message">
-        Settings saved!
-      </div>
-
-      <a class="home-link" href="index.html">
-        Return to 
-      </a>
     </section>
   </main>
 
@@ -446,16 +1230,18 @@
     };
 
     function readSavedSettings() {
-      const saved = localStorage.getItem(
-        "patriotTeacherProfile"
-      );
+      const saved =
+        localStorage.getItem(
+          "patriotTeacherProfile"
+        );
 
       if (!saved) {
         return defaultSettings;
       }
 
       try {
-        const parsed = JSON.parse(saved);
+        const parsed =
+          JSON.parse(saved);
 
         return {
           ...defaultSettings,
@@ -478,22 +1264,35 @@
     function fillForm(settings) {
       document.getElementById(
         "teacher-name"
-      ).value = settings.teacherName || "";
+      ).value =
+        settings.teacherName || "";
 
       document.getElementById(
         "teacher-email"
-      ).value = settings.teacherEmail || "";
+      ).value =
+        settings.teacherEmail || "";
 
       document.getElementById(
         "teacher-room"
-      ).value = settings.room || "";
+      ).value =
+        settings.room || "";
 
-      Object.entries(fieldMap).forEach(
-        ([periodName, fieldId]) => {
+      Object.entries(
+        fieldMap
+      ).forEach(
+        (
+          [
+            periodName,
+            fieldId
+          ]
+        ) => {
           document.getElementById(
             fieldId
           ).value =
-            settings.classes[periodName] || "";
+            settings.classes[
+              periodName
+            ] ||
+            "";
         }
       );
     }
@@ -501,37 +1300,59 @@
     function collectForm() {
       const classes = {};
 
-      Object.entries(fieldMap).forEach(
-        ([periodName, fieldId]) => {
-          classes[periodName] =
+      Object.entries(
+        fieldMap
+      ).forEach(
+        (
+          [
+            periodName,
+            fieldId
+          ]
+        ) => {
+          classes[
+            periodName
+          ] =
             document
-              .getElementById(fieldId)
-              .value.trim();
+              .getElementById(
+                fieldId
+              )
+              .value
+              .trim();
         }
       );
 
       return {
         teacherName:
           document
-            .getElementById("teacher-name")
-            .value.trim(),
+            .getElementById(
+              "teacher-name"
+            )
+            .value
+            .trim(),
 
         teacherEmail:
           document
-            .getElementById("teacher-email")
-            .value.trim(),
+            .getElementById(
+              "teacher-email"
+            )
+            .value
+            .trim(),
 
         room:
           document
-            .getElementById("teacher-room")
-            .value.trim(),
+            .getElementById(
+              "teacher-room"
+            )
+            .value
+            .trim(),
 
-        classes: classes
+        classes
       };
     }
 
     function saveTeacherSettings() {
-      const settings = collectForm();
+      const settings =
+        collectForm();
 
       if (!settings.teacherName) {
         window.alert(
@@ -551,38 +1372,57 @@
 
       localStorage.setItem(
         "patriotTeacherProfile",
-        JSON.stringify(settings)
+        JSON.stringify(
+          settings
+        )
       );
 
       /*
-        Keep the older classroom page compatible
-        while we transition to the new class system.
+      Keep the older classroom page compatible
+      while transitioning to the class system.
       */
+
       localStorage.setItem(
         "patriotTeacherSettings",
         JSON.stringify({
-          teacher: settings.teacherName,
+          teacher:
+            settings.teacherName,
+
           course:
-            settings.classes["1st Period"] ||
+            settings.classes[
+              "1st Period"
+            ] ||
             "Your Class",
-          room: settings.room
+
+          room:
+            settings.room
         })
       );
 
       const message =
-        document.getElementById("save-message");
+        document.getElementById(
+          "save-message"
+        );
 
-      message.classList.add("show");
+      message.classList.add(
+        "show"
+      );
 
-      setTimeout(() => {
-        message.classList.remove("show");
-      }, 1800);
+      window.setTimeout(
+        () => {
+          message.classList.remove(
+            "show"
+          );
+        },
+        1800
+      );
     }
 
     function resetTeacherSettings() {
-      const confirmed = window.confirm(
-        "Reset all teacher and class information?"
-      );
+      const confirmed =
+        window.confirm(
+          "Reset all teacher and class information?"
+        );
 
       if (!confirmed) {
         return;
@@ -596,11 +1436,16 @@
         "patriotTeacherSettings"
       );
 
-      fillForm(defaultSettings);
+      fillForm(
+        defaultSettings
+      );
     }
 
-    fillForm(readSavedSettings());
+    fillForm(
+      readSavedSettings()
+    );
   </script>
-<script src="js/navigation.js?v=2"></script>
+
+  <script src="js/navigation.js?v=3"></script>
 </body>
 </html>
