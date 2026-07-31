@@ -1,20 +1,19 @@
 (function () {
   "use strict";
 
-  const PROFILE_STORAGE_KEY =
-    "patriotTeacherProfile";
+  const PROFILE_STORAGE_KEY = "patriotTeacherProfile";
+  const ROSTER_STORAGE_KEY = "patriotStudentRosters";
+  const ACTIVE_CLASS_STORAGE_KEY = "patriotActiveClass";
+  const ROUND_STORAGE_KEY = "patriotStudentPickerRounds";
 
-  const ROSTER_STORAGE_KEY =
-    "patriotStudentRosters";
+  const WIDGET_ID = "student-picker-widget";
 
-  const ACTIVE_CLASS_STORAGE_KEY =
-    "patriotActiveClass";
-
-  const ROUND_STORAGE_KEY =
-    "patriotStudentPickerRounds";
-
-  const WIDGET_ID =
-    "student-picker-widget";
+  /*
+   * Change only this line if your icon uses a different
+   * file extension or capitalization.
+   */
+  const ICON_PATH =
+    "Assets/Icons/student picker.png";
 
   let selectedClassKey = "";
   let roster = [];
@@ -31,9 +30,7 @@
     fallbackValue
   ) {
     const saved =
-      localStorage.getItem(
-        storageKey
-      );
+      localStorage.getItem(storageKey);
 
     if (!saved) {
       return fallbackValue;
@@ -75,18 +72,14 @@
     );
   }
 
-  function saveRoundData(
-    roundData
-  ) {
+  function saveRoundData(roundData) {
     localStorage.setItem(
       ROUND_STORAGE_KEY,
       JSON.stringify(roundData)
     );
   }
 
-  function saveActiveClass(
-    classKey
-  ) {
+  function saveActiveClass(classKey) {
     localStorage.setItem(
       ACTIVE_CLASS_STORAGE_KEY,
       classKey
@@ -265,9 +258,7 @@
     roundData[selectedClassKey] =
       [...remainingStudentIds];
 
-    saveRoundData(
-      roundData
-    );
+    saveRoundData(roundData);
   }
 
   function resetRound() {
@@ -385,7 +376,7 @@
 
   /*
   ==========================================
-  STYLES
+  STUDENT PICKER-SPECIFIC STYLES
   ==========================================
   */
 
@@ -408,41 +399,11 @@
 
     styles.textContent = `
       #${WIDGET_ID} {
-        text-align: center;
+        text-align: left;
       }
 
       #${WIDGET_ID}[hidden] {
         display: none;
-      }
-
-      .student-picker-class-group {
-        margin-bottom: 12px;
-        text-align: left;
-      }
-
-      .student-picker-class-group label {
-        display: block;
-        margin-bottom: 6px;
-        color: var(--navy, #11284a);
-        font-size: 0.86rem;
-        font-weight: bold;
-      }
-
-      .student-picker-class-select {
-        width: 100%;
-        padding: 10px;
-        color: var(--navy, #11284a);
-        font: inherit;
-        background: #ffffff;
-        border: 2px solid #d7dce3;
-        border-radius: 8px;
-      }
-
-      .student-picker-class-select:focus {
-        outline: 3px solid
-          rgba(211, 168, 79, 0.35);
-        border-color:
-          var(--gold, #d3a84f);
       }
 
       .student-picker-result {
@@ -458,7 +419,8 @@
           2.6vw,
           2.2rem
         );
-        font-weight: bold;
+        font-weight: 700;
+        text-align: center;
         overflow-wrap: anywhere;
         background:
           var(--cream, #f7f2e8);
@@ -472,68 +434,21 @@
         color: #777777;
         font-size: 1rem;
         font-style: italic;
-        font-weight: normal;
-      }
-
-      .student-picker-buttons {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-      }
-
-      .student-picker-button {
-        padding: 11px 14px;
-        color: #ffffff;
-        font-weight: bold;
-        background:
-          var(--red, #b3262e);
-        border: 0;
-        border-radius: 8px;
-        cursor: pointer;
-      }
-
-      .student-picker-button.secondary {
-        background:
-          var(--navy, #11284a);
-      }
-
-      .student-picker-button:hover {
-        filter: brightness(1.07);
-      }
-
-      .student-picker-button:disabled {
-        color: #666666;
-        background: #dddddd;
-        cursor: not-allowed;
-        filter: none;
-      }
-
-      .student-picker-button:focus-visible {
-        outline:
-          3px solid
-          var(--gold, #d3a84f);
-        outline-offset: 2px;
+        font-weight: 400;
       }
 
       .student-picker-count {
         margin: 10px 0 0;
-        color: #666666;
-        font-size: 0.85rem;
-        line-height: 1.4;
+        text-align: center;
       }
 
       .student-picker-roster-link {
-        display: inline-block;
-        margin-top: 9px;
+        display: block;
+        width: fit-content;
+        margin: 9px auto 0;
         color: var(--navy, #11284a);
         font-size: 0.82rem;
-        font-weight: bold;
-      }
-
-      @media (max-width: 520px) {
-        .student-picker-buttons {
-          grid-template-columns: 1fr;
-        }
+        font-weight: 700;
       }
     `;
 
@@ -580,11 +495,20 @@
     widget.hidden = true;
 
     widget.innerHTML = `
-      <h2>🎲 Student Picker</h2>
+      <div class="pc-widget-header">
+        <img
+          class="pc-widget-icon"
+          src="${ICON_PATH}"
+          alt=""
+          aria-hidden="true"
+        >
 
-      <div
-        class="student-picker-class-group"
-      >
+        <h2 class="pc-widget-title">
+          Student Picker
+        </h2>
+      </div>
+
+      <div class="pc-widget-field">
         <label
           for="student-picker-class-select"
         >
@@ -593,7 +517,7 @@
 
         <select
           id="student-picker-class-select"
-          class="student-picker-class-select"
+          class="pc-widget-select"
         >
           <option value="">
             Select a class
@@ -609,12 +533,10 @@
         Select a class
       </div>
 
-      <div
-        class="student-picker-buttons"
-      >
+      <div class="pc-widget-button-row">
         <button
           id="student-picker-pick-button"
-          class="student-picker-button"
+          class="pc-widget-button"
           type="button"
           disabled
         >
@@ -623,7 +545,7 @@
 
         <button
           id="student-picker-reset-button"
-          class="student-picker-button secondary"
+          class="pc-widget-button secondary"
           type="button"
           disabled
         >
@@ -633,7 +555,7 @@
 
       <p
         id="student-picker-count"
-        class="student-picker-count"
+        class="student-picker-count pc-widget-muted"
       >
         No class selected
       </p>
