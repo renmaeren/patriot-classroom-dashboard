@@ -370,8 +370,17 @@ widgets on the Teach page.
         text-transform: uppercase;
         pointer-events: none;
       }
-
-      .teach-widget-panel {
+ 
+.teach-widget-tab-icon {
+  display: block;
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  pointer-events: none;
+}
+    
+.teach-widget-panel {
         left: -292px;
         width: 280px;
         max-height: calc(100vh - 30px);
@@ -883,11 +892,13 @@ widgets on the Teach page.
 
     tab.type = "button";
 
-    tab.innerHTML = `
-      <span class="teach-widget-tab-label">
-        Widgets
-      </span>
-    `;
+   tab.innerHTML = `
+  <img
+    src="Assets/Icons/tool-tab.png"
+    alt=""
+    class="teach-widget-tab-icon"
+  >
+`;
 
     tab.setAttribute(
       "aria-label",
