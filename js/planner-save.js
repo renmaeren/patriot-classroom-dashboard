@@ -581,15 +581,43 @@ Full-Page Lesson Planner Saving
           lesson.teacherNotes
       });
 
-    await fetch(
-      ARCHIVE_URL,
-      {
-        method: "POST",
-        mode: "no-cors",
-        body: archiveData
-      }
+    const archiveRequest =
+  fetch(
+    ARCHIVE_URL,
+    {
+      method: "POST",
+      mode: "no-cors",
+      body: archiveData
+    }
+  ).catch(error => {
+    console.warn(
+      "The lesson archive request did not finish normally.",
+      error
     );
-  }
+  });
+
+const archiveTimeout =
+  new Promise(resolve => {
+    window.setTimeout(
+      resolve,
+      8000
+    );
+  });
+
+/*
+Do not leave the Planner frozen if Google
+Apps Script takes too long to respond.
+
+Because this is a no-cors request, Patriot
+Command cannot reliably confirm the response
+anyway. The request may still finish in the
+background.
+*/
+
+await Promise.race([
+  archiveRequest,
+  archiveTimeout
+]);
 
   function createClassroomLesson(
   lesson
