@@ -592,14 +592,16 @@ Load Duplicate or Editable Lesson
     );
 
     setValue(
-      "bell-ringer",
-      lesson.bellRinger
-    );
+  "bell-ringer",
+  lesson.bellRinger ||
+  lesson.bellringer
+);
 
     setValue(
-      "essential-question",
-      lesson.essentialQuestion
-    );
+  "essential-question",
+  lesson.essentialQuestion ||
+  lesson.essentialquestion
+);
 
     setValue(
       "agenda",
@@ -625,9 +627,11 @@ Load Duplicate or Editable Lesson
     );
 
     setValue(
-      "learning-target",
-      lesson.learningTarget
-    );
+  "learning-target",
+  lesson.learningTarget ||
+  lesson.ican ||
+  lesson.iCan
+);
 
     setValue(
       "standards",
