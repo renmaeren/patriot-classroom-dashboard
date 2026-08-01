@@ -47,7 +47,7 @@ Empty optional components are not displayed.
     "patriotLastPlannedLesson";
 
   window.PATRIOT_TEACH_LOADER_VERSION =
-    "12";
+    "13";
 
   /*
   ==========================================
@@ -396,16 +396,21 @@ Empty optional components are not displayed.
     }
 
     return {
-      lessonId:
-        firstContent(
-          rawLesson.lessonId
-        ),
+  lessonId:
+    firstContent(
+      rawLesson.lessonId
+    ),
 
-      lessonTitle:
-        firstContent(
-          rawLesson.lessonTitle,
-          rawLesson.title
-        ),
+  lessonDate:
+    firstContent(
+      rawLesson.lessonDate
+    ),
+
+  lessonTitle:
+    firstContent(
+      rawLesson.lessonTitle,
+      rawLesson.title
+    ),
 
       bellRinger:
         firstContent(
@@ -2553,21 +2558,70 @@ function createEmbedUrl(resource) {
   */
 
   function applyLesson(rawLesson) {
-    const lesson =
-      normalizeLesson(
-        rawLesson
+  const lesson =
+    normalizeLesson(
+      rawLesson
+    );
+
+  const subtitle =
+    document.querySelector(
+      ".lesson-workspace-subtitle"
+    );
+
+  if (subtitle) {
+    if (
+      lesson &&
+      lesson.lessonDate
+    ) {
+      const dateParts =
+        lesson.lessonDate
+          .split("-")
+          .map(Number);
+
+      const plannedDate =
+        new Date(
+          dateParts[0],
+          dateParts[1] - 1,
+          dateParts[2],
+          12,
+          0,
+          0
+        );
+
+      subtitle.textContent =
+        `Planned for ${plannedDate.toLocaleDateString(
+          [],
+          {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          }
+        )}`;
+
+      subtitle.classList.add(
+        "show"
       );
+    } else {
+      subtitle.textContent =
+        "";
 
-    displayLessonFlow(
-      lesson
-    );
-
-    displayLessonResources(
-      lesson
-        ? lesson.resources
-        : []
-    );
+      subtitle.classList.remove(
+        "show"
+      );
+    }
   }
+
+  displayLessonFlow(
+    lesson
+  );
+
+  displayLessonResources(
+    lesson
+      ? lesson.resources
+      : []
+  );
+}
 
   /*
   ==========================================
