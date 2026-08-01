@@ -18,6 +18,12 @@ Full-Page Lesson Planner Saving
   const DUPLICATE_LESSON_KEY =
     "patriotDuplicateLesson";
 
+  const TEACH_LESSON_KEY =
+  "patriotTeachLesson";
+
+  const DAILY_LESSON_KEY =
+  "patriotDailyLesson";
+
   function readTeacherProfile() {
     const saved =
       localStorage.getItem(
@@ -660,6 +666,11 @@ function saveLessonLocally(
       options.forceClassroom
     );
 
+  const classroomLesson =
+    createClassroomLesson(
+      lesson
+    );
+
   localStorage.setItem(
     "patriotLastPlannedLesson",
     JSON.stringify(
@@ -668,24 +679,44 @@ function saveLessonLocally(
   );
 
   /*
-  Today's lesson becomes active automatically.
+  A normal save makes today's lesson the
+  scheduled daily lesson.
 
-  A teacher may also deliberately choose
-  "Teach This Lesson" to make any saved lesson
-  active, regardless of its planned date.
+  Teach This Lesson deliberately stores the
+  selected lesson under patriotTeachLesson,
+  which Teach Loader reads first.
   */
 
   if (
-    forceClassroom ||
     lesson.lessonDate ===
       getTodayText()
   ) {
     localStorage.setItem(
-      "patriotDailyLesson",
+      DAILY_LESSON_KEY,
       JSON.stringify(
-        createClassroomLesson(
-          lesson
-        )
+        classroomLesson
+      )
+    );
+  }
+
+  if (forceClassroom) {
+    localStorage.setItem(
+      TEACH_LESSON_KEY,
+      JSON.stringify(
+        classroomLesson
+      )
+    );
+
+    /*
+    Keep daily storage synchronized too, while
+    patriotTeachLesson remains the explicit
+    priority for the immediate launch.
+    */
+
+    localStorage.setItem(
+      DAILY_LESSON_KEY,
+      JSON.stringify(
+        classroomLesson
       )
     );
   }
