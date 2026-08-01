@@ -678,15 +678,6 @@ function saveLessonLocally(
     )
   );
 
-  /*
-  A normal save makes today's lesson the
-  scheduled daily lesson.
-
-  Teach This Lesson deliberately stores the
-  selected lesson under patriotTeachLesson,
-  which Teach Loader reads first.
-  */
-
   if (
     lesson.lessonDate ===
       getTodayText()
@@ -700,12 +691,31 @@ function saveLessonLocally(
   }
 
   if (forceClassroom) {
+    /*
+    Remove any previously selected Library
+    lesson, then replace it with the lesson
+    being launched directly from Planner.
+    */
+
+    localStorage.removeItem(
+      TEACH_LESSON_KEY
+    );
+
     localStorage.setItem(
       TEACH_LESSON_KEY,
       JSON.stringify(
         classroomLesson
       )
     );
+
+    localStorage.setItem(
+      DAILY_LESSON_KEY,
+      JSON.stringify(
+        classroomLesson
+      )
+    );
+  }
+}
 
     /*
     Keep daily storage synchronized too, while
