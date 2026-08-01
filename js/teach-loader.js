@@ -47,7 +47,7 @@ Empty optional components are not displayed.
     "patriotLastPlannedLesson";
 
   window.PATRIOT_TEACH_LOADER_VERSION =
-    "6";
+    "12";
 
   /*
   ==========================================
@@ -2055,69 +2055,211 @@ function displayLessonFlow(lesson) {
   }
 
   function canEmbed(resource) {
-    return [
-      "slides",
-      "video",
-      "youtube",
-      "canva",
-      "pdf"
-    ].includes(
-      resource.type
-    );
-  }
+  return Boolean(
+    resource &&
+    isValidUrl(
+      resource.url
+    )
+  );
+}
 
-  function createEmbedUrl(resource) {
-    const url =
-      resource.url;
+function createEmbedUrl(resource) {
+  const url =
+    resource.url;
+
+  /*
+  ========================================
+  GOOGLE SLIDES
+  ========================================
+  */
+
+  if (
+    resource.type === "slides" &&
+    url.includes(
+      "docs.google.com/presentation"
+    )
+  ) {
+    const baseUrl =
+      url.split("?")[0];
 
     if (
-      resource.type === "slides" &&
-      url.includes(
-        "docs.google.com/presentation"
-      )
+      baseUrl.includes("/edit")
     ) {
-      const baseUrl =
-        url.split("?")[0];
-
-      if (
-        baseUrl.includes("/edit")
-      ) {
-        return baseUrl.replace(
-          "/edit",
-          "/embed"
-        );
-      }
-
-      if (
-        baseUrl.includes("/present")
-      ) {
-        return baseUrl.replace(
-          "/present",
-          "/embed"
-        );
-      }
-
-      return baseUrl;
+      return baseUrl.replace(
+        "/edit",
+        "/embed"
+      );
     }
 
     if (
-      resource.type === "video" ||
-      resource.type === "youtube"
+      baseUrl.includes("/present")
     ) {
-      try {
-        const parsedUrl =
-          new URL(url);
+      return baseUrl.replace(
+        "/present",
+        "/embed"
+      );
+    }
 
-        if (
-          parsedUrl.hostname.includes(
-            "youtu.be"
-          )
-        ) {
-          const videoId =
-            parsedUrl.pathname
-              .replace("/", "")
-              .split("?")[0];
+    return baseUrl;
+  }
 
+  /*
+  ========================================
+  GOOGLE DOCS
+  ========================================
+  */
+
+  if (
+    resource.type === "document" &&
+    url.includes(
+      "docs.google.com/document"
+    )
+  ) {
+    const baseUrl =
+      url.split("?")[0];
+
+    if (
+      baseUrl.includes("/edit")
+    ) {
+      return baseUrl.replace(
+        "/edit",
+        "/preview"
+      );
+    }
+
+    return baseUrl;
+  }
+
+  /*
+  ========================================
+  GOOGLE SHEETS
+  ========================================
+  */
+
+  if (
+    resource.type === "spreadsheet" &&
+    url.includes(
+      "docs.google.com/spreadsheets"
+    )
+  ) {
+    const baseUrl =
+      url.split("?")[0];
+
+    if (
+      baseUrl.includes("/edit")
+    ) {
+      return baseUrl.replace(
+        "/edit",
+        "/preview"
+      );
+    }
+
+    return baseUrl;
+  }
+
+  /*
+  ========================================
+  GOOGLE FORMS
+  ========================================
+  */
+
+  if (
+    resource.type === "form" &&
+    url.includes(
+      "docs.google.com/forms"
+    )
+  ) {
+    const baseUrl =
+      url.split("?")[0];
+
+    if (
+      baseUrl.includes("/edit")
+    ) {
+      return baseUrl.replace(
+        "/edit",
+        "/viewform?embedded=true"
+      );
+    }
+
+    if (
+      baseUrl.includes("/viewform")
+    ) {
+      return (
+        baseUrl +
+        "?embedded=true"
+      );
+    }
+
+    return baseUrl;
+  }
+
+  /*
+  ========================================
+  GOOGLE DRIVE FILES
+  ========================================
+  */
+
+  if (
+    url.includes(
+      "drive.google.com/file/d/"
+    )
+  ) {
+    const baseUrl =
+      url.split("?")[0];
+
+    if (
+      baseUrl.includes("/view")
+    ) {
+      return baseUrl.replace(
+        "/view",
+        "/preview"
+      );
+    }
+
+    return baseUrl;
+  }
+
+  /*
+  ========================================
+  YOUTUBE
+  ========================================
+  */
+
+  if (
+    resource.type === "video" ||
+    resource.type === "youtube"
+  ) {
+    try {
+      const parsedUrl =
+        new URL(url);
+
+      if (
+        parsedUrl.hostname.includes(
+          "youtu.be"
+        )
+      ) {
+        const videoId =
+          parsedUrl.pathname
+            .replace("/", "")
+            .split("?")[0];
+
+        return (
+          "https://www.youtube.com/embed/" +
+          videoId
+        );
+      }
+
+      if (
+        parsedUrl.hostname.includes(
+          "youtube.com"
+        )
+      ) {
+        const videoId =
+          parsedUrl.searchParams.get(
+            "v"
+          );
+
+        if (videoId) {
           return (
             "https://www.youtube.com/embed/" +
             videoId
@@ -2125,58 +2267,44 @@ function displayLessonFlow(lesson) {
         }
 
         if (
-          parsedUrl.hostname.includes(
-            "youtube.com"
+          parsedUrl.pathname.includes(
+            "/embed/"
           )
         ) {
-          const videoId =
-            parsedUrl.searchParams.get(
-              "v"
-            );
-
-          if (videoId) {
-            return (
-              "https://www.youtube.com/embed/" +
-              videoId
-            );
-          }
-
-          if (
-            parsedUrl.pathname.includes(
-              "/embed/"
-            )
-          ) {
-            return url;
-          }
-
-          if (
-            parsedUrl.pathname.includes(
-              "/shorts/"
-            )
-          ) {
-            const shortId =
-              parsedUrl.pathname
-                .split(
-                  "/shorts/"
-                )[1]
-                .split("/")[0];
-
-            return (
-              "https://www.youtube.com/embed/" +
-              shortId
-            );
-          }
+          return url;
         }
-      } catch (error) {
-        console.error(
-          "Could not prepare YouTube link.",
-          error
-        );
-      }
-    }
 
-    return url;
+        if (
+          parsedUrl.pathname.includes(
+            "/shorts/"
+          )
+        ) {
+          const shortId =
+            parsedUrl.pathname
+              .split("/shorts/")[1]
+              .split("/")[0];
+
+          return (
+            "https://www.youtube.com/embed/" +
+            shortId
+          );
+        }
+      }
+    } catch (error) {
+      console.error(
+        "Could not prepare YouTube link.",
+        error
+      );
+    }
   }
+
+  /*
+  Other valid resources are attempted directly
+  inside the central Teach workspace.
+  */
+
+  return url;
+}
 
   /*
   ==========================================
@@ -2185,125 +2313,100 @@ function displayLessonFlow(lesson) {
   */
 
   function selectResource(
-    resource,
-    selectedButton
-  ) {
-    document
-      .querySelectorAll(
-        ".resource-tab"
-      )
-      .forEach(button => {
-        button.classList.remove(
-          "active"
-        );
+  resource,
+  selectedButton
+) {
+  document
+    .querySelectorAll(
+      ".resource-tab"
+    )
+    .forEach(button => {
+      button.classList.remove(
+        "active"
+      );
 
-        button.setAttribute(
-          "aria-pressed",
-          "false"
-        );
-      });
+      button.setAttribute(
+        "aria-pressed",
+        "false"
+      );
+    });
 
-    selectedButton.classList.add(
-      "active"
+  selectedButton.classList.add(
+    "active"
+  );
+
+  selectedButton.setAttribute(
+    "aria-pressed",
+    "true"
+  );
+
+  const frame =
+    document.getElementById(
+      "lesson-frame"
     );
 
-    selectedButton.setAttribute(
-      "aria-pressed",
-      "true"
+  const originalPlaceholder =
+    document.getElementById(
+      "lesson-placeholder"
     );
 
-    const frame =
-      document.getElementById(
-        "lesson-frame"
-      );
+  const openPlaceholder =
+    document.getElementById(
+      "resource-open-placeholder"
+    );
 
-    const originalPlaceholder =
-      document.getElementById(
-        "lesson-placeholder"
-      );
+  const headerOpenLink =
+    document.getElementById(
+      "open-lesson-link"
+    );
 
-    const openPlaceholder =
-      document.getElementById(
-        "resource-open-placeholder"
-      );
-
-    const openTitle =
-      document.getElementById(
-        "resource-open-title"
-      );
-
-    const openButton =
-      document.getElementById(
-        "resource-open-button"
-      );
-
-    const headerOpenLink =
-      document.getElementById(
-        "open-lesson-link"
-      );
-
-    if (originalPlaceholder) {
-      originalPlaceholder.style.display =
-        "none";
-    }
-
-    if (headerOpenLink) {
-      headerOpenLink.href =
-        resource.url;
-
-      headerOpenLink.style.display =
-        "inline-flex";
-    }
-
-    if (
-      canEmbed(resource) &&
-      frame
-    ) {
-      if (openPlaceholder) {
-        openPlaceholder.classList.remove(
-          "show"
-        );
-      }
-
-      frame.src =
-        createEmbedUrl(
-          resource
-        );
-
-      frame.style.display =
-        "block";
-
-      return;
-    }
-
-    if (frame) {
-      frame.style.display =
-        "none";
-
-      frame.removeAttribute(
-        "src"
-      );
-    }
-
-    if (openTitle) {
-      openTitle.textContent =
-        resource.label;
-    }
-
-    if (openButton) {
-      openButton.href =
-        resource.url;
-
-      openButton.textContent =
-        `Open ${resource.label}`;
-    }
-
-    if (openPlaceholder) {
-      openPlaceholder.classList.add(
-        "show"
-      );
-    }
+  if (originalPlaceholder) {
+    originalPlaceholder.style.display =
+      "none";
   }
+
+  /*
+  Always preserve a separate-tab option as a
+  backup for websites that block iframe display.
+  */
+
+  if (headerOpenLink) {
+    headerOpenLink.href =
+      resource.url;
+
+    headerOpenLink.textContent =
+      "Open in New Tab";
+
+    headerOpenLink.style.display =
+      "inline-flex";
+  }
+
+  /*
+  Hide the old large separate-tab placeholder.
+  Every valid resource is attempted centrally.
+  */
+
+  if (openPlaceholder) {
+    openPlaceholder.classList.remove(
+      "show"
+    );
+  }
+
+  if (
+    !frame ||
+    !canEmbed(resource)
+  ) {
+    return;
+  }
+
+  frame.src =
+    createEmbedUrl(
+      resource
+    );
+
+  frame.style.display =
+    "block";
+}
 
   function displayLessonResources(
     resources
