@@ -2637,14 +2637,18 @@ CONTENT TYPE OPTIONS
     </section>
   </main>
 
-  <script src="config/google-config.js?v=1"></script>
+ <script src="config/google-config.js?v=1"></script>
+
+<script
+  src="https://accounts.google.com/gsi/client"
+  async
+  defer
+></script>
+
+<script src="js/google-auth.js?v=1"></script>
 <script src="js/navigation.js?v=3"></script>
 <script src="js/admin-access.js?v=1"></script>
 
-<script>
-  window.PatriotAdminAccess
-    ?.enforceAdminAccess();
-</script>
   <script>
     window.PatriotAdminAccess
     ?.enforceAdminAccess();
