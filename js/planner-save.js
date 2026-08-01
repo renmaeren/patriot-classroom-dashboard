@@ -717,21 +717,6 @@ function saveLessonLocally(
   }
 }
 
-    /*
-    Keep daily storage synchronized too, while
-    patriotTeachLesson remains the explicit
-    priority for the immediate launch.
-    */
-
-    localStorage.setItem(
-      DAILY_LESSON_KEY,
-      JSON.stringify(
-        classroomLesson
-      )
-    );
-  }
-}
-
   function showStatus(message) {
     const status =
       document.getElementById(
