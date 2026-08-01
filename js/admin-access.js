@@ -19,26 +19,48 @@ Admin Access Control
   }
 
   function getCurrentUserEmail() {
-    const possibleSources = [
-      window.patriotCurrentUserEmail,
-      window.currentUserEmail,
-      window.teacherEmail
-    ];
+  const possibleSources = [
+    window.patriotCurrentUserEmail,
+    window.currentUserEmail,
+    window.teacherEmail
+  ];
 
-    for (
-      let index = 0;
-      index < possibleSources.length;
-      index += 1
-    ) {
-      const email =
-        cleanText(
-          possibleSources[index]
-        );
+  for (
+    let index = 0;
+    index < possibleSources.length;
+    index += 1
+  ) {
+    const email =
+      cleanText(
+        possibleSources[index]
+      );
 
-      if (email) {
-        return email;
-      }
+    if (email) {
+      return email;
     }
+  }
+
+  try {
+    const savedProfile =
+      JSON.parse(
+        localStorage.getItem(
+          "patriotTeacherProfile"
+        ) || "{}"
+      );
+
+    return cleanText(
+      savedProfile.teacherEmail ||
+      savedProfile.email
+    );
+  } catch (error) {
+    console.error(
+      "Admin access could not read the teacher profile.",
+      error
+    );
+
+    return "";
+  }
+}
 
     try {
       const savedSettings =
