@@ -1070,6 +1070,33 @@
       background:
         #2f6842;
     }
+    .teach-button {
+  color: #ffffff;
+
+  background:
+    var(--planner-red);
+
+  border:
+    1px solid
+    var(--planner-red);
+}
+
+.teach-button:hover {
+  color: #ffffff;
+
+  background:
+    #ad1711;
+
+  border-color:
+    #ad1711;
+}
+
+.teach-button:disabled,
+.save-button:disabled {
+  cursor: wait;
+  opacity: 0.68;
+  transform: none;
+}
 
     .new-button {
       color:
@@ -1866,12 +1893,12 @@
         </button>
 
         <button
-          id="plan-another-button"
-          class="action-button new-button"
-          type="button"
-        >
-          Plan Another Lesson
-        </button>
+        id="teach-this-lesson-button"
+        class="action-button teach-button"
+        type="button"
+      >
+        ▶ Teach This Lesson
+      </button>
 
         <a
           class="action-button library-button"
@@ -2014,6 +2041,6 @@
   
   <script src="js/planner-duplicate.js?v=6"></script>
   
-  <script src="js/planner-save.js?v=4"></script>
+  <script src="js/planner-save.js?v=5"></script>
 </body>
 </html>
