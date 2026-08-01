@@ -62,28 +62,6 @@ Admin Access Control
   }
 }
 
-    try {
-      const savedSettings =
-        JSON.parse(
-          localStorage.getItem(
-            "patriotTeacherSettings"
-          ) || "{}"
-        );
-
-      return cleanText(
-        savedSettings.teacherEmail ||
-        savedSettings.email
-      );
-    } catch (error) {
-      console.error(
-        "Admin access could not read teacher settings.",
-        error
-      );
-
-      return "";
-    }
-  }
-
   function isApprovedAdmin(email) {
     return ADMIN_EMAILS.includes(
       cleanText(email)
