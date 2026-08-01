@@ -23,6 +23,8 @@ Full-Page Lesson Planner Saving
 
   const DAILY_LESSON_KEY =
     "patriotDailyLesson";
+    let activeLessonId = "";
+    let saveInProgress = false;
 
   function readTeacherProfile() {
     const saved =
@@ -96,29 +98,39 @@ Full-Page Lesson Planner Saving
   }
 
   function getLessonIdForSave() {
-    const mode =
-      getPlannerMode();
+  const mode =
+    getPlannerMode();
 
-    if (mode === "edit") {
-      const originalLesson =
-        readStoredLesson(
-          EDIT_LESSON_KEY
-        );
-
-      if (
-        originalLesson &&
-        originalLesson.lessonId
-      ) {
-        return originalLesson.lessonId;
-      }
-
-      throw new Error(
-        "The original lesson ID could not be found. Return to the Library and open the lesson again."
+  if (mode === "edit") {
+    const originalLesson =
+      readStoredLesson(
+        EDIT_LESSON_KEY
       );
+
+    if (
+      originalLesson &&
+      originalLesson.lessonId
+    ) {
+      activeLessonId =
+        originalLesson.lessonId;
+
+      return activeLessonId;
     }
 
-    return createLessonId();
+    throw new Error(
+      "The original lesson ID could not be found. Return to the Library and open the lesson again."
+    );
   }
+
+  if (activeLessonId) {
+    return activeLessonId;
+  }
+
+  activeLessonId =
+    createLessonId();
+
+  return activeLessonId;
+}
 
   function createLessonId() {
     if (
@@ -815,6 +827,10 @@ Full-Page Lesson Planner Saving
   async function savePlannerLesson(
     options = {}
   ) {
+      if (saveInProgress) {
+    return false;
+  }
+    
     const teachAfterSave =
       Boolean(
         options.teachAfterSave
@@ -851,6 +867,7 @@ Full-Page Lesson Planner Saving
 
       return false;
     }
+      saveInProgress = true;
 
     const saveButton =
       document.querySelector(
@@ -961,6 +978,8 @@ Full-Page Lesson Planner Saving
 
       return false;
     } finally {
+      saveInProgress = false;
+      
       if (saveButton) {
         saveButton.disabled =
           false;
