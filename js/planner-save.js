@@ -19,10 +19,10 @@ Full-Page Lesson Planner Saving
     "patriotDuplicateLesson";
 
   const TEACH_LESSON_KEY =
-  "patriotTeachLesson";
+    "patriotTeachLesson";
 
   const DAILY_LESSON_KEY =
-  "patriotDailyLesson";
+    "patriotDailyLesson";
 
   function readTeacherProfile() {
     const saved =
@@ -582,168 +582,163 @@ Full-Page Lesson Planner Saving
       });
 
     const archiveRequest =
-  fetch(
-    ARCHIVE_URL,
-    {
-      method: "POST",
-      mode: "no-cors",
-      body: archiveData
-    }
-  ).catch(error => {
-    console.warn(
-      "The lesson archive request did not finish normally.",
-      error
-    );
-  });
+      fetch(
+        ARCHIVE_URL,
+        {
+          method: "POST",
+          mode: "no-cors",
+          body: archiveData
+        }
+      ).catch(error => {
+        console.warn(
+          "The lesson archive request did not finish normally.",
+          error
+        );
+      });
 
-const archiveTimeout =
-  new Promise(resolve => {
-    window.setTimeout(
-      resolve,
-      8000
-    );
-  });
+    const archiveTimeout =
+      new Promise(resolve => {
+        window.setTimeout(
+          resolve,
+          8000
+        );
+      });
 
-/*
-Do not leave the Planner frozen if Google
-Apps Script takes too long to respond.
-
-Because this is a no-cors request, Patriot
-Command cannot reliably confirm the response
-anyway. The request may still finish in the
-background.
-*/
-
-await Promise.race([
-  archiveRequest,
-  archiveTimeout
-]);
-
-  function createClassroomLesson(
-  lesson
-) {
-  return {
-    lessonId:
-      lesson.lessonId,
-
-    lessonDate:
-      lesson.lessonDate,
-
-    lessonTitle:
-      lesson.lessonTitle,
-
-    assignedPeriods:
-      lesson.assignedPeriods,
-
-    assignedCourses:
-      lesson.assignedCourses,
-
-    bellringer:
-      lesson.bellRinger,
-
-    essentialQuestion:
-      lesson.essentialQuestion,
-
-    agenda:
-      lesson.agenda,
-
-    ican:
-      lesson.learningTarget,
-
-    success:
-      lesson.successCriteria,
-
-    profileId:
-      lesson.profileId,
-
-    profileComponent:
-      lesson.profileComponent,
-
-    profileStatement:
-      lesson.profileFocus,
-
-    standards:
-      lesson.standards,
-
-    vocabulary:
-      lesson.vocabulary,
-
-    resources:
-      lesson.resources,
-
-    exitTicket:
-      lesson.exitTicket,
-
-    homework:
-      lesson.homework,
-
-    whyLearning:
-      lesson.whyLearning,
-
-    materials:
-      lesson.materials
-  };
-}
-
-function saveLessonLocally(
-  lesson,
-  options = {}
-) {
-  const forceClassroom =
-    Boolean(
-      options.forceClassroom
-    );
-
-  const classroomLesson =
-    createClassroomLesson(
-      lesson
-    );
-
-  localStorage.setItem(
-    "patriotLastPlannedLesson",
-    JSON.stringify(
-      lesson
-    )
-  );
-
-  if (
-    lesson.lessonDate ===
-      getTodayText()
-  ) {
-    localStorage.setItem(
-      DAILY_LESSON_KEY,
-      JSON.stringify(
-        classroomLesson
-      )
-    );
-  }
-
-  if (forceClassroom) {
     /*
-    Remove any previously selected Library
-    lesson, then replace it with the lesson
-    being launched directly from Planner.
+    Do not leave the Planner frozen if Google
+    Apps Script takes too long to respond.
+
+    Because this is a no-cors request, Patriot
+    Command cannot reliably confirm the response
+    anyway. The request may still finish in the
+    background.
     */
 
-    localStorage.removeItem(
-      TEACH_LESSON_KEY
-    );
-
-    localStorage.setItem(
-      TEACH_LESSON_KEY,
-      JSON.stringify(
-        classroomLesson
-      )
-    );
-
-    localStorage.setItem(
-      DAILY_LESSON_KEY,
-      JSON.stringify(
-        classroomLesson
-      )
-    );
+    await Promise.race([
+      archiveRequest,
+      archiveTimeout
+    ]);
   }
-}
+
+  function createClassroomLesson(
+    lesson
+  ) {
+    return {
+      lessonId:
+        lesson.lessonId,
+
+      lessonDate:
+        lesson.lessonDate,
+
+      lessonTitle:
+        lesson.lessonTitle,
+
+      assignedPeriods:
+        lesson.assignedPeriods,
+
+      assignedCourses:
+        lesson.assignedCourses,
+
+      bellringer:
+        lesson.bellRinger,
+
+      essentialQuestion:
+        lesson.essentialQuestion,
+
+      agenda:
+        lesson.agenda,
+
+      ican:
+        lesson.learningTarget,
+
+      success:
+        lesson.successCriteria,
+
+      profileId:
+        lesson.profileId,
+
+      profileComponent:
+        lesson.profileComponent,
+
+      profileStatement:
+        lesson.profileFocus,
+
+      standards:
+        lesson.standards,
+
+      vocabulary:
+        lesson.vocabulary,
+
+      resources:
+        lesson.resources,
+
+      exitTicket:
+        lesson.exitTicket,
+
+      homework:
+        lesson.homework,
+
+      whyLearning:
+        lesson.whyLearning,
+
+      materials:
+        lesson.materials
+    };
+  }
+
+  function saveLessonLocally(
+    lesson,
+    options = {}
+  ) {
+    const forceClassroom =
+      Boolean(
+        options.forceClassroom
+      );
+
+    const classroomLesson =
+      createClassroomLesson(
+        lesson
+      );
+
+    localStorage.setItem(
+      "patriotLastPlannedLesson",
+      JSON.stringify(
+        lesson
+      )
+    );
+
+    if (
+      lesson.lessonDate ===
+        getTodayText()
+    ) {
+      localStorage.setItem(
+        DAILY_LESSON_KEY,
+        JSON.stringify(
+          classroomLesson
+        )
+      );
+    }
+
+    if (forceClassroom) {
+      localStorage.removeItem(
+        TEACH_LESSON_KEY
+      );
+
+      localStorage.setItem(
+        TEACH_LESSON_KEY,
+        JSON.stringify(
+          classroomLesson
+        )
+      );
+
+      localStorage.setItem(
+        DAILY_LESSON_KEY,
+        JSON.stringify(
+          classroomLesson
+        )
+      );
+    }
+  }
 
   function showStatus(message) {
     const status =
@@ -818,225 +813,225 @@ function saveLessonLocally(
   }
 
   async function savePlannerLesson(
-  options = {}
-) {
-  const teachAfterSave =
-    Boolean(
-      options.teachAfterSave
-    );
-
-  const mode =
-    getPlannerMode();
-
-  let lesson;
-
-  try {
-    lesson =
-      collectLesson();
-  } catch (error) {
-    window.alert(
-      error.message
-    );
-
-    return false;
-  }
-
-  const missing =
-    validateLesson(
-      lesson
-    );
-
-  if (
-    missing.length > 0
+    options = {}
   ) {
-    window.alert(
-      "Please complete:\n\n" +
-      missing.join("\n")
-    );
-
-    return false;
-  }
-
-  const saveButton =
-    document.querySelector(
-      ".save-button"
-    );
-
-  const teachButton =
-    document.getElementById(
-      "teach-this-lesson-button"
-    );
-
-  const originalSaveText =
-    saveButton
-      ? saveButton.textContent
-      : "Save Lesson";
-
-  const originalTeachText =
-    teachButton
-      ? teachButton.textContent
-      : "Teach This Lesson";
-
-  if (saveButton) {
-    saveButton.disabled =
-      true;
-  }
-
-  if (teachButton) {
-    teachButton.disabled =
-      true;
-  }
-
-  if (teachAfterSave) {
-    if (teachButton) {
-      teachButton.textContent =
-        "Preparing Classroom...";
-    }
-  } else if (saveButton) {
-    saveButton.textContent =
-      mode === "edit"
-        ? "Updating Lesson..."
-        : "Saving Lesson...";
-  }
-
-  try {
-    await sendLessonToArchive(
-      lesson
-    );
-
-    saveLessonLocally(
-      lesson,
-      {
-        forceClassroom:
-          teachAfterSave
-      }
-    );
-
-    localStorage.setItem(
-      "patriotPlannerLastSaved",
-      "true"
-    );
-
-    updatePageAfterSave(
-      mode
-    );
-
-    if (teachAfterSave) {
-      showStatus(
-        "✓ Lesson saved! Opening the Teach workspace..."
+    const teachAfterSave =
+      Boolean(
+        options.teachAfterSave
       );
 
-      window.setTimeout(
-        () => {
-          window.location.href =
-            "classroom.html";
-        },
-        450
+    const mode =
+      getPlannerMode();
+
+    let lesson;
+
+    try {
+      lesson =
+        collectLesson();
+    } catch (error) {
+      window.alert(
+        error.message
       );
 
-      return true;
+      return false;
     }
 
-    if (mode === "edit") {
-      showStatus(
-        "✓ Lesson updated successfully. Return to the Library to view the changes."
+    const missing =
+      validateLesson(
+        lesson
       );
-    } else if (
-      mode === "duplicate"
+
+    if (
+      missing.length > 0
     ) {
-      showStatus(
-        "✓ Duplicated lesson saved as a new lesson. You may return to the Library or continue planning."
+      window.alert(
+        "Please complete:\n\n" +
+        missing.join("\n")
       );
-    } else {
-      showStatus(
-        "✓ Lesson saved and archived! You may now teach this lesson or return to the Lesson Library."
-      );
+
+      return false;
     }
 
-    return true;
-  } catch (error) {
-    console.error(
-      "Lesson archive saving failed.",
-      error
-    );
+    const saveButton =
+      document.querySelector(
+        ".save-button"
+      );
 
-    window.alert(
-      "The Google lesson archive could not be reached. Check your internet connection and try again."
-    );
+    const teachButton =
+      document.getElementById(
+        "teach-this-lesson-button"
+      );
 
-    return false;
-  } finally {
+    const originalSaveText =
+      saveButton
+        ? saveButton.textContent
+        : "Save Lesson";
+
+    const originalTeachText =
+      teachButton
+        ? teachButton.textContent
+        : "Teach This Lesson";
+
     if (saveButton) {
       saveButton.disabled =
-        false;
-
-      saveButton.textContent =
-        originalSaveText;
+        true;
     }
 
     if (teachButton) {
       teachButton.disabled =
-        false;
+        true;
+    }
 
-      teachButton.textContent =
-        originalTeachText;
+    if (teachAfterSave) {
+      if (teachButton) {
+        teachButton.textContent =
+          "Preparing Classroom...";
+      }
+    } else if (saveButton) {
+      saveButton.textContent =
+        mode === "edit"
+          ? "Updating Lesson..."
+          : "Saving Lesson...";
+    }
+
+    try {
+      await sendLessonToArchive(
+        lesson
+      );
+
+      saveLessonLocally(
+        lesson,
+        {
+          forceClassroom:
+            teachAfterSave
+        }
+      );
+
+      localStorage.setItem(
+        "patriotPlannerLastSaved",
+        "true"
+      );
+
+      updatePageAfterSave(
+        mode
+      );
+
+      if (teachAfterSave) {
+        showStatus(
+          "✓ Lesson saved! Opening the Teach workspace..."
+        );
+
+        window.setTimeout(
+          () => {
+            window.location.href =
+              "classroom.html";
+          },
+          450
+        );
+
+        return true;
+      }
+
+      if (mode === "edit") {
+        showStatus(
+          "✓ Lesson updated successfully. Return to the Library to view the changes."
+        );
+      } else if (
+        mode === "duplicate"
+      ) {
+        showStatus(
+          "✓ Duplicated lesson saved as a new lesson. You may return to the Library or continue planning."
+        );
+      } else {
+        showStatus(
+          "✓ Lesson saved and archived! You may now teach this lesson or return to the Lesson Library."
+        );
+      }
+
+      return true;
+    } catch (error) {
+      console.error(
+        "Lesson archive saving failed.",
+        error
+      );
+
+      window.alert(
+        "The Google lesson archive could not be reached. Check your internet connection and try again."
+      );
+
+      return false;
+    } finally {
+      if (saveButton) {
+        saveButton.disabled =
+          false;
+
+        saveButton.textContent =
+          originalSaveText;
+      }
+
+      if (teachButton) {
+        teachButton.disabled =
+          false;
+
+        teachButton.textContent =
+          originalTeachText;
+      }
     }
   }
-}
 
-async function handleSave(
-  event
-) {
-  event.preventDefault();
+  async function handleSave(
+    event
+  ) {
+    event.preventDefault();
 
-  await savePlannerLesson({
-    teachAfterSave:
-      false
-  });
-}
-
-async function handleTeachLesson() {
-  await savePlannerLesson({
-    teachAfterSave:
-      true
-  });
-}
-
-function startPlannerSaving() {
-  const form =
-    document.getElementById(
-      "lesson-planner-form"
-    );
-
-  const teachButton =
-    document.getElementById(
-      "teach-this-lesson-button"
-    );
-
-  if (form) {
-    form.addEventListener(
-      "submit",
-      handleSave
-    );
+    await savePlannerLesson({
+      teachAfterSave:
+        false
+    });
   }
 
-  if (teachButton) {
-    teachButton.addEventListener(
-      "click",
-      handleTeachLesson
-    );
+  async function handleTeachLesson() {
+    await savePlannerLesson({
+      teachAfterSave:
+        true
+    });
   }
-}
 
-if (
-  document.readyState ===
-  "loading"
-) {
-  document.addEventListener(
-    "DOMContentLoaded",
-    startPlannerSaving
-  );
-} else {
-  startPlannerSaving();
-}
+  function startPlannerSaving() {
+    const form =
+      document.getElementById(
+        "lesson-planner-form"
+      );
+
+    const teachButton =
+      document.getElementById(
+        "teach-this-lesson-button"
+      );
+
+    if (form) {
+      form.addEventListener(
+        "submit",
+        handleSave
+      );
+    }
+
+    if (teachButton) {
+      teachButton.addEventListener(
+        "click",
+        handleTeachLesson
+      );
+    }
+  }
+
+  if (
+    document.readyState ===
+    "loading"
+  ) {
+    document.addEventListener(
+      "DOMContentLoaded",
+      startPlannerSaving
+    );
+  } else {
+    startPlannerSaving();
+  }
 })();
