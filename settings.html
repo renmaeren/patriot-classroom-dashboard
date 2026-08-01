@@ -10,19 +10,19 @@
 
   <meta
     name="description"
-    content="Manage teacher information and daily classes in Patriot Command."
+    content="Manage teacher information, Google connection, and daily classes in Patriot Command."
   >
 
   <title>Teacher Settings | Patriot Command</title>
 
   <link
     rel="stylesheet"
-    href="css/patriot-design-system.css?v=2"
+    href="css/patriot-design-system.css?v=3"
   >
 
   <link
     rel="stylesheet"
-    href="css/layout.css?v=2"
+    href="css/layout.css?v=3"
   >
 
   <style>
@@ -114,13 +114,16 @@
     body {
       min-height: 100vh;
       margin: 0;
+
       color:
         var(--settings-ink);
+
       font-family:
         "Inter",
         "Segoe UI",
         Arial,
         sans-serif;
+
       background:
         radial-gradient(
           circle at 8% 2%,
@@ -177,10 +180,13 @@
 
     .settings-page-header {
       position: relative;
+
       display: flex;
       align-items: center;
       justify-content: space-between;
+
       gap: 22px;
+
       width:
         min(
           1800px,
@@ -189,14 +195,19 @@
             24px
           )
         );
+
       min-height: 92px;
+
       margin:
         12px
         auto;
+
       padding:
         16px
         23px;
+
       overflow: hidden;
+
       background:
         linear-gradient(
           112deg,
@@ -219,6 +230,7 @@
             0.16
           ) 100%
         );
+
       border:
         1px solid
         rgba(
@@ -227,25 +239,34 @@
           255,
           0.9
         );
+
       border-radius: 16px;
+
       box-shadow:
         var(--settings-shadow);
+
       backdrop-filter:
         blur(18px);
+
       -webkit-backdrop-filter:
         blur(18px);
+
       isolation: isolate;
     }
 
     .settings-page-header::before {
       content: "";
+
       position: absolute;
       top: -85px;
       right: -40px;
       z-index: -1;
+
       width: 220px;
       height: 220px;
+
       pointer-events: none;
+
       background:
         rgba(
           42,
@@ -253,6 +274,7 @@
           163,
           0.07
         );
+
       border-radius: 50%;
     }
 
@@ -265,8 +287,10 @@
         0
         0
         2px;
+
       color:
         var(--settings-blue);
+
       font-size: 0.62rem;
       font-weight: 800;
       text-transform: uppercase;
@@ -275,18 +299,22 @@
 
     .settings-page-header h1 {
       margin: 0;
+
       color:
         var(--settings-ink);
+
       font-family:
         "Literata",
         Georgia,
         serif;
+
       font-size:
         clamp(
           1.55rem,
           2.4vw,
           2.15rem
         );
+
       line-height: 1.08;
       letter-spacing: -0.03em;
     }
@@ -296,8 +324,10 @@
         4px
         0
         0;
+
       color:
         var(--settings-muted);
+
       font-size: 0.78rem;
       font-weight: 650;
     }
@@ -306,10 +336,14 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+
       flex: 0 0 auto;
+
       width: 48px;
       height: 48px;
+
       font-size: 1.55rem;
+
       background:
         rgba(
           255,
@@ -317,6 +351,7 @@
           255,
           0.66
         );
+
       border:
         1px solid
         rgba(
@@ -325,7 +360,9 @@
           255,
           0.86
         );
+
       border-radius: 13px;
+
       box-shadow:
         0 4px 14px
         rgba(
@@ -344,6 +381,7 @@
 
     .settings-main {
       display: grid;
+
       grid-template-columns:
         minmax(
           0,
@@ -353,8 +391,11 @@
           0,
           1.5fr
         );
+
       align-items: start;
+
       gap: 12px;
+
       width:
         min(
           1500px,
@@ -363,6 +404,7 @@
             24px
           )
         );
+
       margin:
         0
         auto
@@ -384,11 +426,14 @@
     .settings-card {
       min-width: 0;
       margin: 0;
+
       padding:
         14px
         16px;
+
       background:
         var(--settings-glass);
+
       border:
         1px solid
         rgba(
@@ -397,11 +442,15 @@
           255,
           0.9
         );
+
       border-radius: 15px;
+
       box-shadow:
         var(--settings-shadow);
+
       backdrop-filter:
         blur(18px);
+
       -webkit-backdrop-filter:
         blur(18px);
     }
@@ -410,9 +459,12 @@
       display: flex;
       align-items: baseline;
       justify-content: space-between;
+
       gap: 12px;
+
       margin-bottom: 10px;
       padding-bottom: 8px;
+
       border-bottom:
         1px solid
         var(--settings-line);
@@ -420,20 +472,25 @@
 
     .settings-card h2 {
       margin: 0;
+
       color:
         var(--settings-red);
+
       font-family:
         "Literata",
         Georgia,
         serif;
+
       font-size: 1rem;
       line-height: 1.2;
     }
 
     .settings-card-header p {
       margin: 0;
+
       color:
         var(--settings-muted);
+
       font-size: 0.66rem;
       text-align: right;
     }
@@ -443,13 +500,17 @@
         0
         0
         11px;
+
       padding:
         9px
         11px;
+
       color:
         #4d5870;
+
       font-size: 0.69rem;
       line-height: 1.42;
+
       background:
         rgba(
           255,
@@ -457,9 +518,11 @@
           105,
           0.18
         );
+
       border-left:
         3px solid
         var(--settings-gold);
+
       border-radius: 8px;
     }
 
@@ -471,6 +534,7 @@
 
     .form-grid {
       display: grid;
+
       grid-template-columns:
         repeat(
           2,
@@ -479,6 +543,7 @@
             1fr
           )
         );
+
       gap:
         10px
         12px;
@@ -496,12 +561,15 @@
 
     .form-group label {
       display: block;
+
       margin:
         0
         0
         4px;
+
       color:
         var(--settings-ink);
+
       font-size: 0.75rem;
       font-weight: 750;
     }
@@ -510,11 +578,14 @@
     .form-group select {
       width: 100%;
       min-height: 38px;
+
       padding:
         8px
         10px;
+
       color:
         var(--settings-ink);
+
       background:
         rgba(
           255,
@@ -522,6 +593,7 @@
           255,
           0.9
         );
+
       border:
         1px solid
         rgba(
@@ -530,8 +602,11 @@
           163,
           0.18
         );
+
       border-radius: 9px;
+
       outline: none;
+
       transition:
         border-color 180ms ease,
         box-shadow 180ms ease,
@@ -542,8 +617,10 @@
     .form-group select:focus {
       background:
         #ffffff;
+
       border-color:
         var(--settings-blue);
+
       box-shadow:
         0 0 0 3px
         rgba(
@@ -556,12 +633,384 @@
 
     /*
     ==========================================
+    GOOGLE ACCOUNT
+    ==========================================
+    */
+
+    .google-account-panel {
+      display: grid;
+      gap: 11px;
+    }
+
+    .google-status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      gap: 12px;
+
+      min-width: 0;
+
+      padding:
+        11px
+        12px;
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.78
+        );
+
+      border:
+        1px solid
+        var(--settings-line);
+
+      border-radius: 11px;
+    }
+
+    .google-status-copy {
+      display: flex;
+      align-items: center;
+
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .google-status-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      flex:
+        0
+        0
+        auto;
+
+      width: 32px;
+      height: 32px;
+
+      color:
+        var(--settings-white);
+
+      font-size: 0.8rem;
+      font-weight: 850;
+
+      background:
+        var(--settings-muted);
+
+      border-radius: 9px;
+    }
+
+    .google-status-icon.connected {
+      background:
+        var(--settings-green);
+    }
+
+    .google-status-text {
+      min-width: 0;
+    }
+
+    .google-status-title {
+      margin: 0;
+
+      color:
+        var(--settings-ink);
+
+      font-size: 0.75rem;
+      font-weight: 800;
+      line-height: 1.2;
+    }
+
+    .google-status-description {
+      margin:
+        2px
+        0
+        0;
+
+      overflow: hidden;
+
+      color:
+        var(--settings-muted);
+
+      font-size: 0.64rem;
+      line-height: 1.3;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .google-profile {
+      display: none;
+
+      grid-template-columns:
+        42px
+        minmax(
+          0,
+          1fr
+        );
+
+      align-items: center;
+
+      gap: 10px;
+
+      padding:
+        10px
+        11px;
+
+      background:
+        linear-gradient(
+          135deg,
+          rgba(
+            57,
+            118,
+            77,
+            0.09
+          ),
+          rgba(
+            255,
+            255,
+            255,
+            0.82
+          )
+        );
+
+      border:
+        1px solid
+        rgba(
+          57,
+          118,
+          77,
+          0.18
+        );
+
+      border-radius: 11px;
+    }
+
+    .google-profile.show {
+      display: grid;
+    }
+
+    .google-profile-image,
+    .google-profile-fallback {
+      width: 42px;
+      height: 42px;
+
+      object-fit: cover;
+
+      border-radius: 50%;
+    }
+
+    .google-profile-image {
+      display: none;
+
+      border:
+        2px solid
+        rgba(
+          57,
+          118,
+          77,
+          0.22
+        );
+    }
+
+    .google-profile-image.show {
+      display: block;
+    }
+
+    .google-profile-fallback {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      color:
+        var(--settings-white);
+
+      font-weight: 850;
+
+      background:
+        var(--settings-blue);
+    }
+
+    .google-profile-fallback.hide {
+      display: none;
+    }
+
+    .google-profile-name {
+      margin: 0;
+
+      color:
+        var(--settings-ink);
+
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+
+      font-size: 0.79rem;
+      font-weight: 750;
+      line-height: 1.25;
+    }
+
+    .google-profile-email {
+      margin:
+        2px
+        0
+        0;
+
+      overflow: hidden;
+
+      color:
+        var(--settings-muted);
+
+      font-size: 0.66rem;
+
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .google-account-actions {
+      display: grid;
+
+      grid-template-columns:
+        minmax(
+          0,
+          1fr
+        )
+        auto;
+
+      gap: 8px;
+    }
+
+    .google-connect-button,
+    .google-disconnect-button {
+      min-height: 38px;
+
+      padding:
+        8px
+        12px;
+
+      font-size: 0.72rem;
+      font-weight: 750;
+
+      border-radius: 9px;
+    }
+
+    .google-connect-button {
+      color:
+        var(--settings-white);
+
+      background:
+        var(--settings-blue);
+    }
+
+    .google-connect-button:hover {
+      background:
+        #21378a;
+    }
+
+    .google-connect-button:disabled {
+      cursor: wait;
+      opacity: 0.68;
+      transform: none;
+    }
+
+    .google-disconnect-button {
+      display: none;
+
+      color:
+        var(--settings-red);
+
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.92
+        );
+
+      border:
+        1px solid
+        rgba(
+          207,
+          27,
+          19,
+          0.23
+        );
+    }
+
+    .google-disconnect-button.show {
+      display: inline-flex;
+    }
+
+    .google-disconnect-button:hover {
+      color:
+        var(--settings-white);
+
+      background:
+        var(--settings-red);
+    }
+
+    .google-message {
+      display: none;
+
+      margin: 0;
+
+      padding:
+        8px
+        10px;
+
+      color:
+        var(--settings-muted);
+
+      font-size: 0.66rem;
+      line-height: 1.4;
+
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.06
+        );
+
+      border-left:
+        3px solid
+        var(--settings-blue);
+
+      border-radius: 7px;
+    }
+
+    .google-message.show {
+      display: block;
+    }
+
+    .google-message.error {
+      color:
+        #8d1712;
+
+      background:
+        rgba(
+          207,
+          27,
+          19,
+          0.08
+        );
+
+      border-left-color:
+        var(--settings-red);
+    }
+
+    /*
+    ==========================================
     DAILY SCHEDULE
     ==========================================
     */
 
     .schedule-grid {
       display: grid;
+
       grid-template-columns:
         repeat(
           2,
@@ -570,18 +1019,24 @@
             1fr
           )
         );
-      gap: 8px 12px;
+
+      gap:
+        8px
+        12px;
     }
 
     .schedule-row {
       display: grid;
+
       grid-template-columns:
         92px
         minmax(
           0,
           1fr
         );
+
       align-items: center;
+
       gap: 9px;
       min-width: 0;
       margin: 0;
@@ -590,6 +1045,7 @@
     .period-label {
       color:
         var(--settings-blue);
+
       font-size: 0.72rem;
       font-weight: 750;
     }
@@ -598,11 +1054,14 @@
       width: 100%;
       min-width: 0;
       min-height: 36px;
+
       padding:
         7px
         9px;
+
       color:
         var(--settings-ink);
+
       background:
         rgba(
           255,
@@ -610,6 +1069,7 @@
           255,
           0.9
         );
+
       border:
         1px solid
         rgba(
@@ -618,8 +1078,10 @@
           163,
           0.18
         );
+
       border-radius: 8px;
       outline: none;
+
       transition:
         border-color 180ms ease,
         box-shadow 180ms ease,
@@ -629,8 +1091,10 @@
     .schedule-row input:focus {
       background:
         #ffffff;
+
       border-color:
         var(--settings-blue);
+
       box-shadow:
         0 0 0 3px
         rgba(
@@ -646,8 +1110,10 @@
         10px
         0
         0;
+
       color:
         var(--settings-muted);
+
       font-size: 0.65rem;
       line-height: 1.4;
     }
@@ -660,6 +1126,7 @@
 
     .actions {
       display: grid;
+
       grid-template-columns:
         minmax(
           160px,
@@ -669,6 +1136,7 @@
           110px,
           0.65fr
         );
+
       gap: 8px;
     }
 
@@ -677,19 +1145,26 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
+
       min-height: 39px;
+
       padding:
         8px
         12px;
+
       color:
         var(--settings-white);
+
       font-size: 0.74rem;
       font-weight: 750;
       text-align: center;
       text-decoration: none;
+
       border: 0;
       border-radius: 9px;
+
       cursor: pointer;
+
       transition:
         background 180ms ease,
         box-shadow 180ms ease,
@@ -706,6 +1181,7 @@
           163,
           0.13
         );
+
       transform:
         translateY(-1px);
     }
@@ -733,8 +1209,10 @@
     .home-link {
       width: 100%;
       margin-top: 8px;
+
       color:
         var(--settings-blue);
+
       background:
         rgba(
           255,
@@ -742,6 +1220,7 @@
           255,
           0.9
         );
+
       border:
         1px solid
         var(--settings-blue);
@@ -750,23 +1229,30 @@
     .home-link:hover {
       color:
         var(--settings-white);
+
       background:
         var(--settings-blue);
     }
 
     .save-message {
       display: none;
+
       margin-top: 8px;
+
       padding:
         8px
         10px;
+
       color:
         var(--settings-white);
+
       font-size: 0.72rem;
       text-align: center;
       font-weight: 750;
+
       background:
         var(--settings-green);
+
       border-radius: 8px;
     }
 
@@ -816,13 +1302,15 @@
         position: absolute;
         top: 15px;
         right: 15px;
+
         width: 42px;
         height: 42px;
       }
 
       .form-grid,
       .schedule-grid,
-      .actions {
+      .actions,
+      .google-account-actions {
         grid-template-columns:
           minmax(
             0,
@@ -838,6 +1326,10 @@
 
       .settings-card-header p {
         text-align: left;
+      }
+
+      .google-disconnect-button {
+        width: 100%;
       }
     }
 
@@ -900,7 +1392,7 @@
       </h1>
 
       <p>
-        Set your information and daily schedule once.
+        Set your information, Google account, and daily schedule once.
       </p>
     </div>
 
@@ -938,8 +1430,8 @@
         </div>
 
         <p class="instructions">
-          Enter your basic information. These details normally
-          only need to be entered once.
+          Enter your basic information. Connecting Google can
+          automatically fill in your name and school email.
         </p>
 
         <div class="form-grid">
@@ -978,6 +1470,123 @@
               placeholder="611 or Library"
             >
           </div>
+        </div>
+      </section>
+
+      <!--
+      ========================================
+      GOOGLE ACCOUNT
+      ========================================
+      -->
+
+      <section class="settings-card">
+        <div class="settings-card-header">
+          <h2>
+            Google Account
+          </h2>
+
+          <p>
+            Connect once for Drive resources.
+          </p>
+        </div>
+
+        <p class="instructions">
+          Connect your school Google account to choose Slides,
+          Docs, Forms, PDFs, images, and other lesson resources
+          directly from your Google Drive.
+        </p>
+
+        <div class="google-account-panel">
+          <div class="google-status-row">
+            <div class="google-status-copy">
+              <div
+                id="google-status-icon"
+                class="google-status-icon"
+                aria-hidden="true"
+              >
+                G
+              </div>
+
+              <div class="google-status-text">
+                <p
+                  id="google-status-title"
+                  class="google-status-title"
+                >
+                  Checking Google connection...
+                </p>
+
+                <p
+                  id="google-status-description"
+                  class="google-status-description"
+                >
+                  Please wait while Patriot Command loads Google services.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="google-profile"
+            class="google-profile"
+          >
+            <img
+              id="google-profile-image"
+              class="google-profile-image"
+              src=""
+              alt=""
+              referrerpolicy="no-referrer"
+            >
+
+            <div
+              id="google-profile-fallback"
+              class="google-profile-fallback"
+              aria-hidden="true"
+            >
+              G
+            </div>
+
+            <div>
+              <p
+                id="google-profile-name"
+                class="google-profile-name"
+              >
+                Google User
+              </p>
+
+              <p
+                id="google-profile-email"
+                class="google-profile-email"
+              >
+                School Google account
+              </p>
+            </div>
+          </div>
+
+          <div class="google-account-actions">
+            <button
+              id="google-connect-button"
+              class="google-connect-button"
+              type="button"
+              onclick="connectGoogleAccount()"
+            >
+              Connect Google Account
+            </button>
+
+            <button
+              id="google-disconnect-button"
+              class="google-disconnect-button"
+              type="button"
+              onclick="disconnectGoogleAccount()"
+            >
+              Disconnect
+            </button>
+          </div>
+
+          <p
+            id="google-message"
+            class="google-message"
+            role="status"
+          ></p>
         </div>
       </section>
 
@@ -1200,6 +1809,12 @@
   </main>
 
   <script>
+    /*
+    ==========================================
+    TEACHER SETTINGS
+    ==========================================
+    */
+
     const defaultSettings = {
       teacherName: "",
       teacherEmail: "",
@@ -1246,6 +1861,7 @@
         return {
           ...defaultSettings,
           ...parsed,
+
           classes: {
             ...defaultSettings.classes,
             ...(parsed.classes || {})
@@ -1441,10 +2057,469 @@
       );
     }
 
+    /*
+    ==========================================
+    GOOGLE ACCOUNT DISPLAY
+    ==========================================
+    */
+
+    function setGoogleMessage(
+      message,
+      isError = false
+    ) {
+      const messageElement =
+        document.getElementById(
+          "google-message"
+        );
+
+      messageElement.textContent =
+        message || "";
+
+      messageElement.classList.toggle(
+        "show",
+        Boolean(message)
+      );
+
+      messageElement.classList.toggle(
+        "error",
+        Boolean(isError)
+      );
+    }
+
+    function setGoogleLoading(
+      isLoading
+    ) {
+      const connectButton =
+        document.getElementById(
+          "google-connect-button"
+        );
+
+      connectButton.disabled =
+        Boolean(isLoading);
+
+      connectButton.textContent =
+        isLoading
+          ? "Connecting..."
+          : "Connect Google Account";
+    }
+
+    function showDisconnectedGoogleState() {
+      const statusIcon =
+        document.getElementById(
+          "google-status-icon"
+        );
+
+      const statusTitle =
+        document.getElementById(
+          "google-status-title"
+        );
+
+      const statusDescription =
+        document.getElementById(
+          "google-status-description"
+        );
+
+      const profile =
+        document.getElementById(
+          "google-profile"
+        );
+
+      const connectButton =
+        document.getElementById(
+          "google-connect-button"
+        );
+
+      const disconnectButton =
+        document.getElementById(
+          "google-disconnect-button"
+        );
+
+      statusIcon.classList.remove(
+        "connected"
+      );
+
+      statusTitle.textContent =
+        "Google account not connected";
+
+      statusDescription.textContent =
+        "Connect your school account to choose lesson resources from Drive.";
+
+      profile.classList.remove(
+        "show"
+      );
+
+      connectButton.style.display =
+        "inline-flex";
+
+      disconnectButton.classList.remove(
+        "show"
+      );
+    }
+
+    function showConnectedGoogleState(
+      profileData
+    ) {
+      const profile =
+        profileData || {};
+
+      const statusIcon =
+        document.getElementById(
+          "google-status-icon"
+        );
+
+      const statusTitle =
+        document.getElementById(
+          "google-status-title"
+        );
+
+      const statusDescription =
+        document.getElementById(
+          "google-status-description"
+        );
+
+      const profilePanel =
+        document.getElementById(
+          "google-profile"
+        );
+
+      const profileImage =
+        document.getElementById(
+          "google-profile-image"
+        );
+
+      const profileFallback =
+        document.getElementById(
+          "google-profile-fallback"
+        );
+
+      const profileName =
+        document.getElementById(
+          "google-profile-name"
+        );
+
+      const profileEmail =
+        document.getElementById(
+          "google-profile-email"
+        );
+
+      const connectButton =
+        document.getElementById(
+          "google-connect-button"
+        );
+
+      const disconnectButton =
+        document.getElementById(
+          "google-disconnect-button"
+        );
+
+      statusIcon.classList.add(
+        "connected"
+      );
+
+      statusTitle.textContent =
+        "Google account connected";
+
+      statusDescription.textContent =
+        "Drive resources are available when planning lessons.";
+
+      profileName.textContent =
+        profile.name ||
+        "School Google Account";
+
+      profileEmail.textContent =
+        profile.email ||
+        "Connected";
+
+      if (profile.picture) {
+        profileImage.src =
+          profile.picture;
+
+        profileImage.alt =
+          profile.name
+            ? `${profile.name} Google profile`
+            : "Google profile";
+
+        profileImage.classList.add(
+          "show"
+        );
+
+        profileFallback.classList.add(
+          "hide"
+        );
+      } else {
+        profileImage.removeAttribute(
+          "src"
+        );
+
+        profileImage.classList.remove(
+          "show"
+        );
+
+        profileFallback.classList.remove(
+          "hide"
+        );
+
+        profileFallback.textContent =
+          String(
+            profile.name ||
+            profile.email ||
+            "G"
+          )
+            .trim()
+            .charAt(0)
+            .toUpperCase() ||
+          "G";
+      }
+
+      profilePanel.classList.add(
+        "show"
+      );
+
+      connectButton.style.display =
+        "none";
+
+      disconnectButton.classList.add(
+        "show"
+      );
+
+      /*
+      Fill blank teacher fields from the
+      connected Google profile.
+      */
+
+      const teacherName =
+        document.getElementById(
+          "teacher-name"
+        );
+
+      const teacherEmail =
+        document.getElementById(
+          "teacher-email"
+        );
+
+      if (
+        !teacherName.value.trim() &&
+        profile.name
+      ) {
+        teacherName.value =
+          profile.name;
+      }
+
+      if (
+        !teacherEmail.value.trim() &&
+        profile.email
+      ) {
+        teacherEmail.value =
+          profile.email;
+      }
+    }
+
+    async function connectGoogleAccount() {
+      if (
+        !window.PatriotGoogle
+      ) {
+        setGoogleMessage(
+          "Google services have not loaded yet. Refresh the page and try again.",
+          true
+        );
+
+        return;
+      }
+
+      setGoogleLoading(true);
+      setGoogleMessage("");
+
+      try {
+        const result =
+          await window.PatriotGoogle
+            .signIn();
+
+        showConnectedGoogleState(
+          result.profile ||
+          window.PatriotGoogle
+            .getProfile()
+        );
+
+        setGoogleMessage(
+          "Google connected successfully. Save your teacher settings to keep any profile details added above."
+        );
+      } catch (error) {
+        console.error(
+          "Google account connection failed.",
+          error
+        );
+
+        showDisconnectedGoogleState();
+
+        setGoogleMessage(
+          error.message ||
+          "Google account connection was not completed.",
+          true
+        );
+      } finally {
+        setGoogleLoading(false);
+      }
+    }
+
+    async function disconnectGoogleAccount() {
+      const confirmed =
+        window.confirm(
+          "Disconnect this Google account from Patriot Command?"
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      setGoogleMessage(
+        "Disconnecting Google account..."
+      );
+
+      try {
+        if (
+          window.PatriotGoogle
+        ) {
+          await window.PatriotGoogle
+            .signOut();
+        }
+
+        showDisconnectedGoogleState();
+
+        setGoogleMessage(
+          "Google account disconnected."
+        );
+      } catch (error) {
+        console.error(
+          "Google account could not be disconnected.",
+          error
+        );
+
+        setGoogleMessage(
+          "Google account could not be disconnected. Please try again.",
+          true
+        );
+      }
+    }
+
+    async function initializeGoogleSettings() {
+      const statusTitle =
+        document.getElementById(
+          "google-status-title"
+        );
+
+      const statusDescription =
+        document.getElementById(
+          "google-status-description"
+        );
+
+      if (
+        !window.PatriotGoogle
+      ) {
+        statusTitle.textContent =
+          "Google connection unavailable";
+
+        statusDescription.textContent =
+          "Patriot Command could not load the Google integration.";
+
+        setGoogleMessage(
+          "Check that google-config.js and google-drive-picker.js are loading correctly.",
+          true
+        );
+
+        return;
+      }
+
+      try {
+        const result =
+          await window.PatriotGoogle
+            .initialize();
+
+        const profile =
+          result.profile ||
+          window.PatriotGoogle
+            .getProfile();
+
+        if (
+          result.remembered &&
+          profile
+        ) {
+          showConnectedGoogleState(
+            profile
+          );
+
+          setGoogleMessage(
+            "Your Google account is remembered. Google may ask you to confirm the account again when a Drive access token expires."
+          );
+
+          return;
+        }
+
+        showDisconnectedGoogleState();
+        setGoogleMessage("");
+      } catch (error) {
+        console.error(
+          "Google settings could not be initialized.",
+          error
+        );
+
+        showDisconnectedGoogleState();
+
+        setGoogleMessage(
+          error.message ||
+          "Google services could not be initialized.",
+          true
+        );
+      }
+    }
+
+    /*
+    ==========================================
+    PAGE START
+    ==========================================
+    */
+
     fillForm(
       readSavedSettings()
     );
+
+    if (
+      document.readyState ===
+      "loading"
+    ) {
+      document.addEventListener(
+        "DOMContentLoaded",
+        initializeGoogleSettings
+      );
+    } else {
+      initializeGoogleSettings();
+    }
+
+    window.addEventListener(
+      "patriot-google-profile",
+      event => {
+        showConnectedGoogleState(
+          event.detail?.profile ||
+          null
+        );
+      }
+    );
+
+    window.addEventListener(
+      "patriot-google-signed-out",
+      () => {
+        showDisconnectedGoogleState();
+      }
+    );
   </script>
+
+  <!--
+  Google configuration must load before
+  the Google integration file.
+  -->
+
+  <script src="config/google-config.js?v=1"></script>
+
+  <script src="js/google-drive-picker.js?v=1"></script>
 
   <script src="js/navigation.js?v=3"></script>
 </body>
