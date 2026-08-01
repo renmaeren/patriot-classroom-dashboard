@@ -996,20 +996,31 @@ IMPORTANT:
         pickerType
       );
 
+    const uploadView =
+  new window.google.picker
+    .DocsUploadView();
+
+    uploadView.setIncludeFolders(
+      true
+    );
+
     return new Promise(
       (
         resolve,
         reject
       ) => {
         const picker =
-          new window.google.picker
-            .PickerBuilder()
-            .addView(
-              pickerView
-            )
-            .setOAuthToken(
-              accessToken
-            )
+  new window.google.picker
+    .PickerBuilder()
+    .addView(
+      pickerView
+    )
+    .addView(
+      uploadView
+    )
+    .setOAuthToken(
+      accessToken
+    )
             .setDeveloperKey(
               apiKey
             )
