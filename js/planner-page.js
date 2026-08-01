@@ -3,31 +3,337 @@
 PATRIOT COMMAND
 Lesson Planner Page
 ==========================================
+
+Handles:
+
+- default lesson date;
+- teacher classes;
+- Profile of a Patriot choices;
+- lesson resource rows;
+- Google Drive resource selection;
+- starting another lesson.
 */
 
 (function () {
+  "use strict";
+
   const PROFILE_STORAGE_KEY =
     "patriotTeacherProfile";
 
   const profileOptions =
-    typeof profileOfAPatriotOptions !== "undefined"
+    typeof profileOfAPatriotOptions !==
+      "undefined"
       ? profileOfAPatriotOptions
       : [];
 
+  /*
+  ==========================================
+  GOOGLE DRIVE RESOURCE TYPES
+  ==========================================
+  */
+
+  const GOOGLE_PICKER_TYPES = {
+    slides: "slides",
+    document: "docs",
+    spreadsheet: "sheets",
+    form: "forms",
+    pdf: "pdf",
+    image: "images",
+    video: "videos"
+  };
+
+  /*
+  ==========================================
+  PAGE STYLES
+  ==========================================
+  */
+
+  function addPlannerGoogleStyles() {
+    if (
+      document.getElementById(
+        "patriot-planner-google-styles"
+      )
+    ) {
+      return;
+    }
+
+    const style =
+      document.createElement(
+        "style"
+      );
+
+    style.id =
+      "patriot-planner-google-styles";
+
+    style.textContent = `
+      /*
+      ========================================
+      GOOGLE DRIVE RESOURCE BUTTON
+      ========================================
+      */
+
+      .resource-row {
+        grid-template-columns:
+          minmax(135px, 180px)
+          minmax(0, 1fr)
+          auto
+          auto;
+      }
+
+      .google-drive-resource-button {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+
+        min-height: 37px;
+
+        padding:
+          7px
+          11px;
+
+        color:
+          #2a43a3;
+
+        font-size: 0.70rem;
+        font-weight: 750;
+        line-height: 1;
+        white-space: nowrap;
+
+        background:
+          rgba(
+            255,
+            255,
+            255,
+            0.94
+          );
+
+        border:
+          1px solid
+          rgba(
+            42,
+            67,
+            163,
+            0.22
+          );
+
+        border-radius: 8px;
+
+        cursor: pointer;
+
+        transition:
+          color 180ms ease,
+          background 180ms ease,
+          border-color 180ms ease,
+          box-shadow 180ms ease,
+          transform 180ms ease;
+      }
+
+      .google-drive-resource-button.show {
+        display: inline-flex;
+      }
+
+      .google-drive-resource-button:hover {
+        color: #ffffff;
+
+        background:
+          #2a43a3;
+
+        border-color:
+          #2a43a3;
+
+        box-shadow:
+          0 5px 12px
+          rgba(
+            42,
+            67,
+            163,
+            0.14
+          );
+
+        transform:
+          translateY(-1px);
+      }
+
+      .google-drive-resource-button:disabled {
+        cursor: wait;
+        opacity: 0.65;
+        transform: none;
+      }
+
+      .google-drive-resource-button:focus-visible {
+        outline:
+          3px solid
+          #ffe269;
+
+        outline-offset: 2px;
+      }
+
+      .resource-url.google-selected {
+        border-color:
+          rgba(
+            57,
+            118,
+            77,
+            0.55
+          );
+
+        background:
+          rgba(
+            236,
+            248,
+            239,
+            0.94
+          );
+
+        box-shadow:
+          0 0 0 3px
+          rgba(
+            57,
+            118,
+            77,
+            0.08
+          );
+      }
+
+      .planner-google-message {
+        display: none;
+
+        margin-top: 8px;
+
+        padding:
+          8px
+          10px;
+
+        color:
+          #4d5870;
+
+        font-size: 0.68rem;
+        line-height: 1.4;
+
+        background:
+          rgba(
+            42,
+            67,
+            163,
+            0.06
+          );
+
+        border-left:
+          3px solid
+          #2a43a3;
+
+        border-radius: 7px;
+      }
+
+      .planner-google-message.show {
+        display: block;
+      }
+
+      .planner-google-message.error {
+        color:
+          #8d1712;
+
+        background:
+          rgba(
+            207,
+            27,
+            19,
+            0.08
+          );
+
+        border-left-color:
+          #cf1b13;
+      }
+
+      @media (
+        max-width: 900px
+      ) {
+        .resource-row {
+          grid-template-columns:
+            minmax(135px, 180px)
+            minmax(0, 1fr)
+            auto;
+        }
+
+        .google-drive-resource-button {
+          grid-column:
+            2 / 3;
+        }
+
+        .remove-resource {
+          grid-column:
+            3 / 4;
+
+          grid-row:
+            1 / 3;
+        }
+      }
+
+      @media (
+        max-width: 700px
+      ) {
+        .resource-row {
+          grid-template-columns:
+            minmax(0, 1fr);
+        }
+
+        .google-drive-resource-button,
+        .remove-resource {
+          grid-column: auto;
+          grid-row: auto;
+
+          width: 100%;
+        }
+      }
+
+      @media (
+        prefers-reduced-motion:
+        reduce
+      ) {
+        .google-drive-resource-button {
+          transition: none !important;
+        }
+      }
+    `;
+
+    document.head.appendChild(
+      style
+    );
+  }
+
+  /*
+  ==========================================
+  GENERAL HELPERS
+  ==========================================
+  */
+
   function getTodayText() {
-    const today = new Date();
+    const today =
+      new Date();
 
-    const year = today.getFullYear();
+    const year =
+      today.getFullYear();
 
-    const month = String(
-      today.getMonth() + 1
-    ).padStart(2, "0");
+    const month =
+      String(
+        today.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      );
 
-    const day = String(
-      today.getDate()
-    ).padStart(2, "0");
+    const day =
+      String(
+        today.getDate()
+      ).padStart(
+        2,
+        "0"
+      );
 
-    return `${year}-${month}-${day}`;
+    return (
+      `${year}-${month}-${day}`
+    );
   }
 
   function readTeacherProfile() {
@@ -46,7 +352,9 @@ Lesson Planner Page
     }
 
     try {
-      return JSON.parse(saved);
+      return JSON.parse(
+        saved
+      );
     } catch (error) {
       console.error(
         "Teacher settings could not be read.",
@@ -62,6 +370,71 @@ Lesson Planner Page
     }
   }
 
+  function getResourceList() {
+    return document.getElementById(
+      "resource-list"
+    );
+  }
+
+  function setPlannerGoogleMessage(
+    message,
+    isError = false
+  ) {
+    let messageElement =
+      document.getElementById(
+        "planner-google-message"
+      );
+
+    if (!messageElement) {
+      const resourceList =
+        getResourceList();
+
+      if (!resourceList) {
+        return;
+      }
+
+      messageElement =
+        document.createElement(
+          "p"
+        );
+
+      messageElement.id =
+        "planner-google-message";
+
+      messageElement.className =
+        "planner-google-message";
+
+      messageElement.setAttribute(
+        "role",
+        "status"
+      );
+
+      resourceList.insertAdjacentElement(
+        "afterend",
+        messageElement
+      );
+    }
+
+    messageElement.textContent =
+      message || "";
+
+    messageElement.classList.toggle(
+      "show",
+      Boolean(message)
+    );
+
+    messageElement.classList.toggle(
+      "error",
+      Boolean(isError)
+    );
+  }
+
+  /*
+  ==========================================
+  DEFAULT DATE
+  ==========================================
+  */
+
   function setDefaultDate() {
     const dateInput =
       document.getElementById(
@@ -76,6 +449,12 @@ Lesson Planner Page
         getTodayText();
     }
   }
+
+  /*
+  ==========================================
+  TEACHER CLASSES
+  ==========================================
+  */
 
   function loadTeacherClasses() {
     const container =
@@ -94,15 +473,24 @@ Lesson Planner Page
       Object.entries(
         profile.classes || {}
       ).filter(
-        ([period, course]) =>
+        (
+          [
+            period,
+            course
+          ]
+        ) =>
           period &&
           course &&
-          String(course).trim()
+          String(
+            course
+          ).trim()
       );
 
     container.innerHTML = "";
 
-    if (classes.length === 0) {
+    if (
+      classes.length === 0
+    ) {
       container.innerHTML = `
         <p>
           No classes are saved yet.
@@ -116,7 +504,12 @@ Lesson Planner Page
     }
 
     classes.forEach(
-      ([period, course]) => {
+      (
+        [
+          period,
+          course
+        ]
+      ) => {
         const label =
           document.createElement(
             "label"
@@ -130,10 +523,15 @@ Lesson Planner Page
             "input"
           );
 
-        checkbox.type = "checkbox";
+        checkbox.type =
+          "checkbox";
+
         checkbox.name =
           "planner-class";
-        checkbox.value = period;
+
+        checkbox.value =
+          period;
+
         checkbox.dataset.course =
           course;
 
@@ -160,6 +558,12 @@ Lesson Planner Page
     );
   }
 
+  /*
+  ==========================================
+  PROFILE OF A PATRIOT
+  ==========================================
+  */
+
   function populateProfileComponents() {
     const componentSelect =
       document.getElementById(
@@ -181,20 +585,24 @@ Lesson Planner Page
         option =>
           option.id !== "none"
       )
-      .forEach(option => {
-        const choice =
-          document.createElement(
-            "option"
+      .forEach(
+        option => {
+          const choice =
+            document.createElement(
+              "option"
+            );
+
+          choice.value =
+            option.id;
+
+          choice.textContent =
+            option.title;
+
+          componentSelect.appendChild(
+            choice
           );
-
-        choice.value = option.id;
-        choice.textContent =
-          option.title;
-
-        componentSelect.appendChild(
-          choice
-        );
-      });
+        }
+      );
   }
 
   function populateProfileFocus() {
@@ -235,20 +643,401 @@ Lesson Planner Page
     (
       selectedProfile.statements ||
       []
-    ).forEach(statement => {
-      const choice =
-        document.createElement(
-          "option"
+    ).forEach(
+      statement => {
+        const choice =
+          document.createElement(
+            "option"
+          );
+
+        choice.value =
+          statement;
+
+        choice.textContent =
+          statement;
+
+        focusSelect.appendChild(
+          choice
+        );
+      }
+    );
+  }
+
+  /*
+  ==========================================
+  GOOGLE DRIVE RESOURCE PICKER
+  ==========================================
+  */
+
+  function getPickerType(
+    resourceType
+  ) {
+    return (
+      GOOGLE_PICKER_TYPES[
+        resourceType
+      ] ||
+      ""
+    );
+  }
+
+  function supportsGooglePicker(
+    resourceType
+  ) {
+    return Boolean(
+      getPickerType(
+        resourceType
+      )
+    );
+  }
+
+  function getDriveButtonLabel(
+    resourceType
+  ) {
+    const labels = {
+      slides:
+        "Choose Slides",
+
+      document:
+        "Choose Doc",
+
+      spreadsheet:
+        "Choose Sheet",
+
+      form:
+        "Choose Form",
+
+      pdf:
+        "Choose PDF",
+
+      image:
+        "Choose Image",
+
+      video:
+        "Choose Video"
+    };
+
+    return (
+      labels[resourceType] ||
+      "Choose from Drive"
+    );
+  }
+
+  function updateDriveButton(
+    row
+  ) {
+    if (!row) {
+      return;
+    }
+
+    const typeSelect =
+      row.querySelector(
+        ".resource-type"
+      );
+
+    const driveButton =
+      row.querySelector(
+        ".google-drive-resource-button"
+      );
+
+    if (
+      !typeSelect ||
+      !driveButton
+    ) {
+      return;
+    }
+
+    const resourceType =
+      typeSelect.value;
+
+    const isSupported =
+      supportsGooglePicker(
+        resourceType
+      );
+
+    driveButton.classList.toggle(
+      "show",
+      isSupported
+    );
+
+    driveButton.disabled =
+      false;
+
+    driveButton.textContent =
+      getDriveButtonLabel(
+        resourceType
+      );
+
+    driveButton.setAttribute(
+      "aria-label",
+      isSupported
+        ? `${getDriveButtonLabel(
+            resourceType
+          )} from Google Drive`
+        : "Google Drive is not available for this resource type"
+    );
+  }
+
+  async function chooseGoogleResource(
+    row
+  ) {
+    if (!row) {
+      return;
+    }
+
+    const typeSelect =
+      row.querySelector(
+        ".resource-type"
+      );
+
+    const urlInput =
+      row.querySelector(
+        ".resource-url"
+      );
+
+    const driveButton =
+      row.querySelector(
+        ".google-drive-resource-button"
+      );
+
+    if (
+      !typeSelect ||
+      !urlInput ||
+      !driveButton
+    ) {
+      return;
+    }
+
+    const resourceType =
+      typeSelect.value;
+
+    const pickerType =
+      getPickerType(
+        resourceType
+      );
+
+    if (!pickerType) {
+      setPlannerGoogleMessage(
+        "This resource type uses a manually pasted link."
+      );
+
+      return;
+    }
+
+    if (!window.PatriotGoogle) {
+      setPlannerGoogleMessage(
+        "Google Drive is not available yet. Refresh the page and try again.",
+        true
+      );
+
+      return;
+    }
+
+    driveButton.disabled =
+      true;
+
+    driveButton.textContent =
+      "Opening Drive...";
+
+    setPlannerGoogleMessage("");
+
+    try {
+      const selectedFile =
+        await window.PatriotGoogle
+          .openPicker({
+            type:
+              pickerType
+          });
+
+      if (!selectedFile) {
+        updateDriveButton(
+          row
         );
 
-      choice.value = statement;
-      choice.textContent =
-        statement;
+        return;
+      }
 
-      focusSelect.appendChild(
-        choice
+      if (!selectedFile.url) {
+        throw new Error(
+          "Google Drive did not return a usable file link."
+        );
+      }
+
+      urlInput.value =
+        selectedFile.url;
+
+      urlInput.dataset.googleFileId =
+        selectedFile.id || "";
+
+      urlInput.dataset.googleFileName =
+        selectedFile.name || "";
+
+      urlInput.dataset.googleMimeType =
+        selectedFile.mimeType || "";
+
+      urlInput.dataset.googleSource =
+        "google-drive";
+
+      urlInput.classList.add(
+        "google-selected"
       );
-    });
+
+      /*
+      Keep the dropdown synchronized with the
+      file type Google returned.
+      */
+
+      const returnedType =
+        selectedFile.type;
+
+      const supportedSelectTypes = [
+        "slides",
+        "document",
+        "spreadsheet",
+        "form",
+        "pdf",
+        "video",
+        "image"
+      ];
+
+      if (
+        returnedType &&
+        supportedSelectTypes.includes(
+          returnedType
+        )
+      ) {
+        const matchingOption =
+          typeSelect.querySelector(
+            `option[value="${returnedType}"]`
+          );
+
+        if (matchingOption) {
+          typeSelect.value =
+            returnedType;
+        }
+      }
+
+      updateDriveButton(
+        row
+      );
+
+      setPlannerGoogleMessage(
+        selectedFile.name
+          ? `"${selectedFile.name}" was added from Google Drive.`
+          : "Google Drive resource added."
+      );
+
+      urlInput.dispatchEvent(
+        new Event(
+          "input",
+          {
+            bubbles: true
+          }
+        )
+      );
+
+      urlInput.focus();
+    } catch (error) {
+      console.error(
+        "Google Drive resource selection failed.",
+        error
+      );
+
+      setPlannerGoogleMessage(
+        error.message ||
+        "The Google Drive resource could not be selected.",
+        true
+      );
+
+      updateDriveButton(
+        row
+      );
+    }
+  }
+
+  function createDriveButton() {
+    const button =
+      document.createElement(
+        "button"
+      );
+
+    button.type =
+      "button";
+
+    button.className =
+      "google-drive-resource-button";
+
+    button.textContent =
+      "Choose from Drive";
+
+    button.addEventListener(
+      "click",
+      event => {
+        const row =
+          event.currentTarget.closest(
+            ".resource-row"
+          );
+
+        chooseGoogleResource(
+          row
+        );
+      }
+    );
+
+    return button;
+  }
+
+  /*
+  ==========================================
+  RESOURCE ROWS
+  ==========================================
+  */
+
+  function getResourceOptionsHtml() {
+    return `
+      <option value="slides">
+        Google Slides
+      </option>
+
+      <option value="video">
+        Video / YouTube
+      </option>
+
+      <option value="studysync">
+        StudySync
+      </option>
+
+      <option value="document">
+        Google Doc
+      </option>
+
+      <option value="spreadsheet">
+        Google Sheet
+      </option>
+
+      <option value="form">
+        Google Form
+      </option>
+
+      <option value="canva">
+        Canva
+      </option>
+
+      <option value="pdf">
+        PDF
+      </option>
+
+      <option value="image">
+        Image
+      </option>
+
+      <option value="website">
+        Website
+      </option>
+
+      <option value="other">
+        Other
+      </option>
+    `;
   }
 
   function createResourceRow() {
@@ -261,44 +1050,18 @@ Lesson Planner Page
       "resource-row";
 
     row.innerHTML = `
-      <select class="resource-type">
-        <option value="slides">
-          Google Slides
-        </option>
-
-        <option value="video">
-          Video / YouTube
-        </option>
-
-        <option value="studysync">
-          StudySync
-        </option>
-
-        <option value="document">
-          Google Doc
-        </option>
-
-        <option value="canva">
-          Canva
-        </option>
-
-        <option value="pdf">
-          PDF
-        </option>
-
-        <option value="website">
-          Website
-        </option>
-
-        <option value="other">
-          Other
-        </option>
+      <select
+        class="resource-type"
+        aria-label="Resource type"
+      >
+        ${getResourceOptionsHtml()}
       </select>
 
       <input
         class="resource-url"
         type="url"
-        placeholder="Paste the complete https:// link"
+        placeholder="Paste a link or choose from Google Drive"
+        aria-label="Resource link"
       >
 
       <button
@@ -314,69 +1077,166 @@ Lesson Planner Page
         ".remove-resource"
       );
 
-    removeButton.addEventListener(
-      "click",
-      () => {
-        const list =
-          document.getElementById(
-            "resource-list"
-          );
+    row.insertBefore(
+      createDriveButton(),
+      removeButton
+    );
 
-        row.remove();
-
-        if (
-          list &&
-          list.children.length === 0
-        ) {
-          list.appendChild(
-            createResourceRow()
-          );
-        }
-      }
+    connectResourceRow(
+      row
     );
 
     return row;
   }
 
-  function connectExistingResourceRow() {
-    const existingRow =
-      document.querySelector(
-        ".resource-row"
-      );
+  function removeResourceRow(
+    row
+  ) {
+    const list =
+      getResourceList();
 
-    if (!existingRow) {
+    row.remove();
+
+    if (
+      list &&
+      list.children.length === 0
+    ) {
+      list.appendChild(
+        createResourceRow()
+      );
+    }
+  }
+
+  function connectResourceRow(
+    row
+  ) {
+    if (
+      !row ||
+      row.dataset.patriotConnected ===
+        "true"
+    ) {
       return;
     }
 
+    row.dataset.patriotConnected =
+      "true";
+
+    const typeSelect =
+      row.querySelector(
+        ".resource-type"
+      );
+
+    const urlInput =
+      row.querySelector(
+        ".resource-url"
+      );
+
     const removeButton =
-      existingRow.querySelector(
+      row.querySelector(
         ".remove-resource"
       );
 
-    if (!removeButton) {
-      return;
+    let driveButton =
+      row.querySelector(
+        ".google-drive-resource-button"
+      );
+
+    if (!driveButton) {
+      driveButton =
+        createDriveButton();
+
+      if (removeButton) {
+        row.insertBefore(
+          driveButton,
+          removeButton
+        );
+      } else {
+        row.appendChild(
+          driveButton
+        );
+      }
     }
 
-    removeButton.addEventListener(
-      "click",
-      () => {
-        const list =
-          document.getElementById(
-            "resource-list"
-          );
+    if (typeSelect) {
+      typeSelect.addEventListener(
+        "change",
+        () => {
+          if (urlInput) {
+            urlInput.classList.remove(
+              "google-selected"
+            );
 
-        existingRow.remove();
+            delete urlInput.dataset
+              .googleFileId;
 
-        if (
-          list &&
-          list.children.length === 0
-        ) {
-          list.appendChild(
-            createResourceRow()
+            delete urlInput.dataset
+              .googleFileName;
+
+            delete urlInput.dataset
+              .googleMimeType;
+
+            delete urlInput.dataset
+              .googleSource;
+          }
+
+          updateDriveButton(
+            row
           );
         }
-      }
+      );
+    }
+
+    if (urlInput) {
+      urlInput.addEventListener(
+        "input",
+        () => {
+          /*
+          If the teacher manually changes the URL,
+          no longer visually mark it as an untouched
+          Google Picker selection.
+          */
+
+          if (
+            urlInput.dataset
+              .googleSource ===
+              "google-drive"
+          ) {
+            urlInput.classList.remove(
+              "google-selected"
+            );
+          }
+        }
+      );
+    }
+
+    if (removeButton) {
+      removeButton.addEventListener(
+        "click",
+        () => {
+          removeResourceRow(
+            row
+          );
+        }
+      );
+    }
+
+    updateDriveButton(
+      row
     );
+  }
+
+  function connectExistingResourceRows() {
+    document
+      .querySelectorAll(
+        ".resource-row"
+      )
+      .forEach(
+        row => {
+          connectResourceRow(
+            row
+          );
+        }
+      );
   }
 
   function connectAddResourceButton() {
@@ -386,9 +1246,7 @@ Lesson Planner Page
       );
 
     const list =
-      document.getElementById(
-        "resource-list"
-      );
+      getResourceList();
 
     if (
       !addButton ||
@@ -406,6 +1264,82 @@ Lesson Planner Page
       }
     );
   }
+
+  /*
+  Planner editing and lesson duplication may
+  rebuild resource rows after this file starts.
+  Watch the list so every restored row receives
+  the Drive button automatically.
+  */
+
+  function observeResourceRows() {
+    const list =
+      getResourceList();
+
+    if (
+      !list ||
+      typeof MutationObserver ===
+        "undefined"
+    ) {
+      return;
+    }
+
+    const observer =
+      new MutationObserver(
+        mutations => {
+          mutations.forEach(
+            mutation => {
+              mutation.addedNodes.forEach(
+                node => {
+                  if (
+                    !(node instanceof
+                      HTMLElement)
+                  ) {
+                    return;
+                  }
+
+                  if (
+                    node.classList.contains(
+                      "resource-row"
+                    )
+                  ) {
+                    connectResourceRow(
+                      node
+                    );
+                  }
+
+                  node
+                    .querySelectorAll?.(
+                      ".resource-row"
+                    )
+                    .forEach(
+                      row => {
+                        connectResourceRow(
+                          row
+                        );
+                      }
+                    );
+                }
+              );
+            }
+          );
+        }
+      );
+
+    observer.observe(
+      list,
+      {
+        childList: true,
+        subtree: true
+      }
+    );
+  }
+
+  /*
+  ==========================================
+  START ANOTHER LESSON
+  ==========================================
+  */
 
   function resetForAnotherLesson() {
     const confirmed =
@@ -432,9 +1366,7 @@ Lesson Planner Page
     populateProfileFocus();
 
     const resourceList =
-      document.getElementById(
-        "resource-list"
-      );
+      getResourceList();
 
     if (resourceList) {
       resourceList.innerHTML = "";
@@ -443,6 +1375,8 @@ Lesson Planner Page
         createResourceRow()
       );
     }
+
+    setPlannerGoogleMessage("");
 
     const status =
       document.getElementById(
@@ -477,7 +1411,15 @@ Lesson Planner Page
     }
   }
 
+  /*
+  ==========================================
+  START
+  ==========================================
+  */
+
   function startPlannerPage() {
+    addPlannerGoogleStyles();
+
     setDefaultDate();
     loadTeacherClasses();
     populateProfileComponents();
@@ -495,9 +1437,10 @@ Lesson Planner Page
       );
     }
 
-    connectExistingResourceRow();
+    connectExistingResourceRows();
     connectAddResourceButton();
     connectPlannerButtons();
+    observeResourceRows();
   }
 
   if (
