@@ -1,0 +1,3173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Manage school-wide messages and announcements in Patriot Command."
+  >
+
+  <title>
+    Admin Console | Patriot Command
+  </title>
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="Assets/Icons/Patriot%20Command%20micro.png"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/patriot-design-system.css?v=3"
+  >
+
+  <link
+    rel="stylesheet"
+    href="css/layout.css?v=3"
+  >
+
+  <style>
+    /*
+    ==========================================
+    PATRIOT COMMAND
+    ADMIN CONSOLE v1
+    ==========================================
+    */
+
+    :root {
+      --admin-blue:
+        var(
+          --patriot-blue,
+          #2a43a3
+        );
+
+      --admin-red:
+        var(
+          --patriot-red,
+          #cf1b13
+        );
+
+      --admin-gold:
+        var(
+          --patriot-gold,
+          #ffe269
+        );
+
+      --admin-cream:
+        var(
+          --patriot-cream,
+          #fffce9
+        );
+
+      --admin-white:
+        #ffffff;
+
+      --admin-ink:
+        var(
+          --patriot-text,
+          #20283a
+        );
+
+      --admin-muted:
+        var(
+          --patriot-muted,
+          #657087
+        );
+
+      --admin-green:
+        #39764d;
+
+      --admin-orange:
+        #b96514;
+
+      --admin-line:
+        rgba(
+          42,
+          67,
+          163,
+          0.13
+        );
+
+      --admin-shadow:
+        0 12px 34px
+        rgba(
+          42,
+          67,
+          163,
+          0.12
+        );
+
+      --admin-shadow-soft:
+        0 5px 16px
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+
+      --admin-radius-large:
+        18px;
+
+      --admin-radius-medium:
+        13px;
+
+      --admin-radius-small:
+        9px;
+
+      --admin-transition:
+        180ms ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      min-height: 100%;
+      background:
+        var(--admin-cream);
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color:
+        var(--admin-ink);
+      font-family:
+        "Inter",
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+      background:
+        radial-gradient(
+          circle at 7% 0,
+          rgba(
+            207,
+            27,
+            19,
+            0.18
+          ),
+          transparent 30%
+        ),
+        radial-gradient(
+          circle at 92% 2%,
+          rgba(
+            42,
+            67,
+            163,
+            0.2
+          ),
+          transparent 31%
+        ),
+        linear-gradient(
+          135deg,
+          rgba(
+            255,
+            252,
+            233,
+            0.94
+          ),
+          rgba(
+            255,
+            255,
+            255,
+            0.92
+          )
+        );
+      background-attachment:
+        fixed;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    /*
+    ==========================================
+    PAGE SHELL
+    ==========================================
+    */
+
+    .admin-page {
+      display: grid;
+      gap: 14px;
+      width:
+        min(
+          1500px,
+          calc(
+            100% -
+            26px
+          )
+        );
+      margin:
+        14px
+        auto
+        34px;
+    }
+
+    /*
+    ==========================================
+    HEADER
+    ==========================================
+    */
+
+    .admin-hero {
+      position: relative;
+      display: grid;
+      grid-template-columns:
+        minmax(
+          0,
+          1fr
+        )
+        auto;
+      align-items: center;
+      gap: 20px;
+      min-height: 116px;
+      padding:
+        20px
+        24px;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          112deg,
+          rgba(
+            207,
+            27,
+            19,
+            0.58
+          ) 0%,
+          rgba(
+            255,
+            255,
+            255,
+            0.95
+          ) 52%,
+          rgba(
+            42,
+            67,
+            163,
+            0.56
+          ) 100%
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border-radius:
+        var(
+          --admin-radius-large
+        );
+      box-shadow:
+        var(
+          --admin-shadow
+        );
+      isolation: isolate;
+    }
+
+    .admin-hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background:
+        radial-gradient(
+          circle at 13% 15%,
+          rgba(
+            255,
+            255,
+            255,
+            0.34
+          ),
+          transparent 31%
+        ),
+        radial-gradient(
+          circle at 90% 0,
+          rgba(
+            255,
+            255,
+            255,
+            0.27
+          ),
+          transparent 28%
+        );
+    }
+
+    .admin-hero::after {
+      content: "";
+      position: absolute;
+      right: -58px;
+      bottom: -135px;
+      z-index: -1;
+      width: 250px;
+      height: 250px;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.13
+        );
+      border-radius: 50%;
+    }
+
+    .admin-hero-copy {
+      min-width: 0;
+    }
+
+    .admin-eyebrow {
+      margin:
+        0
+        0
+        3px;
+      color:
+        var(
+          --admin-blue
+        );
+      font-size: 0.64rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .admin-title {
+      margin: 0;
+      color:
+        var(
+          --admin-ink
+        );
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size:
+        clamp(
+          1.75rem,
+          3vw,
+          2.55rem
+        );
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+    }
+
+    .admin-description {
+      max-width: 720px;
+      margin:
+        7px
+        0
+        0;
+      color:
+        var(
+          --admin-ink
+        );
+      font-size: 0.82rem;
+      font-weight: 620;
+      line-height: 1.45;
+    }
+
+    .admin-access-card {
+      min-width: 230px;
+      padding:
+        12px
+        15px;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.72
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.86
+        );
+      border-radius:
+        var(
+          --admin-radius-medium
+        );
+      box-shadow:
+        var(
+          --admin-shadow-soft
+        );
+      backdrop-filter:
+        blur(14px);
+      -webkit-backdrop-filter:
+        blur(14px);
+    }
+
+    .admin-access-label {
+      display: block;
+      margin-bottom: 4px;
+      color:
+        var(
+          --admin-red
+        );
+      font-size: 0.58rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .admin-access-value {
+      display: block;
+      color:
+        var(
+          --admin-blue
+        );
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.96rem;
+      font-weight: 700;
+    }
+
+    .admin-access-note {
+      display: block;
+      margin-top: 4px;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.65rem;
+      line-height: 1.35;
+    }
+
+    /*
+    ==========================================
+    STATUS STRIP
+    ==========================================
+    */
+
+    .admin-status-strip {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 10px;
+    }
+
+    .admin-stat {
+      min-width: 0;
+      padding:
+        12px
+        14px;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.79
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.88
+        );
+      border-radius:
+        var(
+          --admin-radius-medium
+        );
+      box-shadow:
+        var(
+          --admin-shadow-soft
+        );
+      backdrop-filter:
+        blur(15px);
+      -webkit-backdrop-filter:
+        blur(15px);
+    }
+
+    .admin-stat-label {
+      display: block;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.57rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .admin-stat-value {
+      display: block;
+      margin-top: 4px;
+      color:
+        var(
+          --admin-blue
+        );
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 1.32rem;
+      font-weight: 750;
+      line-height: 1;
+    }
+
+    .admin-stat-detail {
+      display: block;
+      margin-top: 4px;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.65rem;
+    }
+
+    /*
+    ==========================================
+    MAIN GRID
+    ==========================================
+    */
+
+    .admin-grid {
+      display: grid;
+      grid-template-columns:
+        minmax(
+          420px,
+          0.95fr
+        )
+        minmax(
+          460px,
+          1.05fr
+        );
+      align-items: start;
+      gap: 14px;
+    }
+
+    .admin-panel {
+      min-width: 0;
+      overflow: hidden;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.82
+        );
+      border:
+        1px solid
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border-radius:
+        var(
+          --admin-radius-large
+        );
+      box-shadow:
+        var(
+          --admin-shadow
+        );
+      backdrop-filter:
+        blur(18px);
+      -webkit-backdrop-filter:
+        blur(18px);
+    }
+
+    .admin-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 58px;
+      padding:
+        12px
+        16px;
+      background:
+        linear-gradient(
+          110deg,
+          rgba(
+            42,
+            67,
+            163,
+            0.1
+          ),
+          rgba(
+            255,
+            255,
+            255,
+            0.62
+          )
+        );
+      border-bottom:
+        1px solid
+        var(
+          --admin-line
+        );
+    }
+
+    .admin-panel-heading {
+      margin: 0;
+      color:
+        var(
+          --admin-blue
+        );
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 1rem;
+      line-height: 1.15;
+    }
+
+    .admin-panel-kicker {
+      display: block;
+      margin-top: 2px;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.63rem;
+      line-height: 1.35;
+    }
+
+    .admin-panel-body {
+      padding:
+        16px;
+    }
+
+    /*
+    ==========================================
+    FORM
+    ==========================================
+    */
+
+    .admin-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .admin-field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .admin-field-row {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 10px;
+    }
+
+    .admin-field label,
+    .admin-field-label {
+      color:
+        var(
+          --admin-ink
+        );
+      font-size: 0.69rem;
+      font-weight: 780;
+    }
+
+    .admin-required {
+      color:
+        var(
+          --admin-red
+        );
+    }
+
+    .admin-field small {
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.61rem;
+      line-height: 1.35;
+    }
+
+    .admin-input,
+    .admin-select,
+    .admin-textarea {
+      width: 100%;
+      color:
+        var(
+          --admin-ink
+        );
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.96
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+      outline: none;
+      box-shadow:
+        inset
+        0
+        1px
+        2px
+        rgba(
+          32,
+          40,
+          58,
+          0.035
+        );
+      transition:
+        border-color
+        var(
+          --admin-transition
+        ),
+        box-shadow
+        var(
+          --admin-transition
+        ),
+        background
+        var(
+          --admin-transition
+        );
+    }
+
+    .admin-input,
+    .admin-select {
+      min-height: 40px;
+      padding:
+        8px
+        10px;
+      font-size: 0.75rem;
+    }
+
+    .admin-textarea {
+      min-height: 112px;
+      resize: vertical;
+      padding:
+        10px
+        11px;
+      font-size: 0.77rem;
+      line-height: 1.45;
+    }
+
+    .admin-input:focus,
+    .admin-select:focus,
+    .admin-textarea:focus {
+      background:
+        var(
+          --admin-white
+        );
+      border-color:
+        var(
+          --admin-blue
+        );
+      box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+          42,
+          67,
+          163,
+          0.12
+        );
+    }
+
+    /*
+    ==========================================
+    PRIORITY OPTIONS
+    ==========================================
+    */
+
+    .priority-options {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          3,
+          minmax(
+            0,
+            1fr
+          )
+        );
+      gap: 8px;
+    }
+
+    .priority-option {
+      position: relative;
+    }
+
+    .priority-option input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .priority-card {
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+      min-height: 70px;
+      padding:
+        10px
+        8px;
+      color:
+        var(
+          --admin-muted
+        );
+      text-align: center;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.83
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.15
+        );
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+      cursor: pointer;
+      transition:
+        transform
+        var(
+          --admin-transition
+        ),
+        border-color
+        var(
+          --admin-transition
+        ),
+        background
+        var(
+          --admin-transition
+        ),
+        box-shadow
+        var(
+          --admin-transition
+        );
+    }
+
+    .priority-card:hover {
+      transform:
+        translateY(
+          -1px
+        );
+      box-shadow:
+        var(
+          --admin-shadow-soft
+        );
+    }
+
+    .priority-icon {
+      font-size: 1.08rem;
+      line-height: 1;
+    }
+
+    .priority-name {
+      color:
+        var(
+          --admin-ink
+        );
+      font-size: 0.68rem;
+      font-weight: 800;
+    }
+
+    .priority-description {
+      font-size: 0.57rem;
+      line-height: 1.25;
+    }
+
+    .priority-option
+      input:checked
+      + .priority-card {
+      color:
+        var(
+          --admin-blue
+        );
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+      border-color:
+        var(
+          --admin-blue
+        );
+      box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+    }
+
+    .priority-option.important
+      input:checked
+      + .priority-card {
+      color:
+        #7b4b00;
+      background:
+        rgba(
+          255,
+          226,
+          105,
+          0.25
+        );
+      border-color:
+        #d49a25;
+      box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+          212,
+          154,
+          37,
+          0.11
+        );
+    }
+
+    .priority-option.urgent
+      input:checked
+      + .priority-card {
+      color:
+        var(
+          --admin-red
+        );
+      background:
+        rgba(
+          207,
+          27,
+          19,
+          0.09
+        );
+      border-color:
+        var(
+          --admin-red
+        );
+      box-shadow:
+        0
+        0
+        0
+        3px
+        rgba(
+          207,
+          27,
+          19,
+          0.1
+        );
+    }
+
+    /*
+    ==========================================
+    TOGGLE
+    ==========================================
+    */
+
+    .admin-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding:
+        11px
+        12px;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.055
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+    }
+
+    .admin-toggle-copy {
+      min-width: 0;
+    }
+
+    .admin-toggle-title {
+      display: block;
+      color:
+        var(
+          --admin-ink
+        );
+      font-size: 0.7rem;
+      font-weight: 800;
+    }
+
+    .admin-toggle-description {
+      display: block;
+      margin-top: 2px;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.6rem;
+      line-height: 1.35;
+    }
+
+    .admin-switch {
+      position: relative;
+      display: inline-flex;
+      flex:
+        0
+        0
+        auto;
+      width: 44px;
+      height: 25px;
+    }
+
+    .admin-switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .admin-switch-track {
+      position: absolute;
+      inset: 0;
+      background:
+        #a9afba;
+      border-radius: 999px;
+      transition:
+        background
+        var(
+          --admin-transition
+        );
+    }
+
+    .admin-switch-track::after {
+      content: "";
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 19px;
+      height: 19px;
+      background:
+        var(
+          --admin-white
+        );
+      border-radius: 50%;
+      box-shadow:
+        0
+        2px
+        5px
+        rgba(
+          32,
+          40,
+          58,
+          0.25
+        );
+      transition:
+        transform
+        var(
+          --admin-transition
+        );
+    }
+
+    .admin-switch
+      input:checked
+      + .admin-switch-track {
+      background:
+        var(
+          --admin-green
+        );
+    }
+
+    .admin-switch
+      input:checked
+      + .admin-switch-track::after {
+      transform:
+        translateX(
+          19px
+        );
+    }
+
+    /*
+    ==========================================
+    FORM BUTTONS
+    ==========================================
+    */
+
+    .admin-form-actions {
+      display: flex;
+      justify-content:
+        flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 2px;
+    }
+
+    .admin-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 38px;
+      padding:
+        8px
+        13px;
+      color:
+        var(
+          --admin-white
+        );
+      font-size: 0.7rem;
+      font-weight: 780;
+      background:
+        var(
+          --admin-blue
+        );
+      border: 0;
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+      box-shadow:
+        0
+        5px
+        13px
+        rgba(
+          42,
+          67,
+          163,
+          0.16
+        );
+      transition:
+        transform
+        var(
+          --admin-transition
+        ),
+        background
+        var(
+          --admin-transition
+        ),
+        box-shadow
+        var(
+          --admin-transition
+        );
+    }
+
+    .admin-button:hover {
+      background:
+        var(
+          --admin-red
+        );
+      box-shadow:
+        0
+        7px
+        16px
+        rgba(
+          207,
+          27,
+          19,
+          0.17
+        );
+      transform:
+        translateY(
+          -1px
+        );
+    }
+
+    .admin-button.secondary {
+      color:
+        var(
+          --admin-blue
+        );
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.92
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.18
+        );
+      box-shadow: none;
+    }
+
+    .admin-button.secondary:hover {
+      color:
+        var(
+          --admin-white
+        );
+      background:
+        var(
+          --admin-blue
+        );
+    }
+
+    /*
+    ==========================================
+    PREVIEW
+    ==========================================
+    */
+
+    .preview-shell {
+      display: grid;
+      gap: 9px;
+      margin-bottom: 16px;
+      padding:
+        13px;
+      background:
+        linear-gradient(
+          145deg,
+          rgba(
+            255,
+            252,
+            233,
+            0.83
+          ),
+          rgba(
+            255,
+            255,
+            255,
+            0.95
+          )
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+      border-radius:
+        var(
+          --admin-radius-medium
+        );
+    }
+
+    .preview-label {
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.57rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+    }
+
+    .announcement-preview {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 47px;
+      padding:
+        9px
+        13px;
+      color:
+        var(
+          --admin-white
+        );
+      background:
+        linear-gradient(
+          90deg,
+          #2a43a3,
+          #20367f
+        );
+      border-top:
+        3px solid
+        var(
+          --admin-gold
+        );
+      border-radius:
+        8px;
+      box-shadow:
+        0
+        7px
+        18px
+        rgba(
+          32,
+          54,
+          127,
+          0.2
+        );
+      transition:
+        background
+        var(
+          --admin-transition
+        ),
+        border-color
+        var(
+          --admin-transition
+        );
+    }
+
+    .announcement-preview.important {
+      color:
+        #4d3200;
+      background:
+        linear-gradient(
+          90deg,
+          #ffe269,
+          #f5c64e
+        );
+      border-top-color:
+        #c58914;
+    }
+
+    .announcement-preview.urgent {
+      color:
+        var(
+          --admin-white
+        );
+      background:
+        linear-gradient(
+          90deg,
+          #cf1b13,
+          #97151d
+        );
+      border-top-color:
+        var(
+          --admin-white
+        );
+    }
+
+    .announcement-preview-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex:
+        0
+        0
+        auto;
+      width: 29px;
+      height: 29px;
+      font-size: 0.95rem;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.16
+        );
+      border-radius: 8px;
+    }
+
+    .announcement-preview.important
+      .announcement-preview-icon {
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.42
+        );
+    }
+
+    .announcement-preview-copy {
+      min-width: 0;
+      font-size: 0.74rem;
+      font-weight: 700;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    /*
+    ==========================================
+    MESSAGE LIST
+    ==========================================
+    */
+
+    .message-section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin:
+        0
+        0
+        8px;
+    }
+
+    .message-section-heading h3 {
+      margin: 0;
+      color:
+        var(
+          --admin-ink
+        );
+      font-size: 0.83rem;
+    }
+
+    .message-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 25px;
+      min-height: 21px;
+      padding:
+        3px
+        7px;
+      color:
+        var(
+          --admin-blue
+        );
+      font-size: 0.59rem;
+      font-weight: 850;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.09
+        );
+      border-radius: 999px;
+    }
+
+    .message-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .message-card {
+      display: grid;
+      grid-template-columns:
+        auto
+        minmax(
+          0,
+          1fr
+        )
+        auto;
+      align-items: start;
+      gap: 10px;
+      padding:
+        11px
+        12px;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.9
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.12
+        );
+      border-left:
+        4px solid
+        var(
+          --admin-blue
+        );
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+      box-shadow:
+        0
+        3px
+        10px
+        rgba(
+          42,
+          67,
+          163,
+          0.055
+        );
+    }
+
+    .message-card.important {
+      border-left-color:
+        #d49a25;
+    }
+
+    .message-card.urgent {
+      border-left-color:
+        var(
+          --admin-red
+        );
+    }
+
+    .message-card.inactive {
+      opacity: 0.62;
+    }
+
+    .message-card-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 31px;
+      height: 31px;
+      font-size: 0.9rem;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.08
+        );
+      border-radius: 8px;
+    }
+
+    .message-card.important
+      .message-card-icon {
+      background:
+        rgba(
+          255,
+          226,
+          105,
+          0.25
+        );
+    }
+
+    .message-card.urgent
+      .message-card-icon {
+      background:
+        rgba(
+          207,
+          27,
+          19,
+          0.09
+        );
+    }
+
+    .message-card-copy {
+      min-width: 0;
+    }
+
+    .message-card-title {
+      margin: 0;
+      color:
+        var(
+          --admin-ink
+        );
+      font-size: 0.72rem;
+      font-weight: 800;
+      line-height: 1.35;
+      overflow-wrap: anywhere;
+    }
+
+    .message-card-meta {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap:
+        4px
+        8px;
+      margin-top: 4px;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.58rem;
+      line-height: 1.35;
+    }
+
+    .message-card-badge {
+      display: inline-flex;
+      align-items: center;
+      min-height: 19px;
+      padding:
+        2px
+        6px;
+      color:
+        var(
+          --admin-green
+        );
+      font-size: 0.54rem;
+      font-weight: 850;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      background:
+        rgba(
+          57,
+          118,
+          77,
+          0.1
+        );
+      border-radius: 999px;
+    }
+
+    .message-card-badge.scheduled {
+      color:
+        var(
+          --admin-blue
+        );
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.09
+        );
+    }
+
+    .message-card-actions {
+      display: flex;
+      gap: 5px;
+    }
+
+    .message-icon-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 29px;
+      height: 29px;
+      padding: 0;
+      color:
+        var(
+          --admin-blue
+        );
+      font-size: 0.72rem;
+      font-weight: 800;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.07
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.1
+        );
+      border-radius: 7px;
+      transition:
+        color
+        var(
+          --admin-transition
+        ),
+        background
+        var(
+          --admin-transition
+        ),
+        transform
+        var(
+          --admin-transition
+        );
+    }
+
+    .message-icon-button:hover {
+      color:
+        var(
+          --admin-white
+        );
+      background:
+        var(
+          --admin-blue
+        );
+      transform:
+        translateY(
+          -1px
+        );
+    }
+
+    .message-icon-button.delete:hover {
+      background:
+        var(
+          --admin-red
+        );
+    }
+
+    .empty-message {
+      padding:
+        22px
+        16px;
+      color:
+        var(
+          --admin-muted
+        );
+      font-size: 0.72rem;
+      line-height: 1.45;
+      text-align: center;
+      background:
+        rgba(
+          255,
+          255,
+          255,
+          0.62
+        );
+      border:
+        1px dashed
+        rgba(
+          42,
+          67,
+          163,
+          0.19
+        );
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+    }
+
+    /*
+    ==========================================
+    STATUS MESSAGE
+    ==========================================
+    */
+
+    .admin-status-message {
+      display: none;
+      padding:
+        10px
+        12px;
+      color:
+        #245a37;
+      font-size: 0.68rem;
+      font-weight: 700;
+      background:
+        rgba(
+          57,
+          118,
+          77,
+          0.12
+        );
+      border:
+        1px solid
+        rgba(
+          57,
+          118,
+          77,
+          0.22
+        );
+      border-radius:
+        var(
+          --admin-radius-small
+        );
+    }
+
+    .admin-status-message.show {
+      display: block;
+    }
+
+    /*
+    ==========================================
+    RESPONSIVE
+    ==========================================
+    */
+
+    @media (
+      max-width: 980px
+    ) {
+      .admin-grid {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+    }
+
+    @media (
+      max-width: 720px
+    ) {
+      .admin-hero {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .admin-access-card {
+        min-width: 0;
+      }
+
+      .admin-status-strip {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .admin-field-row,
+      .priority-options {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+    }
+
+    @media (
+      max-width: 520px
+    ) {
+      .admin-page {
+        width:
+          calc(
+            100% -
+            14px
+          );
+        margin-top: 8px;
+      }
+
+      .admin-hero,
+      .admin-panel {
+        border-radius: 13px;
+      }
+
+      .admin-hero {
+        padding:
+          17px
+          15px;
+      }
+
+      .admin-panel-header,
+      .admin-panel-body {
+        padding:
+          12px;
+      }
+
+      .admin-toggle-row {
+        align-items:
+          flex-start;
+      }
+
+      .admin-form-actions {
+        display: grid;
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .admin-button {
+        width: 100%;
+      }
+
+      .message-card {
+        grid-template-columns:
+          auto
+          minmax(
+            0,
+            1fr
+          );
+      }
+
+      .message-card-actions {
+        grid-column:
+          1
+          /
+          -1;
+        justify-content:
+          flex-end;
+      }
+    }
+
+    @media (
+      prefers-reduced-motion:
+      reduce
+    ) {
+      *,
+      *::before,
+      *::after {
+        transition:
+          none !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="patriot-page-settings">
+  <main class="admin-page">
+    <!--
+    ==========================================
+    ADMIN HEADER
+    ==========================================
+    -->
+
+    <header class="admin-hero">
+      <div class="admin-hero-copy">
+        <p class="admin-eyebrow">
+          Patriot Command Administration
+        </p>
+
+        <h1 class="admin-title">
+          Admin Console
+        </h1>
+
+        <p class="admin-description">
+          Create and schedule school-wide messages that
+          will eventually appear across Patriot Command
+          teacher workspaces.
+        </p>
+      </div>
+
+      <div class="admin-access-card">
+        <span class="admin-access-label">
+          Console Status
+        </span>
+
+        <span class="admin-access-value">
+          Preview Mode
+        </span>
+
+        <span class="admin-access-note">
+          Messages are currently stored only in this
+          browser and are not being sent to teachers.
+        </span>
+      </div>
+    </header>
+
+    <!--
+    ==========================================
+    ADMIN SUMMARY
+    ==========================================
+    -->
+
+    <section
+      class="admin-status-strip"
+      aria-label="Announcement summary"
+    >
+      <div class="admin-stat">
+        <span class="admin-stat-label">
+          Active Messages
+        </span>
+
+        <span
+          id="active-message-count"
+          class="admin-stat-value"
+        >
+          0
+        </span>
+
+        <span class="admin-stat-detail">
+          Showing now
+        </span>
+      </div>
+
+      <div class="admin-stat">
+        <span class="admin-stat-label">
+          Scheduled Messages
+        </span>
+
+        <span
+          id="scheduled-message-count"
+          class="admin-stat-value"
+        >
+          0
+        </span>
+
+        <span class="admin-stat-detail">
+          Set for later
+        </span>
+      </div>
+
+      <div class="admin-stat">
+        <span class="admin-stat-label">
+          Console Connection
+        </span>
+
+        <span class="admin-stat-value">
+          Local
+        </span>
+
+        <span class="admin-stat-detail">
+          Backend connection comes next
+        </span>
+      </div>
+    </section>
+
+    <!--
+    ==========================================
+    ADMIN WORKSPACE
+    ==========================================
+    -->
+
+    <section class="admin-grid">
+      <!--
+      ========================================
+      LEFT: NEW MESSAGE FORM
+      ========================================
+      -->
+
+      <section class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-heading">
+              New School-Wide Message
+            </h2>
+
+            <span class="admin-panel-kicker">
+              Prepare an announcement for Patriot Command.
+            </span>
+          </div>
+        </div>
+
+        <div class="admin-panel-body">
+          <form
+            id="announcement-form"
+            class="admin-form"
+          >
+            <div class="admin-field">
+              <label for="announcement-title">
+                Message title
+                <span class="admin-required">
+                  *
+                </span>
+              </label>
+
+              <input
+                id="announcement-title"
+                class="admin-input"
+                type="text"
+                maxlength="80"
+                placeholder="Example: Faculty meeting today"
+                required
+              >
+
+              <small>
+                Used as the short administrative label.
+              </small>
+            </div>
+
+            <div class="admin-field">
+              <label for="announcement-message">
+                Message
+                <span class="admin-required">
+                  *
+                </span>
+              </label>
+
+              <textarea
+                id="announcement-message"
+                class="admin-textarea"
+                maxlength="300"
+                placeholder="Enter the message teachers should see..."
+                required
+              ></textarea>
+
+              <small>
+                Keep the wording brief enough to read quickly
+                during class.
+              </small>
+            </div>
+
+            <div class="admin-field">
+              <span class="admin-field-label">
+                Priority
+              </span>
+
+              <div class="priority-options">
+                <label class="priority-option">
+                  <input
+                    type="radio"
+                    name="announcement-priority"
+                    value="normal"
+                    checked
+                  >
+
+                  <span class="priority-card">
+                    <span class="priority-icon">
+                      📢
+                    </span>
+
+                    <span class="priority-name">
+                      Normal
+                    </span>
+
+                    <span class="priority-description">
+                      Standard school message
+                    </span>
+                  </span>
+                </label>
+
+                <label class="priority-option important">
+                  <input
+                    type="radio"
+                    name="announcement-priority"
+                    value="important"
+                  >
+
+                  <span class="priority-card">
+                    <span class="priority-icon">
+                      ⭐
+                    </span>
+
+                    <span class="priority-name">
+                      Important
+                    </span>
+
+                    <span class="priority-description">
+                      Needs extra attention
+                    </span>
+                  </span>
+                </label>
+
+                <label class="priority-option urgent">
+                  <input
+                    type="radio"
+                    name="announcement-priority"
+                    value="urgent"
+                  >
+
+                  <span class="priority-card">
+                    <span class="priority-icon">
+                      ⚠
+                    </span>
+
+                    <span class="priority-name">
+                      Urgent
+                    </span>
+
+                    <span class="priority-description">
+                      Immediate attention
+                    </span>
+                  </span>
+                </label>
+              </div>
+            </div>
+
+            <div class="admin-field-row">
+              <div class="admin-field">
+                <label for="announcement-start">
+                  Start date and time
+                </label>
+
+                <input
+                  id="announcement-start"
+                  class="admin-input"
+                  type="datetime-local"
+                >
+              </div>
+
+              <div class="admin-field">
+                <label for="announcement-end">
+                  End date and time
+                </label>
+
+                <input
+                  id="announcement-end"
+                  class="admin-input"
+                  type="datetime-local"
+                >
+              </div>
+            </div>
+
+            <div class="admin-toggle-row">
+              <div class="admin-toggle-copy">
+                <span class="admin-toggle-title">
+                  Message enabled
+                </span>
+
+                <span class="admin-toggle-description">
+                  Disabled messages remain saved but will not
+                  display.
+                </span>
+              </div>
+
+              <label class="admin-switch">
+                <input
+                  id="announcement-enabled"
+                  type="checkbox"
+                  checked
+                >
+
+                <span class="admin-switch-track"></span>
+              </label>
+            </div>
+
+            <div
+              id="admin-status-message"
+              class="admin-status-message"
+              role="status"
+            ></div>
+
+            <div class="admin-form-actions">
+              <button
+                id="reset-announcement-button"
+                class="admin-button secondary"
+                type="button"
+              >
+                Clear Form
+              </button>
+
+              <button
+                class="admin-button"
+                type="submit"
+              >
+                Save Preview Message
+              </button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <!--
+      ========================================
+      RIGHT: PREVIEW AND MESSAGE LIST
+      ========================================
+      -->
+
+      <section class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-heading">
+              Message Preview
+            </h2>
+
+            <span class="admin-panel-kicker">
+              Preview how the message will appear in Teach.
+            </span>
+          </div>
+        </div>
+
+        <div class="admin-panel-body">
+          <div class="preview-shell">
+            <span class="preview-label">
+              Teach announcement bar preview
+            </span>
+
+            <div
+              id="announcement-preview"
+              class="announcement-preview"
+            >
+              <span
+                id="announcement-preview-icon"
+                class="announcement-preview-icon"
+                aria-hidden="true"
+              >
+                📢
+              </span>
+
+              <span
+                id="announcement-preview-copy"
+                class="announcement-preview-copy"
+              >
+                Your school-wide message preview will appear
+                here.
+              </span>
+            </div>
+          </div>
+
+          <div class="message-section-heading">
+            <h3>
+              Saved Preview Messages
+            </h3>
+
+            <span
+              id="saved-message-count"
+              class="message-count"
+            >
+              0
+            </span>
+          </div>
+
+          <div
+            id="message-list"
+            class="message-list"
+          >
+            <div class="empty-message">
+              No preview messages have been created yet.
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="js/navigation.js?v=3"></script>
+
+  <script>
+    /*
+    ==========================================
+    PATRIOT COMMAND
+    ADMIN CONSOLE LOCAL PREVIEW
+    ==========================================
+    */
+
+    (function () {
+      "use strict";
+
+      const STORAGE_KEY =
+        "patriotAdminPreviewMessages";
+
+      let editingMessageId =
+        "";
+
+      function cleanText(value) {
+        return String(
+          value ||
+          ""
+        ).trim();
+      }
+
+      function createMessageId() {
+        if (
+          window.crypto &&
+          typeof window.crypto.randomUUID ===
+            "function"
+        ) {
+          return window.crypto.randomUUID();
+        }
+
+        return (
+          "message-" +
+          Date.now() +
+          "-" +
+          Math.random()
+            .toString(16)
+            .slice(2)
+        );
+      }
+
+      function readMessages() {
+        const saved =
+          localStorage.getItem(
+            STORAGE_KEY
+          );
+
+        if (!saved) {
+          return [];
+        }
+
+        try {
+          const parsed =
+            JSON.parse(saved);
+
+          return Array.isArray(parsed)
+            ? parsed
+            : [];
+        } catch (error) {
+          console.error(
+            "Admin preview messages could not be read.",
+            error
+          );
+
+          return [];
+        }
+      }
+
+      function saveMessages(messages) {
+        localStorage.setItem(
+          STORAGE_KEY,
+          JSON.stringify(messages)
+        );
+      }
+
+      function getSelectedPriority() {
+        const selected =
+          document.querySelector(
+            'input[name="announcement-priority"]:checked'
+          );
+
+        return selected
+          ? selected.value
+          : "normal";
+      }
+
+      function getPriorityDetails(priority) {
+        const details = {
+          normal: {
+            icon: "📢",
+            label: "Normal"
+          },
+
+          important: {
+            icon: "⭐",
+            label: "Important"
+          },
+
+          urgent: {
+            icon: "⚠",
+            label: "Urgent"
+          }
+        };
+
+        return (
+          details[priority] ||
+          details.normal
+        );
+      }
+
+      function formatDateTime(value) {
+        if (!value) {
+          return "No time limit";
+        }
+
+        const date =
+          new Date(value);
+
+        if (
+          Number.isNaN(
+            date.getTime()
+          )
+        ) {
+          return value;
+        }
+
+        return date.toLocaleString(
+          [],
+          {
+            month: "short",
+            day: "numeric",
+            year: "numeric",
+            hour: "numeric",
+            minute: "2-digit"
+          }
+        );
+      }
+
+      function getMessageStatus(message) {
+        if (!message.enabled) {
+          return "inactive";
+        }
+
+        const now =
+          new Date();
+
+        const start =
+          message.start
+            ? new Date(
+                message.start
+              )
+            : null;
+
+        const end =
+          message.end
+            ? new Date(
+                message.end
+              )
+            : null;
+
+        if (
+          start &&
+          !Number.isNaN(
+            start.getTime()
+          ) &&
+          now <
+            start
+        ) {
+          return "scheduled";
+        }
+
+        if (
+          end &&
+          !Number.isNaN(
+            end.getTime()
+          ) &&
+          now >
+            end
+        ) {
+          return "inactive";
+        }
+
+        return "active";
+      }
+
+      function updatePreview() {
+        const preview =
+          document.getElementById(
+            "announcement-preview"
+          );
+
+        const icon =
+          document.getElementById(
+            "announcement-preview-icon"
+          );
+
+        const copy =
+          document.getElementById(
+            "announcement-preview-copy"
+          );
+
+        const message =
+          cleanText(
+            document.getElementById(
+              "announcement-message"
+            ).value
+          );
+
+        const priority =
+          getSelectedPriority();
+
+        const details =
+          getPriorityDetails(
+            priority
+          );
+
+        preview.className =
+          "announcement-preview";
+
+        if (
+          priority === "important" ||
+          priority === "urgent"
+        ) {
+          preview.classList.add(
+            priority
+          );
+        }
+
+        icon.textContent =
+          details.icon;
+
+        copy.textContent =
+          message ||
+          "Your school-wide message preview will appear here.";
+      }
+
+      function showStatus(message) {
+        const status =
+          document.getElementById(
+            "admin-status-message"
+          );
+
+        status.textContent =
+          message;
+
+        status.classList.add(
+          "show"
+        );
+
+        window.setTimeout(
+          () => {
+            status.classList.remove(
+              "show"
+            );
+          },
+          3500
+        );
+      }
+
+      function updateSummary(messages) {
+        const activeCount =
+          messages.filter(
+            message =>
+              getMessageStatus(
+                message
+              ) === "active"
+          ).length;
+
+        const scheduledCount =
+          messages.filter(
+            message =>
+              getMessageStatus(
+                message
+              ) === "scheduled"
+          ).length;
+
+        document.getElementById(
+          "active-message-count"
+        ).textContent =
+          String(activeCount);
+
+        document.getElementById(
+          "scheduled-message-count"
+        ).textContent =
+          String(scheduledCount);
+
+        document.getElementById(
+          "saved-message-count"
+        ).textContent =
+          String(
+            messages.length
+          );
+      }
+
+      function buildMessageCard(message) {
+        const card =
+          document.createElement(
+            "article"
+          );
+
+        const status =
+          getMessageStatus(
+            message
+          );
+
+        const priorityDetails =
+          getPriorityDetails(
+            message.priority
+          );
+
+        card.className =
+          "message-card";
+
+        if (
+          message.priority ===
+            "important" ||
+          message.priority ===
+            "urgent"
+        ) {
+          card.classList.add(
+            message.priority
+          );
+        }
+
+        if (
+          status === "inactive"
+        ) {
+          card.classList.add(
+            "inactive"
+          );
+        }
+
+        const badgeClass =
+          status === "scheduled"
+            ? "message-card-badge scheduled"
+            : "message-card-badge";
+
+        const badgeText =
+          status === "active"
+            ? "Active"
+            : status === "scheduled"
+              ? "Scheduled"
+              : "Inactive";
+
+        card.innerHTML = `
+          <span
+            class="message-card-icon"
+            aria-hidden="true"
+          >
+            ${priorityDetails.icon}
+          </span>
+
+          <div class="message-card-copy">
+            <p class="message-card-title">
+              ${escapeHtml(
+                message.title
+              )}
+            </p>
+
+            <div class="message-card-meta">
+              <span class="${badgeClass}">
+                ${badgeText}
+              </span>
+
+              <span>
+                ${escapeHtml(
+                  priorityDetails.label
+                )}
+              </span>
+
+              <span>
+                Starts:
+                ${escapeHtml(
+                  formatDateTime(
+                    message.start
+                  )
+                )}
+              </span>
+
+              <span>
+                Ends:
+                ${escapeHtml(
+                  formatDateTime(
+                    message.end
+                  )
+                )}
+              </span>
+            </div>
+          </div>
+
+          <div class="message-card-actions">
+            <button
+              class="message-icon-button edit"
+              type="button"
+              aria-label="Edit message"
+              title="Edit message"
+            >
+              ✎
+            </button>
+
+            <button
+              class="message-icon-button delete"
+              type="button"
+              aria-label="Delete message"
+              title="Delete message"
+            >
+              ×
+            </button>
+          </div>
+        `;
+
+        card
+          .querySelector(
+            ".edit"
+          )
+          .addEventListener(
+            "click",
+            () => {
+              editMessage(
+                message
+              );
+            }
+          );
+
+        card
+          .querySelector(
+            ".delete"
+          )
+          .addEventListener(
+            "click",
+            () => {
+              deleteMessage(
+                message.id
+              );
+            }
+          );
+
+        return card;
+      }
+
+      function escapeHtml(value) {
+        return String(
+          value ||
+          ""
+        )
+          .replaceAll(
+            "&",
+            "&amp;"
+          )
+          .replaceAll(
+            "<",
+            "&lt;"
+          )
+          .replaceAll(
+            ">",
+            "&gt;"
+          )
+          .replaceAll(
+            '"',
+            "&quot;"
+          )
+          .replaceAll(
+            "'",
+            "&#039;"
+          );
+      }
+
+      function renderMessages() {
+        const messages =
+          readMessages();
+
+        const list =
+          document.getElementById(
+            "message-list"
+          );
+
+        list.innerHTML =
+          "";
+
+        if (!messages.length) {
+          list.innerHTML = `
+            <div class="empty-message">
+              No preview messages have been created yet.
+            </div>
+          `;
+        } else {
+          messages
+            .slice()
+            .sort(
+              (
+                first,
+                second
+              ) => {
+                return (
+                  new Date(
+                    second.createdAt
+                  ) -
+                  new Date(
+                    first.createdAt
+                  )
+                );
+              }
+            )
+            .forEach(
+              message => {
+                list.appendChild(
+                  buildMessageCard(
+                    message
+                  )
+                );
+              }
+            );
+        }
+
+        updateSummary(
+          messages
+        );
+      }
+
+      function resetForm() {
+        const form =
+          document.getElementById(
+            "announcement-form"
+          );
+
+        form.reset();
+
+        document.getElementById(
+          "announcement-enabled"
+        ).checked =
+          true;
+
+        document.querySelector(
+          'input[name="announcement-priority"][value="normal"]'
+        ).checked =
+          true;
+
+        editingMessageId =
+          "";
+
+        updatePreview();
+      }
+
+      function editMessage(message) {
+        document.getElementById(
+          "announcement-title"
+        ).value =
+          message.title;
+
+        document.getElementById(
+          "announcement-message"
+        ).value =
+          message.message;
+
+        document.getElementById(
+          "announcement-start"
+        ).value =
+          message.start ||
+          "";
+
+        document.getElementById(
+          "announcement-end"
+        ).value =
+          message.end ||
+          "";
+
+        document.getElementById(
+          "announcement-enabled"
+        ).checked =
+          Boolean(
+            message.enabled
+          );
+
+        const priority =
+          document.querySelector(
+            `input[name="announcement-priority"][value="${message.priority}"]`
+          );
+
+        if (priority) {
+          priority.checked =
+            true;
+        }
+
+        editingMessageId =
+          message.id;
+
+        updatePreview();
+
+        window.scrollTo({
+          top: 0,
+          behavior: "smooth"
+        });
+
+        showStatus(
+          "Message loaded for editing."
+        );
+      }
+
+      function deleteMessage(messageId) {
+        const confirmed =
+          window.confirm(
+            "Delete this preview message?"
+          );
+
+        if (!confirmed) {
+          return;
+        }
+
+        const messages =
+          readMessages()
+            .filter(
+              message =>
+                message.id !==
+                messageId
+            );
+
+        saveMessages(
+          messages
+        );
+
+        if (
+          editingMessageId ===
+          messageId
+        ) {
+          resetForm();
+        }
+
+        renderMessages();
+
+        showStatus(
+          "Preview message deleted."
+        );
+      }
+
+      function handleSubmit(event) {
+        event.preventDefault();
+
+        const title =
+          cleanText(
+            document.getElementById(
+              "announcement-title"
+            ).value
+          );
+
+        const messageText =
+          cleanText(
+            document.getElementById(
+              "announcement-message"
+            ).value
+          );
+
+        if (
+          !title ||
+          !messageText
+        ) {
+          window.alert(
+            "Please enter both a title and message."
+          );
+
+          return;
+        }
+
+        const start =
+          document.getElementById(
+            "announcement-start"
+          ).value;
+
+        const end =
+          document.getElementById(
+            "announcement-end"
+          ).value;
+
+        if (
+          start &&
+          end &&
+          new Date(end) <
+            new Date(start)
+        ) {
+          window.alert(
+            "The end date must be later than the start date."
+          );
+
+          return;
+        }
+
+        const messages =
+          readMessages();
+
+        const existingIndex =
+          messages.findIndex(
+            message =>
+              message.id ===
+              editingMessageId
+          );
+
+        const message = {
+          id:
+            editingMessageId ||
+            createMessageId(),
+
+          title:
+            title,
+
+          message:
+            messageText,
+
+          priority:
+            getSelectedPriority(),
+
+          start:
+            start,
+
+          end:
+            end,
+
+          enabled:
+            document.getElementById(
+              "announcement-enabled"
+            ).checked,
+
+          createdAt:
+            existingIndex >= 0
+              ? messages[
+                  existingIndex
+                ].createdAt
+              : new Date()
+                  .toISOString(),
+
+          updatedAt:
+            new Date()
+              .toISOString()
+        };
+
+        if (
+          existingIndex >= 0
+        ) {
+          messages[
+            existingIndex
+          ] =
+            message;
+        } else {
+          messages.push(
+            message
+          );
+        }
+
+        saveMessages(
+          messages
+        );
+
+        renderMessages();
+
+        showStatus(
+          existingIndex >= 0
+            ? "Preview message updated."
+            : "Preview message saved."
+        );
+
+        resetForm();
+      }
+
+      function startAdminConsole() {
+        const form =
+          document.getElementById(
+            "announcement-form"
+          );
+
+        const messageInput =
+          document.getElementById(
+            "announcement-message"
+          );
+
+        const priorityInputs =
+          document.querySelectorAll(
+            'input[name="announcement-priority"]'
+          );
+
+        const resetButton =
+          document.getElementById(
+            "reset-announcement-button"
+          );
+
+        form.addEventListener(
+          "submit",
+          handleSubmit
+        );
+
+        messageInput.addEventListener(
+          "input",
+          updatePreview
+        );
+
+        priorityInputs.forEach(
+          input => {
+            input.addEventListener(
+              "change",
+              updatePreview
+            );
+          }
+        );
+
+        resetButton.addEventListener(
+          "click",
+          resetForm
+        );
+
+        updatePreview();
+        renderMessages();
+      }
+
+      if (
+        document.readyState ===
+        "loading"
+      ) {
+        document.addEventListener(
+          "DOMContentLoaded",
+          startAdminConsole
+        );
+      } else {
+        startAdminConsole();
+      }
+    })();
+  </script>
+</body>
+</html>
