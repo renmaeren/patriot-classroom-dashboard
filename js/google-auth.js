@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Google Authentication
-Version 2
+Version 3
 ==========================================
 */
 
@@ -684,10 +684,11 @@ function isTokenExpired(token) {
 
     return false;
   }
-   const savedToken =
+  
+  let savedToken =
     getIdToken();
 
-  const savedUser =
+  let savedUser =
     getSavedUser();
 
   if (
@@ -703,9 +704,33 @@ function isTokenExpired(token) {
     sessionStorage.removeItem(
       AUTH_USER_KEY
     );
+
+    savedUser =
+      null;
+    
+    savedToken =
+  "";
   }
 
   window.PATRIOT_AUTH = {
+    signedIn:
+      Boolean(
+        savedUser
+      ) &&
+      !isTokenExpired(
+        savedToken
+      ),
+
+    user:
+      savedUser,
+
+    idToken:
+      savedUser
+        ? savedToken
+        : "",
+
+    getUser:
+      () =>
         window.PATRIOT_AUTH.user,
 
     getIdToken,
@@ -734,6 +759,6 @@ function isTokenExpired(token) {
   }
 
   console.log(
-    "Patriot Google Auth v2 loaded."
+    "Patriot Google Auth v3 loaded."
   );
 })();
