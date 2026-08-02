@@ -547,6 +547,190 @@
         rgba(255, 255, 255, 0.76);
     }
 
+/*
+==========================================
+STAFF BULLETIN
+==========================================
+*/
+
+.staff-bulletin-section {
+  overflow: hidden;
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.8
+    );
+  border:
+    1px solid
+    rgba(
+      255,
+      255,
+      255,
+      0.9
+    );
+  border-radius: 15px;
+  box-shadow:
+    0 8px 24px
+    rgba(
+      42,
+      67,
+      163,
+      0.1
+    );
+  backdrop-filter:
+    blur(16px);
+  -webkit-backdrop-filter:
+    blur(16px);
+}
+
+.staff-bulletin-section[hidden] {
+  display: none;
+}
+
+.staff-bulletin-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding:
+    10px
+    16px;
+  color:
+    #ffffff;
+  background:
+    linear-gradient(
+      120deg,
+      #39764d,
+      #2f6541
+    );
+  border-bottom:
+    3px solid
+    var(--patriot-gold);
+}
+
+.staff-bulletin-banner-title {
+  margin: 0;
+  font-family:
+    var(
+      --patriot-heading-font,
+      "Literata",
+      Georgia,
+      serif
+    );
+  font-size: 0.9rem;
+}
+
+.staff-bulletin-banner-note {
+  color:
+    rgba(
+      255,
+      255,
+      255,
+      0.78
+    );
+  font-size: 0.63rem;
+  font-weight: 650;
+}
+
+.staff-bulletin {
+  padding:
+    16px
+    18px;
+}
+
+.staff-bulletin-heading {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+
+.staff-bulletin-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex:
+    0
+    0
+    auto;
+  width: 39px;
+  height: 39px;
+  font-size: 1.14rem;
+  background:
+    rgba(
+      57,
+      118,
+      77,
+      0.11
+    );
+  border-radius: 10px;
+}
+
+.staff-bulletin-label {
+  margin:
+    0
+    0
+    2px;
+  color: #39764d;
+  font-size: 0.57rem;
+  font-weight: 850;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.staff-bulletin-title {
+  margin: 0;
+  color:
+    var(--patriot-ink);
+  font-family:
+    var(
+      --patriot-heading-font,
+      "Literata",
+      Georgia,
+      serif
+    );
+  font-size:
+    clamp(
+      1rem,
+      1.5vw,
+      1.25rem
+    );
+  line-height: 1.2;
+}
+
+.staff-bulletin-message {
+  margin-top: 12px;
+  color:
+    var(--patriot-text);
+  font-size: 0.77rem;
+  font-weight: 560;
+  line-height: 1.58;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.staff-bulletin-updated {
+  margin:
+    11px
+    0
+    0;
+  color:
+    var(--patriot-muted);
+  font-size: 0.61rem;
+  font-weight: 650;
+}
+
+.staff-bulletin-status {
+  padding:
+    16px
+    18px;
+  color:
+    var(--patriot-muted);
+  font-size: 0.72rem;
+  text-align: center;
+}
+    
     /*
     ==========================================
     FOOTNOTE
@@ -702,6 +886,32 @@
       </section>
     </section>
 
+<section
+  id="staff-bulletin-section"
+  class="staff-bulletin-section"
+  aria-label="Staff bulletin"
+>
+  <div class="staff-bulletin-banner">
+    <h2 class="staff-bulletin-banner-title">
+      Staff Bulletin
+    </h2>
+
+    <span class="staff-bulletin-banner-note">
+      Teacher information and weekly updates
+    </span>
+  </div>
+
+  <div
+    id="staff-bulletin"
+    class="staff-bulletin"
+    aria-live="polite"
+  >
+    <div class="staff-bulletin-status">
+      Loading the latest staff bulletin...
+    </div>
+  </div>
+</section>
+    
     <section class="dashboard-actions-panel">
       <div class="dashboard-section-heading">
         <h2>
@@ -1270,6 +1480,18 @@
     })();
   </script>
 
-  <script src="js/navigation.js?v=3"></script>
+<script src="config/google-config.js?v=1"></script>
+
+<script
+  src="https://accounts.google.com/gsi/client"
+  async
+  defer
+></script>
+
+<script src="js/google-auth.js?v=3"></script>
+
+<script src="js/dashboard-bulletin.js?v=1"></script>
+
+<script src="js/navigation.js?v=3"></script>
 </body>
 </html>
