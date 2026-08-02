@@ -2050,6 +2050,191 @@ CONTENT TYPE OPTIONS
       display: block;
     }
 
+  /*
+==========================================
+ADMIN MAINTENANCE
+==========================================
+*/
+
+.admin-right-stack {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.admin-maintenance-body {
+  display: grid;
+  gap: 12px;
+}
+
+.admin-maintenance-item {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 14px;
+  padding: 13px;
+  background:
+    rgba(
+      42,
+      67,
+      163,
+      0.055
+    );
+  border:
+    1px solid
+    rgba(
+      42,
+      67,
+      163,
+      0.11
+    );
+  border-radius:
+    var(--admin-radius-small);
+}
+
+.admin-maintenance-copy {
+  min-width: 0;
+}
+
+.admin-maintenance-title {
+  display: block;
+  color:
+    var(--admin-ink);
+  font-size: 0.73rem;
+  font-weight: 820;
+}
+
+.admin-maintenance-description {
+  display: block;
+  margin-top: 3px;
+  color:
+    var(--admin-muted);
+  font-size: 0.61rem;
+  line-height: 1.4;
+}
+
+.admin-sync-button {
+  min-height: 38px;
+  padding:
+    8px
+    13px;
+  color:
+    var(--admin-white);
+  font: inherit;
+  font-size: 0.67rem;
+  font-weight: 800;
+  white-space: nowrap;
+  background:
+    var(--admin-blue);
+  border: 0;
+  border-radius:
+    var(--admin-radius-small);
+  box-shadow:
+    0 5px 13px
+    rgba(
+      42,
+      67,
+      163,
+      0.16
+    );
+  cursor: pointer;
+  transition:
+    background
+    var(--admin-transition),
+    transform
+    var(--admin-transition);
+}
+
+.admin-sync-button:hover {
+  background:
+    var(--admin-red);
+  transform:
+    translateY(-1px);
+}
+
+.admin-sync-button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+  transform: none;
+}
+
+.calendar-sync-status {
+  min-height: 20px;
+  padding:
+    8px
+    10px;
+  color:
+    var(--admin-muted);
+  font-size: 0.62rem;
+  font-weight: 650;
+  line-height: 1.4;
+  background:
+    rgba(
+      255,
+      255,
+      255,
+      0.72
+    );
+  border:
+    1px solid
+    rgba(
+      42,
+      67,
+      163,
+      0.09
+    );
+  border-radius:
+    var(--admin-radius-small);
+}
+
+.calendar-sync-status.success {
+  color: #245a37;
+  background:
+    rgba(
+      57,
+      118,
+      77,
+      0.1
+    );
+}
+
+.calendar-sync-status.error {
+  color: #8f1712;
+  background:
+    rgba(
+      207,
+      27,
+      19,
+      0.09
+    );
+}
+
+.calendar-sync-status.working {
+  color: #725000;
+  background:
+    rgba(
+      255,
+      226,
+      105,
+      0.22
+    );
+}
+
+@media (
+  max-width: 600px
+) {
+  .admin-maintenance-item {
+    grid-template-columns:
+      minmax(0, 1fr);
+  }
+
+  .admin-sync-button {
+    width: 100%;
+  }
+}
+    
     /*
     ==========================================
     RESPONSIVE
@@ -2580,7 +2765,7 @@ CONTENT TYPE OPTIONS
       RIGHT: PREVIEW AND MESSAGE LIST
       ========================================
       -->
-
+        <div class="admin-right-stack">
       <section class="admin-panel">
         <div class="admin-panel-header">
           <div>
@@ -2644,7 +2829,55 @@ CONTENT TYPE OPTIONS
             </div>
           </div>
         </div>
+           </section>
+
+      <section class="admin-panel">
+        <div class="admin-panel-header">
+          <div>
+            <h2 class="admin-panel-heading">
+              Maintenance
+            </h2>
+
+            <span class="admin-panel-kicker">
+              Refresh shared Patriot Command data sources.
+            </span>
+          </div>
+        </div>
+
+        <div class="admin-panel-body admin-maintenance-body">
+          <div class="admin-maintenance-item">
+            <div class="admin-maintenance-copy">
+              <span class="admin-maintenance-title">
+                ACSHS Schedule of Events
+              </span>
+
+              <span class="admin-maintenance-description">
+                Rebuild imported calendar rows from the shared
+                admin-team Google Doc. District Calendar rows
+                will remain unchanged.
+              </span>
+            </div>
+
+            <button
+              id="sync-acshs-calendar-button"
+              class="admin-sync-button"
+              type="button"
+            >
+              Sync Schedule
+            </button>
+          </div>
+
+          <div
+            id="calendar-sync-status"
+            class="calendar-sync-status"
+            role="status"
+            aria-live="polite"
+          >
+            Ready to sync.
+          </div>
+        </div>
       </section>
+    </div>
     </section>
   </main>
 
@@ -2658,6 +2891,7 @@ CONTENT TYPE OPTIONS
 
 <script src="js/google-auth.js?v=3"></script>
 <script src="js/admin-api.js?v=1"></script>
+<script src="js/admin-sync.js?v=1"></script>
 <script src="js/navigation.js?v=3"></script>
 <script src="js/admin-access.js?v=1"></script>
 
