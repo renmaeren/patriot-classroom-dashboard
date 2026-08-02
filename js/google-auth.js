@@ -101,7 +101,23 @@ Version 2
       return null;
     }
   }
+function isTokenExpired(token) {
+  const payload =
+    decodeJwtPayload(token);
 
+  if (
+    !payload ||
+    !payload.exp
+  ) {
+    return true;
+  }
+
+  return (
+    Date.now() >=
+    payload.exp * 1000
+  );
+}
+  
   function getSavedUser() {
     try {
       return JSON.parse(
@@ -668,28 +684,28 @@ Version 2
 
     return false;
   }
+   const savedToken =
+    getIdToken();
 
   const savedUser =
     getSavedUser();
 
-  const savedToken =
-    getIdToken();
+  if (
+    savedToken &&
+    isTokenExpired(
+      savedToken
+    )
+  ) {
+    sessionStorage.removeItem(
+      AUTH_TOKEN_KEY
+    );
+
+    sessionStorage.removeItem(
+      AUTH_USER_KEY
+    );
+  }
 
   window.PATRIOT_AUTH = {
-    signedIn:
-      Boolean(
-        savedUser &&
-        savedToken
-      ),
-
-    user:
-      savedUser,
-
-    idToken:
-      savedToken,
-
-    getUser:
-      () =>
         window.PATRIOT_AUTH.user,
 
     getIdToken,
