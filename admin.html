@@ -2212,13 +2212,18 @@ CONTENT TYPE OPTIONS
           Console Status
         </span>
 
-        <span class="admin-access-value">
-          Preview Mode
+        <span
+          id="admin-console-status"
+          class="admin-access-value"
+        >
+          Connecting
         </span>
 
-        <span class="admin-access-note">
-          Messages are currently stored only in this
-          browser and are not being sent to teachers.
+        <span
+          id="admin-console-status-note"
+          class="admin-access-note"
+        >
+          Connecting securely to the Patriot Command backend.
         </span>
       </div>
     </header>
@@ -2272,12 +2277,18 @@ CONTENT TYPE OPTIONS
           Console Connection
         </span>
 
-        <span class="admin-stat-value">
-          Local
+        <span
+          id="admin-connection-value"
+          class="admin-stat-value"
+        >
+          Connecting
         </span>
 
-        <span class="admin-stat-detail">
-          Backend connection comes next
+        <span
+          id="admin-connection-detail"
+          class="admin-stat-detail"
+        >
+          Waiting for secure Google verification
         </span>
       </div>
     </section>
@@ -2557,7 +2568,7 @@ CONTENT TYPE OPTIONS
                 class="admin-button"
                 type="submit"
               >
-                Save Preview Message
+                Save Message
               </button>
             </div>
           </form>
@@ -2613,7 +2624,7 @@ CONTENT TYPE OPTIONS
 
           <div class="message-section-heading">
             <h3>
-              Saved Preview Messages
+              Saved Messages
             </h3>
 
             <span
@@ -2629,7 +2640,7 @@ CONTENT TYPE OPTIONS
             class="message-list"
           >
             <div class="empty-message">
-              No preview messages have been created yet.
+              No messages have been created yet.
             </div>
           </div>
         </div>
@@ -2645,7 +2656,7 @@ CONTENT TYPE OPTIONS
   defer
 ></script>
 
-<script src="js/google-auth.js?v=1"></script>
+<script src="js/google-auth.js?v=2"></script>
 <script src="js/admin-api.js?v=1"></script>
 <script src="js/navigation.js?v=3"></script>
 <script src="js/admin-access.js?v=1"></script>
@@ -2659,476 +2670,265 @@ CONTENT TYPE OPTIONS
     /*
     ==========================================
     PATRIOT COMMAND
-    ADMIN CONSOLE LOCAL PREVIEW
+    ADMIN CONSOLE LIVE BACKEND
+    Version 1
     ==========================================
     */
 
     (function () {
       "use strict";
 
-      const STORAGE_KEY =
-        "patriotAdminPreviewMessages";
-
-      let editingMessageId =
-        "";
+      let messages = [];
+      let editingContentId = "";
 
       function cleanText(value) {
-        return String(
-          value ||
-          ""
-        ).trim();
+        return String(value || "").trim();
       }
 
-      function createMessageId() {
-        if (
-          window.crypto &&
-          typeof window.crypto.randomUUID ===
-            "function"
-        ) {
-          return window.crypto.randomUUID();
-        }
-
-        return (
-          "message-" +
-          Date.now() +
-          "-" +
-          Math.random()
-            .toString(16)
-            .slice(2)
+      function getSelectedContentType() {
+        const selected = document.querySelector(
+          'input[name="admin-content-type"]:checked'
         );
+
+        return selected ? selected.value : "announcement";
       }
 
-      function readMessages() {
-        const saved =
-          localStorage.getItem(
-            STORAGE_KEY
-          );
+      function getContentTypeDetails(contentType) {
+        const details = {
+          announcement: {
+            icon: "📢",
+            label: "School Announcement",
+            previewLabel: "Teach announcement bar preview"
+          },
+          bulletin: {
+            icon: "📰",
+            label: "Staff Bulletin",
+            previewLabel: "Teacher Dashboard bulletin preview"
+          }
+        };
 
-        if (!saved) {
-          return [];
-        }
-
-        try {
-          const parsed =
-            JSON.parse(saved);
-
-          return Array.isArray(parsed)
-            ? parsed
-            : [];
-        } catch (error) {
-          console.error(
-            "Admin preview messages could not be read.",
-            error
-          );
-
-          return [];
-        }
+        return details[contentType] || details.announcement;
       }
 
-      function saveMessages(messages) {
-        localStorage.setItem(
-          STORAGE_KEY,
-          JSON.stringify(messages)
-        );
-      }
-
-function getSelectedContentType() {
-  const selected =
-    document.querySelector(
-      'input[name="admin-content-type"]:checked'
-    );
-
-  return selected
-    ? selected.value
-    : "announcement";
-}
-
-function getContentTypeDetails(
-  contentType
-) {
-  const details = {
-    announcement: {
-      icon: "📢",
-      label:
-        "School Announcement",
-      previewLabel:
-        "Teach announcement bar preview"
-    },
-
-    bulletin: {
-      icon: "📰",
-      label:
-        "Staff Bulletin",
-      previewLabel:
-        "Teacher Dashboard bulletin preview"
-    }
-  };
-
-  return (
-    details[contentType] ||
-    details.announcement
-  );
-}
-      
       function getSelectedPriority() {
-        const selected =
-          document.querySelector(
-            'input[name="announcement-priority"]:checked'
-          );
+        const selected = document.querySelector(
+          'input[name="announcement-priority"]:checked'
+        );
 
-        return selected
-          ? selected.value
-          : "normal";
+        return selected ? selected.value : "normal";
       }
 
       function getPriorityDetails(priority) {
         const details = {
-          normal: {
-            icon: "📢",
-            label: "Normal"
-          },
-
-          important: {
-            icon: "⭐",
-            label: "Important"
-          },
-
-          urgent: {
-            icon: "⚠",
-            label: "Urgent"
-          }
+          normal: { icon: "📢", label: "Normal" },
+          important: { icon: "⭐", label: "Important" },
+          urgent: { icon: "⚠", label: "Urgent" }
         };
 
-        return (
-          details[priority] ||
-          details.normal
-        );
+        return details[priority] || details.normal;
       }
 
       function formatDateTime(value) {
-        if (!value) {
-          return "No time limit";
+        if (!value) return "No time limit";
+
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return value;
+
+        return date.toLocaleString([], {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+          hour: "numeric",
+          minute: "2-digit"
+        });
+      }
+
+      function toDateTimeLocal(value) {
+        if (!value) return "";
+
+        const text = cleanText(value);
+        if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(text)) {
+          return text.slice(0, 16);
         }
 
-        const date =
-          new Date(value);
+        const date = new Date(text);
+        if (Number.isNaN(date.getTime())) return "";
 
-        if (
-          Number.isNaN(
-            date.getTime()
-          )
-        ) {
-          return value;
-        }
+        const pad = number => String(number).padStart(2, "0");
 
-        return date.toLocaleString(
-          [],
-          {
-            month: "short",
-            day: "numeric",
-            year: "numeric",
-            hour: "numeric",
-            minute: "2-digit"
-          }
+        return (
+          date.getFullYear() +
+          "-" +
+          pad(date.getMonth() + 1) +
+          "-" +
+          pad(date.getDate()) +
+          "T" +
+          pad(date.getHours()) +
+          ":" +
+          pad(date.getMinutes())
         );
       }
 
       function getMessageStatus(message) {
-        if (!message.enabled) {
-          return "inactive";
-        }
+        if (!message.enabled) return "inactive";
 
-        const now =
-          new Date();
+        const now = new Date();
+        const start = message.start ? new Date(message.start) : null;
+        const end = message.end ? new Date(message.end) : null;
 
-        const start =
-          message.start
-            ? new Date(
-                message.start
-              )
-            : null;
-
-        const end =
-          message.end
-            ? new Date(
-                message.end
-              )
-            : null;
-
-        if (
-          start &&
-          !Number.isNaN(
-            start.getTime()
-          ) &&
-          now <
-            start
-        ) {
+        if (start && !Number.isNaN(start.getTime()) && now < start) {
           return "scheduled";
         }
 
-        if (
-          end &&
-          !Number.isNaN(
-            end.getTime()
-          ) &&
-          now >
-            end
-        ) {
+        if (end && !Number.isNaN(end.getTime()) && now > end) {
           return "inactive";
         }
 
         return "active";
       }
 
+      function setConnectionStatus(value, note, connected) {
+        const heroValue = document.getElementById("admin-console-status");
+        const heroNote = document.getElementById("admin-console-status-note");
+        const connectionValue = document.getElementById("admin-connection-value");
+        const connectionDetail = document.getElementById("admin-connection-detail");
+
+        if (heroValue) heroValue.textContent = value;
+        if (heroNote) heroNote.textContent = note;
+        if (connectionValue) connectionValue.textContent = connected ? "Live" : value;
+        if (connectionDetail) {
+          connectionDetail.textContent = connected
+            ? "Connected to AdminContent"
+            : note;
+        }
+      }
+
+      function setFormBusy(isBusy) {
+        const form = document.getElementById("announcement-form");
+        if (!form) return;
+
+        form.querySelectorAll("button, input, textarea").forEach(element => {
+          element.disabled = Boolean(isBusy);
+        });
+      }
+
       function updatePreview() {
-  const preview =
-    document.getElementById(
-      "announcement-preview"
-    );
+        const preview = document.getElementById("announcement-preview");
+        const icon = document.getElementById("announcement-preview-icon");
+        const copy = document.getElementById("announcement-preview-copy");
+        const previewLabel = document.querySelector(".preview-label");
+        const messageInput = document.getElementById("announcement-message");
+        const messageHelp = document.getElementById("announcement-message-help");
+        const titleInput = document.getElementById("announcement-title");
+        const priorityField = document.getElementById("announcement-priority-field");
+        const contentType = getSelectedContentType();
+        const typeDetails = getContentTypeDetails(contentType);
+        const title = cleanText(titleInput.value);
+        const message = cleanText(messageInput.value);
+        const priority = getSelectedPriority();
+        const priorityDetails = getPriorityDetails(priority);
 
-  const icon =
-    document.getElementById(
-      "announcement-preview-icon"
-    );
+        preview.className = "announcement-preview";
 
-  const copy =
-    document.getElementById(
-      "announcement-preview-copy"
-    );
+        if (contentType === "bulletin") {
+          preview.classList.add("bulletin");
+          icon.textContent = typeDetails.icon;
+          copy.textContent =
+            title || message
+              ? `${title || "Staff Bulletin"}\n${message}`
+              : "Your weekly staff bulletin preview will appear here.";
+          messageInput.maxLength = 2500;
+          messageInput.placeholder =
+            "Enter the weekly staff bulletin, reminders, deadlines, celebrations, links, and updates...";
+          if (messageHelp) {
+            messageHelp.textContent =
+              "Supports longer weekly updates, reminders, links, and staff information.";
+          }
+          if (priorityField) priorityField.classList.add("content-type-hidden");
+        } else {
+          if (priority === "important" || priority === "urgent") {
+            preview.classList.add(priority);
+          }
+          icon.textContent = priorityDetails.icon;
+          copy.textContent =
+            message || "Your school-wide message preview will appear here.";
+          messageInput.maxLength = 300;
+          messageInput.placeholder =
+            "Enter the message teachers and students should see...";
+          if (messageHelp) {
+            messageHelp.textContent =
+              "Keep the wording brief enough to read quickly during class.";
+          }
+          if (priorityField) priorityField.classList.remove("content-type-hidden");
+        }
 
-  const previewLabel =
-    document.querySelector(
-      ".preview-label"
-    );
+        if (previewLabel) previewLabel.textContent = typeDetails.previewLabel;
+      }
 
-  const messageInput =
-    document.getElementById(
-      "announcement-message"
-    );
+      function showStatus(message, isError) {
+        const status = document.getElementById("admin-status-message");
+        status.textContent = message;
+        status.style.color = isError ? "#8f1712" : "#245a37";
+        status.style.background = isError
+          ? "rgba(207,27,19,.10)"
+          : "rgba(57,118,77,.12)";
+        status.style.borderColor = isError
+          ? "rgba(207,27,19,.22)"
+          : "rgba(57,118,77,.22)";
+        status.classList.add("show");
 
-  const messageHelp =
-  document.getElementById(
-    "announcement-message-help"
-  );
-        
-  const titleInput =
-    document.getElementById(
-      "announcement-title"
-    );
+        window.setTimeout(() => {
+          status.classList.remove("show");
+        }, isError ? 6500 : 3500);
+      }
 
-  const priorityField =
-    document.getElementById(
-      "announcement-priority-field"
-    );
+      function updateSummary(currentMessages) {
+        const activeCount = currentMessages.filter(
+          message => getMessageStatus(message) === "active"
+        ).length;
+        const scheduledCount = currentMessages.filter(
+          message => getMessageStatus(message) === "scheduled"
+        ).length;
 
-  const contentType =
-    getSelectedContentType();
-
-  const typeDetails =
-    getContentTypeDetails(
-      contentType
-    );
-
-  const title =
-    cleanText(
-      titleInput.value
-    );
-
-  const message =
-    cleanText(
-      messageInput.value
-    );
-
-  const priority =
-    getSelectedPriority();
-
-  const priorityDetails =
-    getPriorityDetails(
-      priority
-    );
-
-  preview.className =
-    "announcement-preview";
-
-  if (
-    contentType ===
-    "bulletin"
-  ) {
-    preview.classList.add(
-      "bulletin"
-    );
-
-    icon.textContent =
-      typeDetails.icon;
-
-    copy.textContent =
-      title || message
-        ? `${title || "Staff Bulletin"}\n${message}`
-        : "Your weekly staff bulletin preview will appear here.";
-
-    messageInput.maxLength = 2500;
-
-    messageInput.placeholder =
-      "Enter the weekly staff bulletin, reminders, deadlines, celebrations, links, and updates...";
-
-     if (messageHelp) {
-      messageHelp.textContent =
-      "Supports longer weekly updates, reminders, links, and staff information.";
-}
-
-    if (priorityField) {
-      priorityField.classList.add(
-        "content-type-hidden"
-      );
-    }
-  } else {
-    if (
-      priority ===
-        "important" ||
-      priority ===
-        "urgent"
-    ) {
-      preview.classList.add(
-        priority
-      );
-    }
-
-    icon.textContent =
-      priorityDetails.icon;
-
-    copy.textContent =
-      message ||
-      "Your school-wide message preview will appear here.";
-
-    messageInput.maxLength = 300;
-
-    messageInput.placeholder =
-      "Enter the message teachers and students should see...";
-    if (messageHelp) {
-    messageHelp.textContent =
-      "Keep the wording brief enough to read quickly during class.";
-}
-
-    if (priorityField) {
-      priorityField.classList.remove(
-        "content-type-hidden"
-      );
-    }
-  }
-
-  if (previewLabel) {
-    previewLabel.textContent =
-      typeDetails.previewLabel;
-  }
-}
-
-      function showStatus(message) {
-        const status =
-          document.getElementById(
-            "admin-status-message"
-          );
-
-        status.textContent =
-          message;
-
-        status.classList.add(
-          "show"
-        );
-
-        window.setTimeout(
-          () => {
-            status.classList.remove(
-              "show"
-            );
-          },
-          3500
+        document.getElementById("active-message-count").textContent = String(activeCount);
+        document.getElementById("scheduled-message-count").textContent = String(scheduledCount);
+        document.getElementById("saved-message-count").textContent = String(
+          currentMessages.length
         );
       }
 
-      function updateSummary(messages) {
-        const activeCount =
-          messages.filter(
-            message =>
-              getMessageStatus(
-                message
-              ) === "active"
-          ).length;
-
-        const scheduledCount =
-          messages.filter(
-            message =>
-              getMessageStatus(
-                message
-              ) === "scheduled"
-          ).length;
-
-        document.getElementById(
-          "active-message-count"
-        ).textContent =
-          String(activeCount);
-
-        document.getElementById(
-          "scheduled-message-count"
-        ).textContent =
-          String(scheduledCount);
-
-        document.getElementById(
-          "saved-message-count"
-        ).textContent =
-          String(
-            messages.length
-          );
+      function escapeHtml(value) {
+        return String(value || "")
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
       }
 
       function buildMessageCard(message) {
-        const card =
-          document.createElement(
-            "article"
-          );
+        const card = document.createElement("article");
+        const status = getMessageStatus(message);
+        const priorityDetails = getPriorityDetails(message.priority);
+        const contentTypeDetails = getContentTypeDetails(
+          message.contentType || "announcement"
+        );
 
-        const status =
-          getMessageStatus(
-            message
-          );
-
-        const priorityDetails =
-          getPriorityDetails(
-            message.priority
-          );
-
-        const contentTypeDetails =
-          getContentTypeDetails(
-            message.contentType ||
-            "announcement"
-          );
-
-        card.className =
-          "message-card";
+        card.className = "message-card";
 
         if (
-          message.priority ===
-            "important" ||
-          message.priority ===
-            "urgent"
+          message.contentType === "announcement" &&
+          (message.priority === "important" || message.priority === "urgent")
         ) {
-          card.classList.add(
-            message.priority
-          );
+          card.classList.add(message.priority);
         }
 
-        if (
-          status === "inactive"
-        ) {
-          card.classList.add(
-            "inactive"
-          );
-        }
+        if (status === "inactive") card.classList.add("inactive");
 
         const badgeClass =
           status === "scheduled"
             ? "message-card-badge scheduled"
             : "message-card-badge";
-
         const badgeText =
           status === "active"
             ? "Active"
@@ -3137,543 +2937,282 @@ function getContentTypeDetails(
               : "Inactive";
 
         card.innerHTML = `
-          <span
-            class="message-card-icon"
-            aria-hidden="true"
-          >
+          <span class="message-card-icon" aria-hidden="true">
             ${
-  (
-    message.contentType ||
-    "announcement"
-  ) === "bulletin"
-    ? contentTypeDetails.icon
-    : priorityDetails.icon
-}
+              (message.contentType || "announcement") === "bulletin"
+                ? contentTypeDetails.icon
+                : priorityDetails.icon
+            }
           </span>
 
           <div class="message-card-copy">
-            <p class="message-card-title">
-              ${escapeHtml(
-                message.title
-              )}
-            </p>
-
+            <p class="message-card-title">${escapeHtml(message.title)}</p>
             <div class="message-card-meta">
-              <span class="${badgeClass}">
-                ${badgeText}
-              </span>
-
-             <span>
-  ${escapeHtml(
-    contentTypeDetails.label
-  )}
-</span>
-
-${
-  (
-    message.contentType ||
-    "announcement"
-  ) === "announcement"
-    ? `
-      <span>
-        ${escapeHtml(
-          priorityDetails.label
-        )}
-      </span>
-    `
-    : ""
-}
-
-              <span>
-                Starts:
-                ${escapeHtml(
-                  formatDateTime(
-                    message.start
-                  )
-                )}
-              </span>
-
-              <span>
-                Ends:
-                ${escapeHtml(
-                  formatDateTime(
-                    message.end
-                  )
-                )}
-              </span>
+              <span class="${badgeClass}">${badgeText}</span>
+              <span>${escapeHtml(contentTypeDetails.label)}</span>
+              ${
+                (message.contentType || "announcement") === "announcement"
+                  ? `<span>${escapeHtml(priorityDetails.label)}</span>`
+                  : ""
+              }
+              <span>Starts: ${escapeHtml(formatDateTime(message.start))}</span>
+              <span>Ends: ${escapeHtml(formatDateTime(message.end))}</span>
             </div>
           </div>
 
           <div class="message-card-actions">
-            <button
-              class="message-icon-button edit"
-              type="button"
-              aria-label="Edit message"
-              title="Edit message"
-            >
-              ✎
-            </button>
-
-            <button
-              class="message-icon-button delete"
-              type="button"
-              aria-label="Delete message"
-              title="Delete message"
-            >
-              ×
-            </button>
+            <button class="message-icon-button edit" type="button" aria-label="Edit message" title="Edit message">✎</button>
+            <button class="message-icon-button delete" type="button" aria-label="Delete message" title="Delete message">×</button>
           </div>
         `;
 
-        card
-          .querySelector(
-            ".edit"
-          )
-          .addEventListener(
-            "click",
-            () => {
-              editMessage(
-                message
-              );
-            }
-          );
-
-        card
-          .querySelector(
-            ".delete"
-          )
-          .addEventListener(
-            "click",
-            () => {
-              deleteMessage(
-                message.id
-              );
-            }
-          );
+        card.querySelector(".edit").addEventListener("click", () => editMessage(message));
+        card.querySelector(".delete").addEventListener("click", () =>
+          deleteMessage(message.contentId)
+        );
 
         return card;
       }
 
-      function escapeHtml(value) {
-        return String(
-          value ||
-          ""
-        )
-          .replaceAll(
-            "&",
-            "&amp;"
-          )
-          .replaceAll(
-            "<",
-            "&lt;"
-          )
-          .replaceAll(
-            ">",
-            "&gt;"
-          )
-          .replaceAll(
-            '"',
-            "&quot;"
-          )
-          .replaceAll(
-            "'",
-            "&#039;"
-          );
-      }
-
       function renderMessages() {
-        const messages =
-          readMessages();
-
-        const list =
-          document.getElementById(
-            "message-list"
-          );
-
-        list.innerHTML =
-          "";
+        const list = document.getElementById("message-list");
+        list.innerHTML = "";
 
         if (!messages.length) {
           list.innerHTML = `
             <div class="empty-message">
-              No preview messages have been created yet.
+              No messages have been created yet.
             </div>
           `;
         } else {
           messages
             .slice()
-            .sort(
-              (
-                first,
-                second
-              ) => {
-                return (
-                  new Date(
-                    second.createdAt
-                  ) -
-                  new Date(
-                    first.createdAt
-                  )
-                );
-              }
-            )
-            .forEach(
-              message => {
-                list.appendChild(
-                  buildMessageCard(
-                    message
-                  )
-                );
-              }
-            );
+            .sort((first, second) => {
+              return (
+                new Date(second.updatedAt || second.createdAt) -
+                new Date(first.updatedAt || first.createdAt)
+              );
+            })
+            .forEach(message => {
+              list.appendChild(buildMessageCard(message));
+            });
         }
 
-        updateSummary(
-          messages
-        );
+        updateSummary(messages);
       }
 
       function resetForm() {
-        const form =
-          document.getElementById(
-            "announcement-form"
-          );
-
+        const form = document.getElementById("announcement-form");
         form.reset();
-
-        document.getElementById(
-          "announcement-enabled"
-        ).checked =
-          true;
-
+        document.getElementById("announcement-enabled").checked = true;
         document.querySelector(
           'input[name="announcement-priority"][value="normal"]'
-        ).checked =
-          true;
-document.querySelector(
-  'input[name="admin-content-type"][value="announcement"]'
-).checked = true;
-        
-        editingMessageId =
-          "";
-
+        ).checked = true;
+        document.querySelector(
+          'input[name="admin-content-type"][value="announcement"]'
+        ).checked = true;
+        editingContentId = "";
         updatePreview();
       }
 
       function editMessage(message) {
-        document.getElementById(
-          "announcement-title"
-        ).value =
-          message.title;
-
-        document.getElementById(
-          "announcement-message"
-        ).value =
-          message.message;
-
-        document.getElementById(
-          "announcement-start"
-        ).value =
-          message.start ||
-          "";
-
-        document.getElementById(
-          "announcement-end"
-        ).value =
-          message.end ||
-          "";
-
-        document.getElementById(
-          "announcement-enabled"
-        ).checked =
-          Boolean(
-            message.enabled
-          );
-
-        const contentType =
-          document.querySelector(
-            `input[name="admin-content-type"][value="${message.contentType || "announcement"}"]`
-          );
-        
-        if (contentType) {
-          contentType.checked =
-            true;
-        }
-        
-        const priority =
-          document.querySelector(
-            `input[name="announcement-priority"][value="${message.priority || "normal"}"]`
-          );
-
-        if (priority) {
-          priority.checked =
-            true;
-        }
-
-        editingMessageId =
-          message.id;
-
-        updatePreview();
-
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-
-        showStatus(
-          "Message loaded for editing."
+        document.getElementById("announcement-title").value = message.title || "";
+        document.getElementById("announcement-message").value = message.message || "";
+        document.getElementById("announcement-start").value = toDateTimeLocal(
+          message.start
         );
+        document.getElementById("announcement-end").value = toDateTimeLocal(
+          message.end
+        );
+        document.getElementById("announcement-enabled").checked = Boolean(
+          message.enabled
+        );
+
+        const contentType = document.querySelector(
+          `input[name="admin-content-type"][value="${
+            message.contentType || "announcement"
+          }"]`
+        );
+        if (contentType) contentType.checked = true;
+
+        const priority = document.querySelector(
+          `input[name="announcement-priority"][value="${
+            message.priority || "normal"
+          }"]`
+        );
+        if (priority) priority.checked = true;
+
+        editingContentId = message.contentId;
+        updatePreview();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        showStatus("Message loaded for editing.", false);
       }
 
-      function deleteMessage(messageId) {
-        const confirmed =
-          window.confirm(
-            "Delete this preview message?"
+      async function loadMessages(showSuccess) {
+        if (!window.PATRIOT_AUTH?.signedIn) {
+          setConnectionStatus(
+            "Sign In Required",
+            "Use your Allen County Schools Google account.",
+            false
           );
-
-        if (!confirmed) {
           return;
         }
 
-        const messages =
-          readMessages()
-            .filter(
-              message =>
-                message.id !==
-                messageId
-            );
+        setConnectionStatus("Connecting", "Loading live administrative content.", false);
 
-        saveMessages(
-          messages
-        );
-
-        if (
-          editingMessageId ===
-          messageId
-        ) {
-          resetForm();
+        try {
+          messages = await window.PatriotAdminApi.listContent();
+          renderMessages();
+          setConnectionStatus(
+            "Live & Secure",
+            "Messages are stored in the shared AdminContent sheet.",
+            true
+          );
+          if (showSuccess) showStatus("Live messages refreshed.", false);
+        } catch (error) {
+          console.error("Admin messages could not be loaded.", error);
+          setConnectionStatus("Connection Error", error.message, false);
+          showStatus(error.message, true);
         }
-
-        renderMessages();
-
-        showStatus(
-          "Preview message deleted."
-        );
       }
 
-      function handleSubmit(event) {
+      async function deleteMessage(contentId) {
+        const confirmed = window.confirm(
+          "Delete this message from Patriot Command?"
+        );
+        if (!confirmed) return;
+
+        setFormBusy(true);
+
+        try {
+          await window.PatriotAdminApi.deleteContent(contentId);
+          if (editingContentId === contentId) resetForm();
+          await loadMessages(false);
+          showStatus("Message deleted.", false);
+        } catch (error) {
+          console.error("Admin message could not be deleted.", error);
+          showStatus(error.message, true);
+        } finally {
+          setFormBusy(false);
+        }
+      }
+
+      async function handleSubmit(event) {
         event.preventDefault();
 
-        const title =
-          cleanText(
-            document.getElementById(
-              "announcement-title"
-            ).value
-          );
+        const title = cleanText(
+          document.getElementById("announcement-title").value
+        );
+        const messageText = cleanText(
+          document.getElementById("announcement-message").value
+        );
 
-        const messageText =
-          cleanText(
-            document.getElementById(
-              "announcement-message"
-            ).value
-          );
-
-        if (
-          !title ||
-          !messageText
-        ) {
-          window.alert(
-            "Please enter both a title and message."
-          );
-
+        if (!title || !messageText) {
+          window.alert("Please enter both a title and message.");
           return;
         }
 
-        const start =
-          document.getElementById(
-            "announcement-start"
-          ).value;
+        const start = document.getElementById("announcement-start").value;
+        const end = document.getElementById("announcement-end").value;
 
-        const end =
-          document.getElementById(
-            "announcement-end"
-          ).value;
-
-        if (
-          start &&
-          end &&
-          new Date(end) <
-            new Date(start)
-        ) {
-          window.alert(
-            "The end date must be later than the start date."
-          );
-
+        if (start && end && new Date(end) < new Date(start)) {
+          window.alert("The end date must be later than the start date.");
           return;
         }
 
-        const messages =
-          readMessages();
-
-        const existingIndex =
-          messages.findIndex(
-            message =>
-              message.id ===
-              editingMessageId
+        if (!window.PATRIOT_AUTH?.signedIn) {
+          showStatus(
+            "Please sign in with your school Google account before saving.",
+            true
           );
+          return;
+        }
 
-        const message = {
-          id:
-            editingMessageId ||
-            createMessageId(),
-
-          title:
-            title,
-
-          message:
-            messageText,
-
-          contentType:
-            getSelectedContentType(),
-
-          priority:
-            getSelectedPriority(),
-
-          start:
-            start,
-
-          end:
-            end,
-
-          enabled:
-            document.getElementById(
-              "announcement-enabled"
-            ).checked,
-
-          createdAt:
-            existingIndex >= 0
-              ? messages[
-                  existingIndex
-                ].createdAt
-              : new Date()
-                  .toISOString(),
-
-          updatedAt:
-            new Date()
-              .toISOString()
+        const content = {
+          contentId: editingContentId,
+          title,
+          message: messageText,
+          contentType: getSelectedContentType(),
+          priority: getSelectedPriority(),
+          start,
+          end,
+          enabled: document.getElementById("announcement-enabled").checked
         };
 
-        if (
-          existingIndex >= 0
-        ) {
-          messages[
-            existingIndex
-          ] =
-            message;
-        } else {
-          messages.push(
-            message
+        setFormBusy(true);
+
+        try {
+          const result = await window.PatriotAdminApi.saveContent(content);
+          resetForm();
+          await loadMessages(false);
+          showStatus(
+            result.action === "updated"
+              ? "Message updated successfully."
+              : "Message published successfully.",
+            false
           );
+        } catch (error) {
+          console.error("Admin message could not be saved.", error);
+          showStatus(error.message, true);
+        } finally {
+          setFormBusy(false);
         }
-
-        saveMessages(
-          messages
-        );
-
-        renderMessages();
-
-        showStatus(
-          existingIndex >= 0
-            ? "Preview message updated."
-            : "Preview message saved."
-        );
-
-        resetForm();
       }
 
       function startAdminConsole() {
-        const form =
-          document.getElementById(
-            "announcement-form"
-          );
-
-        const messageInput =
-          document.getElementById(
-            "announcement-message"
-          );
-
-        const priorityInputs =
-          document.querySelectorAll(
-            'input[name="announcement-priority"]'
-          );
-
-        const contentTypeInputs =
-          document.querySelectorAll(
-            'input[name="admin-content-type"]'
-          );
-        
-        document.querySelector(
-          'input[name="admin-content-type"][value="announcement"]'
-            ).checked =
-          true;
-        
-        const resetButton =
-          document.getElementById(
-            "reset-announcement-button"
-          );
-
-        form.addEventListener(
-          "submit",
-          handleSubmit
+        const form = document.getElementById("announcement-form");
+        const messageInput = document.getElementById("announcement-message");
+        const priorityInputs = document.querySelectorAll(
+          'input[name="announcement-priority"]'
         );
-
-        messageInput.addEventListener(
-          "input",
-          updatePreview
+        const contentTypeInputs = document.querySelectorAll(
+          'input[name="admin-content-type"]'
         );
+        const resetButton = document.getElementById("reset-announcement-button");
 
-        document.getElementById(
-          "announcement-title"
-        ).addEventListener(
-          "input",
-          updatePreview
+        form.addEventListener("submit", handleSubmit);
+        messageInput.addEventListener("input", updatePreview);
+        document
+          .getElementById("announcement-title")
+          .addEventListener("input", updatePreview);
+        priorityInputs.forEach(input =>
+          input.addEventListener("change", updatePreview)
         );
-        
-        priorityInputs.forEach(
-          input => {
-            input.addEventListener(
-              "change",
-              updatePreview
+        contentTypeInputs.forEach(input =>
+          input.addEventListener("change", updatePreview)
+        );
+        resetButton.addEventListener("click", resetForm);
+
+        window.addEventListener("patriot-auth-changed", event => {
+          if (event.detail?.signedIn) {
+            loadMessages(false);
+          } else {
+            messages = [];
+            renderMessages();
+            setConnectionStatus(
+              "Sign In Required",
+              "Use your Allen County Schools Google account.",
+              false
             );
           }
-        );
-
-        contentTypeInputs.forEach(
-          input => {
-            input.addEventListener(
-              "change",
-              updatePreview
-            );
-          }
-        );
-
-        resetButton.addEventListener(
-          "click",
-          resetForm
-        );
+        });
 
         updatePreview();
         renderMessages();
+
+        if (window.PATRIOT_AUTH?.signedIn) {
+          loadMessages(false);
+        } else {
+          setConnectionStatus(
+            "Sign In Required",
+            "Use your Allen County Schools Google account.",
+            false
+          );
+        }
       }
 
-      if (
-        document.readyState ===
-        "loading"
-      ) {
-        document.addEventListener(
-          "DOMContentLoaded",
-          startAdminConsole
-        );
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", startAdminConsole);
       } else {
         startAdminConsole();
       }
