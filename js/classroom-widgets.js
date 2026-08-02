@@ -13,8 +13,8 @@ Current widgets:
 3. Review Points hook
 4. Random Groups hook
 
-Announcements are stored in localStorage.
-Enter one announcement per line.
+Announcements load from the shared
+AdminContent Google Sheet.
 ==========================================
 */
 
@@ -22,8 +22,13 @@ Enter one announcement per line.
   const WIDGET_STORAGE_KEY =
     "patriotTeachWidgetPreferences";
 
-  const ANNOUNCEMENT_STORAGE_KEY =
-    "patriotTeachAnnouncements";
+  let liveAnnouncements = [];
+
+  let announcementRequestPending =
+    false;
+
+  let announcementRefreshTimer =
+    null;
 
   const DEFAULT_WIDGET_SETTINGS = {
     timer: true,
@@ -32,10 +37,6 @@ Enter one announcement per line.
     points: false,
     groups: false
   };
-
-  const DEFAULT_ANNOUNCEMENTS = [
-    "Welcome to class!"
-  ];
 
   /*
   ==========================================
@@ -93,41 +94,178 @@ Enter one announcement per line.
     };
   }
 
-  function readAnnouncements() {
-    const savedAnnouncements =
-      safelyReadJson(
-        ANNOUNCEMENT_STORAGE_KEY,
-        DEFAULT_ANNOUNCEMENTS
-      );
-
-    if (
-      !Array.isArray(
-        savedAnnouncements
-      )
-    ) {
-      return [
-        ...DEFAULT_ANNOUNCEMENTS
-      ];
-    }
-
-    return savedAnnouncements
-      .map(announcement => {
-        return String(
-          announcement || ""
-        ).trim();
-      })
-      .filter(Boolean);
+    function cleanText(value) {
+    return String(
+      value ||
+      ""
+    ).trim();
   }
 
-  function saveAnnouncements(
-    announcements
-  ) {
-    localStorage.setItem(
-      ANNOUNCEMENT_STORAGE_KEY,
-      JSON.stringify(
-        announcements
+  function readAnnouncements() {
+    return [
+      ...liveAnnouncements
+    ];
+  }
+
+  function createAnnouncementCallbackName() {
+    return (
+      "__patriotTeachAnnouncements_" +
+      Date.now() +
+      "_" +
+      Math.random()
+        .toString(16)
+        .slice(2)
+    );
+  }
+
+  function loadLiveAnnouncements() {
+    if (announcementRequestPending) {
+      return;
+    }
+
+    const scriptUrl =
+      cleanText(
+        window.GOOGLE_SCRIPT_URL
+      );
+
+    if (!scriptUrl) {
+      console.error(
+        "Patriot Command could not load announcements because the Google Apps Script URL is missing."
+      );
+
+      return;
+    }
+
+    announcementRequestPending =
+      true;
+
+    const callbackName =
+      createAnnouncementCallbackName();
+
+    const script =
+      document.createElement(
+        "script"
+      );
+
+    const timeout =
+      window.setTimeout(
+        function () {
+          cleanup();
+
+          console.error(
+            "The Patriot Command announcement request timed out."
+          );
+        },
+        15000
+      );
+
+    function cleanup() {
+      announcementRequestPending =
+        false;
+
+      window.clearTimeout(
+        timeout
+      );
+
+      delete window[
+        callbackName
+      ];
+
+      script.remove();
+    }
+
+    window[
+      callbackName
+    ] = function (
+      response
+    ) {
+      cleanup();
+
+      if (
+        !response ||
+        response.success !==
+          true
+      ) {
+        console.error(
+          response?.message ||
+          "Patriot Command could not load announcements."
+        );
+
+        return;
+      }
+
+      liveAnnouncements =
+        Array.isArray(
+          response.announcements
+        )
+          ? response.announcements
+              .map(
+                function (
+                  announcement
+                ) {
+                  return cleanText(
+                    announcement?.message
+                  );
+                }
+              )
+              .filter(Boolean)
+          : [];
+
+      renderAnnouncements();
+    };
+
+    const url =
+      new URL(
+        scriptUrl
+      );
+
+    url.searchParams.set(
+      "action",
+      "getActiveAnnouncements"
+    );
+
+    url.searchParams.set(
+      "callback",
+      callbackName
+    );
+
+    url.searchParams.set(
+      "cacheBust",
+      String(
+        Date.now()
       )
     );
+
+    script.src =
+      url.toString();
+
+    script.async =
+      true;
+
+    script.onerror =
+      function () {
+        cleanup();
+
+        console.error(
+          "Patriot Command could not reach the announcement backend."
+        );
+      };
+
+    document.head.appendChild(
+      script
+    );
+  }
+
+  function startAnnouncementRefresh() {
+    if (announcementRefreshTimer) {
+      return;
+    }
+
+    announcementRefreshTimer =
+      window.setInterval(
+        loadLiveAnnouncements,
+        60000
+      );
   }
 
   /*
@@ -941,16 +1079,7 @@ Enter one announcement per line.
         >
           ❚❚
         </button>
-
-        <button
-          id="announcement-edit-button"
-          class="patriot-announcement-control"
-          type="button"
-          title="Edit announcements"
-          aria-label="Edit announcements"
-        >
-          ✎
-        </button>
+        
       </div>
     `;
 
@@ -961,11 +1090,6 @@ Enter one announcement per line.
     const pauseButton =
       document.getElementById(
         "announcement-pause-button"
-      );
-
-    const editButton =
-      document.getElementById(
-        "announcement-edit-button"
       );
 
     pauseButton.addEventListener(
@@ -1000,12 +1124,8 @@ Enter one announcement per line.
       }
     );
 
-    editButton.addEventListener(
-      "click",
-      openAnnouncementEditor
-    );
 
-    renderAnnouncements();
+    loadLiveAnnouncements();
   }
 
   /*
@@ -1254,11 +1374,12 @@ Enter one announcement per line.
     );
 
     if (enabled) {
-      renderAnnouncements();
+      loadLiveAnnouncements();
+      startAnnouncementRefresh();
     }
   }
 
-  /*
+/*
   ==========================================
   OTHER WIDGET HOOKS
   ==========================================
@@ -1402,9 +1523,6 @@ Enter one announcement per line.
   */
 
   window.PatriotClassroomWidgets = {
-    editAnnouncements:
-      openAnnouncementEditor,
-
     showAnnouncements:
       function () {
         setAnnouncementsEnabled(
@@ -1420,7 +1538,7 @@ Enter one announcement per line.
       },
 
     refreshAnnouncements:
-      renderAnnouncements
+      loadLiveAnnouncements
   };
 
   /*
@@ -1432,7 +1550,6 @@ Enter one announcement per line.
   function startClassroomWidgets() {
     addWidgetStyles();
     createAnnouncementBar();
-    createAnnouncementEditor();
     addKeyboardControls();
 
     document.addEventListener(
