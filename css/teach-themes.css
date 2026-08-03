@@ -237,14 +237,6 @@ CALM
 CALM COMPONENT FINISHES
 ========================================== */
 
-[data-teach-theme="calm"] .teach-status-chip {
-  color: #667d70;
-  background:
-    rgba(255, 254, 249, 0.72);
-  border-color:
-    rgba(120, 146, 123, 0.2);
-}
-
 [data-teach-theme="calm"] .schedule-label {
   color: #f3ead3;
 }
