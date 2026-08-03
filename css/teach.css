@@ -241,26 +241,17 @@
       flex: 0 0 auto;
       min-height: 21px;
       padding: 3px 8px;
-      color: #b61e24;
+      color:
+        var(--teach-chip-text);
       font-size: 0.58rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       background:
-        rgba(
-          255,
-          255,
-          255,
-          0.70
-        );
+        var(--teach-chip-background);
       border:
         1px solid
-        rgba(
-          207,
-          27,
-          19,
-          0.15
-        );
+        var(--teach-chip-border);
       border-radius: 999px;
     }
     .teacher-details {
@@ -394,21 +385,14 @@
       overflow: hidden;
       color:
         var(--teach-white);
+
+        
       background:
-        rgba(
-          42,
-          67,
-          163,
-          0.15
-        );
+        var(--teach-strip-background);
+
       border:
         1px solid
-        rgba(
-          255,
-          255,
-          255,
-          0.72
-        );
+        var(--teach-strip-border);  
       border-radius:
         var(--teach-medium-radius);
       box-shadow:
