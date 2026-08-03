@@ -37,6 +37,9 @@ DEFAULT
   --teach-strip-background:
   rgba(42, 67, 163, 0.15);
 
+  --teach-page-overlay:
+  none;
+  
   --teach-workspace-accent:
   #cf1b13;
 
@@ -164,6 +167,18 @@ CALM
   --teach-ink: #3f4b48;
   --teach-muted: #77817d;
 
+  --teach-page-overlay:
+    radial-gradient(
+    circle at 15% 15%,
+    rgba(255,255,255,.18),
+    transparent 35%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(255,255,255,.14),
+      transparent 30%
+  );
+  
   --teach-workspace-accent:
   #c9b995;
 
