@@ -132,7 +132,8 @@
       */
 
       background:
-          var(--teach-page-background);
+        var(--teach-page-overlay),
+        var(--teach-page-background);
         
       background-attachment:
         fixed;
