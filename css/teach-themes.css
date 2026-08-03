@@ -278,16 +278,15 @@ CALM
     rgba(255, 254, 249, 0.88);
 
   --teach-shadow:
-    0 10px 28px
-    rgba(72, 86, 81, 0.09);
+    0 10px 30px rgba(86, 104, 96, .08);
+
 
   --teach-shadow-soft:
-    0 4px 14px
-    rgba(72, 86, 81, 0.065);
+   0 4px 16px rgba(86, 104, 96, .05);
 
-  --teach-large-radius: 22px;
-  --teach-medium-radius: 16px;
-  --teach-small-radius: 11px;
+  --teach-large-radius: 24px;
+  --teach-medium-radius: 18px;
+  --teach-small-radius: 12px;
 }
 
 /* ==========================================
