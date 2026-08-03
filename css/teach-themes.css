@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Teach Themes
-Version 2
+Version 7
 ==========================================
 
 Default preserves the original Teach design.
@@ -301,8 +301,4 @@ CALM COMPONENT FINISHES
 }
 
 
-[data-teach-theme="calm"] .panel-collapse-button {
-  background:
-    rgba(120, 148, 161, 0.12);
-}
 
