@@ -34,6 +34,20 @@ DEFAULT
   --teach-white: #ffffff;
   --teach-ink: #20283a;
   --teach-muted: #657087;
+  --teach-strip-background:
+  rgba(42, 67, 163, 0.15);
+
+  --teach-strip-border:
+    rgba(255, 255, 255, 0.72);
+  
+  --teach-chip-text:
+    #b61e24;
+  
+  --teach-chip-background:
+    rgba(255, 255, 255, 0.70);
+  
+  --teach-chip-border:
+    rgba(207, 27, 19, 0.15);
 
   --teach-page-background:
     radial-gradient(
@@ -129,6 +143,21 @@ CALM
   --teach-ink: #3f4b48;
   --teach-muted: #77817d;
 
+  --teach-strip-background:
+    rgba(120, 148, 161, 0.13);
+  
+  --teach-strip-border:
+    rgba(255, 255, 255, 0.68);
+  
+  --teach-chip-text:
+    #667d70;
+  
+  --teach-chip-background:
+    rgba(255, 254, 249, 0.76);
+  
+  --teach-chip-border:
+    rgba(120, 146, 123, 0.20);
+  
   --teach-page-background:
     radial-gradient(
       circle at 10% 0%,
