@@ -2,16 +2,20 @@
 ==========================================
 PATRIOT COMMAND
 Teach Themes
-Version 1
+Version 2
 ==========================================
 
-This stylesheet ONLY overrides theme variables.
+Default preserves the original Teach design.
 
-The Teach page already references these variables,
-so changing them automatically restyles the page
-without duplicating component CSS.
-
-Default = existing appearance.
+Other themes override the full Teach atmosphere:
+- page background
+- header
+- schedule strip
+- panels
+- workspace
+- buttons
+- accents
+- shadows
 */
 
 /* ==========================================
@@ -20,61 +24,93 @@ DEFAULT
 
 :root,
 [data-teach-theme="default"] {
-
   --teach-blue: #2a43a3;
+  --teach-blue-dark: #173270;
   --teach-red: #cf1b13;
+  --teach-red-soft: #e95a53;
   --teach-cream: #fffce9;
   --teach-gold: #ffe269;
-
   --teach-green: #39764d;
-
   --teach-white: #ffffff;
-
   --teach-ink: #20283a;
-
   --teach-muted: #657087;
 
-  --teach-line:
-    rgba(
-      42,
-      67,
-      163,
-      .12
+  --teach-page-background:
+    radial-gradient(
+      circle at 7% 1%,
+      rgba(207, 27, 19, 0.3),
+      transparent 29%
+    ),
+    radial-gradient(
+      circle at 88% 4%,
+      rgba(154, 22, 30, 0.2),
+      transparent 30%
+    ),
+    linear-gradient(
+      128deg,
+      rgba(207, 27, 19, 0.16) 0%,
+      rgba(255, 255, 255, 0.86) 42%,
+      rgba(255, 252, 233, 0.93) 72%,
+      rgba(207, 27, 19, 0.09) 100%
     );
+
+  --teach-header-background:
+    linear-gradient(
+      110deg,
+      #cf1b13 0%,
+      #e95a53 18%,
+      rgba(255, 255, 255, 0.97) 54%,
+      rgba(255, 252, 233, 0.96) 76%,
+      rgba(42, 67, 163, 0.28) 100%
+    );
+
+  --teach-schedule-background:
+    linear-gradient(
+      112deg,
+      rgba(42, 67, 163, 0.94),
+      rgba(32, 51, 126, 0.91)
+    );
+
+  --teach-workspace-header-background:
+    linear-gradient(
+      135deg,
+      #23439a,
+      #173270
+    );
+
+  --teach-placeholder-background:
+    linear-gradient(
+      145deg,
+      #cf1b13,
+      #97151d
+    );
+
+  --teach-line:
+    rgba(42, 67, 163, 0.12);
 
   --teach-glass:
-    rgba(
-      255,
-      255,
-      255,
-      .77
-    );
+    rgba(255, 255, 255, 0.77);
 
   --teach-glass-strong:
-    rgba(
-      255,
-      255,
-      255,
-      .91
-    );
+    rgba(255, 255, 255, 0.91);
+
+  --teach-panel-header:
+    rgba(255, 255, 255, 0.26);
+
+  --teach-button-surface:
+    rgba(255, 255, 255, 0.83);
 
   --teach-shadow:
     0 12px 34px
-    rgba(
-      56,
-      24,
-      36,
-      .13
-    );
+    rgba(56, 24, 36, 0.13);
 
   --teach-shadow-soft:
     0 6px 18px
-    rgba(
-      56,
-      24,
-      36,
-      .09
-    );
+    rgba(56, 24, 36, 0.09);
+
+  --teach-large-radius: 18px;
+  --teach-medium-radius: 13px;
+  --teach-small-radius: 9px;
 }
 
 /* ==========================================
@@ -82,62 +118,141 @@ CALM
 ========================================== */
 
 [data-teach-theme="calm"] {
+  --teach-blue: #7894a1;
+  --teach-blue-dark: #5f7883;
+  --teach-red: #9aaea3;
+  --teach-red-soft: #b8c6bd;
+  --teach-cream: #f3f0e8;
+  --teach-gold: #d7c9aa;
+  --teach-green: #78927b;
+  --teach-white: #fffef9;
+  --teach-ink: #3f4b48;
+  --teach-muted: #77817d;
 
-  --teach-blue: #557899;
+  --teach-page-background:
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(188, 204, 195, 0.34),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 92% 8%,
+      rgba(194, 208, 216, 0.38),
+      transparent 32%
+    ),
+    linear-gradient(
+      145deg,
+      #f4f1e9 0%,
+      #eef2ee 48%,
+      #e6ecec 100%
+    );
 
-  --teach-red: #8ea5b8;
+  --teach-header-background:
+    linear-gradient(
+      118deg,
+      rgba(214, 222, 213, 0.97) 0%,
+      rgba(255, 254, 249, 0.98) 52%,
+      rgba(210, 221, 227, 0.92) 100%
+    );
 
-  --teach-cream: #f8fafb;
+  --teach-schedule-background:
+    linear-gradient(
+      112deg,
+      #839b9e,
+      #6d858a
+    );
 
-  --teach-gold: #dfe7ec;
+  --teach-workspace-header-background:
+    linear-gradient(
+      135deg,
+      #81999d,
+      #667f84
+    );
 
-  --teach-green: #64836d;
-
-  --teach-white: #ffffff;
-
-  --teach-ink: #394856;
-
-  --teach-muted: #768593;
+  --teach-placeholder-background:
+    linear-gradient(
+      145deg,
+      #91a99a,
+      #758f81
+    );
 
   --teach-line:
-    rgba(
-      57,
-      72,
-      86,
-      .10
-    );
+    rgba(83, 102, 96, 0.12);
 
   --teach-glass:
-    rgba(
-      255,
-      255,
-      255,
-      .84
-    );
+    rgba(255, 254, 249, 0.82);
 
   --teach-glass-strong:
-    rgba(
-      255,
-      255,
-      255,
-      .95
-    );
+    rgba(255, 254, 249, 0.94);
+
+  --teach-panel-header:
+    rgba(239, 243, 239, 0.72);
+
+  --teach-button-surface:
+    rgba(255, 254, 249, 0.88);
 
   --teach-shadow:
     0 10px 28px
-    rgba(
-      0,
-      0,
-      0,
-      .07
-    );
+    rgba(72, 86, 81, 0.09);
 
   --teach-shadow-soft:
     0 4px 14px
-    rgba(
-      0,
-      0,
-      0,
-      .05
-    );
+    rgba(72, 86, 81, 0.065);
+
+  --teach-large-radius: 22px;
+  --teach-medium-radius: 16px;
+  --teach-small-radius: 11px;
+}
+
+/* ==========================================
+CALM COMPONENT FINISHES
+========================================== */
+
+[data-teach-theme="calm"] .teach-status-chip {
+  color: #667d70;
+  background:
+    rgba(255, 254, 249, 0.72);
+  border-color:
+    rgba(120, 146, 123, 0.2);
+}
+
+[data-teach-theme="calm"] .schedule-label {
+  color: #f3ead3;
+}
+
+[data-teach-theme="calm"] .command-panel,
+[data-teach-theme="calm"] .lesson-workspace {
+  border-color:
+    rgba(255, 255, 255, 0.72);
+}
+
+[data-teach-theme="calm"] .lesson-workspace-header {
+  border-bottom-color:
+    #c9b995;
+}
+
+[data-teach-theme="calm"] .timer-card h2 {
+  color: #728b7a;
+}
+
+[data-teach-theme="calm"] .timer-controls button {
+  background: #829b8b;
+}
+
+[data-teach-theme="calm"]
+.timer-controls button.secondary {
+  background: #7894a1;
+}
+
+[data-teach-theme="calm"] .panel-collapse-button {
+  background:
+    rgba(120, 148, 161, 0.12);
+}
+
+[data-teach-theme="calm"]
+.panel-collapse-button:hover,
+[data-teach-theme="calm"]
+.header-action:hover {
+  background: #78927b;
+  border-color: #78927b;
 }
