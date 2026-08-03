@@ -316,15 +316,18 @@
     }
 
     .header-action:hover {
-      color:
+    color:
         var(--teach-white);
-      background:
-        var(--teach-red);
-      border-color:
-        var(--teach-red);
-      transform:
+
+    background:
+        var(--teach-hover-background);
+
+    border-color:
+        var(--teach-hover-border);
+
+    transform:
         translateY(-1px);
-    }
+}
 
     .clock-area {
       min-width: 104px;
@@ -792,13 +795,9 @@
 
     .lesson-action-button:hover,
     .open-link:hover {
-      color:
-        var(--teach-white);
-      background:
-        var(--teach-blue);
-      transform:
-        translateY(-1px);
-    }
+        background:
+            var(--teach-hover-background);
+}
 
     .open-link {
       display: none;
