@@ -417,7 +417,7 @@
   display: block;
   margin-bottom: 1px;
   color:
-    var(--teach-gold);
+    var(--teach-schedule-label);
   font-size: 0.54rem;
   font-weight: 800;
   text-transform: uppercase;
@@ -612,7 +612,10 @@
       color:
         var(--teach-white);
       background:
-        var(--teach-red);
+        var(--teach-hover-background);
+
+      border-color:
+        var(--teach-hover-border);
       transform:
         translateY(-1px);
     }
@@ -729,7 +732,7 @@
           var(--teach-workspace-header-background);
       border-bottom:
         4px solid
-        var(--teach-red);
+        var(--teach-workspace-accent);
            
       border-radius:
         18px 18px 0 0;
@@ -949,7 +952,7 @@
       gap: 7px;
       margin: 0;
       color:
-        var(--teach-red);
+        var(--teach-timer-heading);
       font-family:
         "Literata",
         Georgia,
@@ -998,7 +1001,7 @@
       font-size: 0.62rem;
       font-weight: 750;
       background:
-        var(--teach-red);
+        var(--teach-timer-primary);
       border: 0;
       border-radius: 8px;
       transition:
@@ -1010,7 +1013,7 @@
 
     .timer-controls button.secondary {
       background:
-        var(--teach-blue);
+        var(--teach-timer-secondary);
     }
 
     .timer-controls button:hover {
