@@ -639,61 +639,67 @@ Settings
   */
 
   function getNavigationItems() {
-    return [
-      {
-        type: "link",
-        label: "Dashboard",
-        href: "index.html"
-      },
-      {
-        type: "link",
-        label: "Teach",
-        href: "classroom.html"
-      },
-      {
-        type: "dropdown",
-        label: "Plan",
-        pages: [
-          "planner.html",
-          "plan.html",
-          "library.html"
-        ],
-        children: [
-          {
-            label: "Planner",
-            href: "planner.html"
-          },
-          {
-            label: "Library",
-            href: "library.html"
-          }
-        ]
-      },
-      {
-        type: "dropdown",
-        label: "Settings",
-        pages: [
-          "settings.html",
-          "students.html",
-          "about.html"
-        ],
-        children: [
-          {
-            label: "Teacher Settings",
-            href: "settings.html"
-          },
-          {
-            label: "Students & Rosters",
-            href: "students.html"
-          },
-          {
-            label: "About Patriot Command",
-            href: "about.html"
-          }
-        ]
-      }
-    ];
-  }
+  return [
+    {
+      type: "link",
+      label: "Dashboard",
+      href: "index.html"
+    },
+    {
+      type: "dropdown",
+      label: "Plan",
+      pages: [
+        "planner.html",
+        "plan.html",
+        "library.html"
+      ],
+      children: [
+        {
+          label: "Planner",
+          href: "planner.html"
+        },
+        {
+          label: "Library",
+          href: "library.html"
+        }
+      ]
+    },
+    {
+      type: "link",
+      label: "Teach",
+      href: "classroom.html"
+    },
+    {
+      type: "dropdown",
+      label: "Settings",
+      pages: [
+        "settings.html",
+        "students.html",
+        "about.html"
+      ],
+      children: [
+        {
+          label: "Account Settings",
+          href: "settings.html"
+        },
+        {
+          label: "Classes & Students",
+          href: "students.html"
+        },
+        {
+          label: "About Patriot Command",
+          href: "about.html"
+        }
+      ]
+    },
+    {
+      type: "link",
+      label: "Admin",
+      href: "admin.html",
+      adminOnly: true
+    }
+  ];
+}
 
   /*
   ==========================================
