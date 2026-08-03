@@ -429,36 +429,25 @@
     }
 
     .schedule-item {
-      min-width: 0;
-      padding:
-        6px
-        12px;
-      text-align: center;
-      background:
-          var(--teach-schedule-background);
-      display: block;
-      margin-bottom: 1px;
-      color:
-        var(--teach-gold);
-      font-size: 0.54rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.09em;
-    }
+  min-width: 0;
+  padding:
+    6px
+    12px;
+  text-align: center;
+  background:
+    var(--teach-schedule-background);
+}
 
-    .schedule-value {
-      display: block;
-      overflow: hidden;
-      font-size:
-        clamp(
-          0.75rem,
-          1vw,
-          0.91rem
-        );
-      font-weight: 700;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
+.schedule-label {
+  display: block;
+  margin-bottom: 1px;
+  color:
+    var(--teach-gold);
+  font-size: 0.54rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+}
 
     /*
     ==========================================
