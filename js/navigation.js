@@ -38,7 +38,14 @@ Settings
 
   const BRAND_ICON =
     "Assets/Icons/Patriot Command micro.png";
+  let patriotUserPermissions = {
+    permissions: [],
+    isAdmin: false
+  };
 
+  let permissionRequestPending =
+    false;
+  
   /*
   ==========================================
   FONT LOADING
@@ -933,6 +940,201 @@ Settings
 
   /*
   ==========================================
+  USER PERMISSIONS
+  ==========================================
+  */
+
+  function getPermissionCredentials() {
+    const user =
+      window.PATRIOT_AUTH
+        ?.getUser?.() ||
+      window.PATRIOT_USER ||
+      null;
+
+    const idToken =
+      String(
+        window.PATRIOT_AUTH
+          ?.getIdToken?.() ||
+        ""
+      ).trim();
+
+    return {
+      userEmail:
+        String(
+          user?.email ||
+          ""
+        )
+          .trim()
+          .toLowerCase(),
+
+      idToken:
+        idToken
+    };
+  }
+
+  function resetUserPermissions() {
+    patriotUserPermissions = {
+      permissions: [],
+      isAdmin: false
+    };
+
+    renderNavigationLinks();
+  }
+
+  async function loadUserPermissions() {
+    if (permissionRequestPending) {
+      return;
+    }
+
+    const scriptUrl =
+      String(
+        window.GOOGLE_SCRIPT_URL ||
+        ""
+      ).trim();
+
+    const credentials =
+      getPermissionCredentials();
+
+    if (
+      !scriptUrl ||
+      !credentials.userEmail ||
+      !credentials.idToken
+    ) {
+      resetUserPermissions();
+      return;
+    }
+
+    permissionRequestPending =
+      true;
+
+    try {
+      const requestBody =
+        new URLSearchParams();
+
+      requestBody.set(
+        "action",
+        "getUserPermissions"
+      );
+
+      requestBody.set(
+        "userEmail",
+        credentials.userEmail
+      );
+
+      requestBody.set(
+        "idToken",
+        credentials.idToken
+      );
+
+      const response =
+        await fetch(
+          scriptUrl,
+          {
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/x-www-form-urlencoded;charset=UTF-8"
+            },
+
+            body:
+              requestBody.toString()
+          }
+        );
+
+      const result =
+        await response.json();
+
+      if (
+        !response.ok ||
+        !result ||
+        result.success !== true
+      ) {
+        throw new Error(
+          result?.message ||
+          "User permissions could not be loaded."
+        );
+      }
+
+      patriotUserPermissions = {
+        permissions:
+          Array.isArray(
+            result.permissions
+          )
+            ? result.permissions
+            : [],
+
+        isAdmin:
+          result.isAdmin === true
+      };
+    } catch (error) {
+      console.warn(
+        "Patriot Command permissions could not be loaded.",
+        error
+      );
+
+      patriotUserPermissions = {
+        permissions: [],
+        isAdmin: false
+      };
+    } finally {
+      permissionRequestPending =
+        false;
+
+      renderNavigationLinks();
+    }
+  }
+
+  function renderNavigationLinks() {
+    const links =
+      document.querySelector(
+        ".patriot-nav-links"
+      );
+
+    if (!links) {
+      return;
+    }
+
+    const currentPage =
+      getCurrentPage();
+
+    links.innerHTML =
+      "";
+
+    getNavigationItems().forEach(
+      item => {
+        if (
+          item.adminOnly &&
+          !patriotUserPermissions.isAdmin
+        ) {
+          return;
+        }
+
+        if (
+          item.type ===
+          "dropdown"
+        ) {
+          links.appendChild(
+            createDropdown(
+              item,
+              currentPage
+            )
+          );
+        } else {
+          links.appendChild(
+            createDirectLink(
+              item,
+              currentPage
+            )
+          );
+        }
+      }
+    );
+  }
+  
+  /*
+  ==========================================
   CREATE NAVIGATION
   ==========================================
   */
@@ -991,28 +1193,6 @@ Settings
     links.className =
       "patriot-nav-links";
 
-    getNavigationItems().forEach(
-      item => {
-        if (
-          item.type === "dropdown"
-        ) {
-          links.appendChild(
-            createDropdown(
-              item,
-              currentPage
-            )
-          );
-        } else {
-          links.appendChild(
-            createDirectLink(
-              item,
-              currentPage
-            )
-          );
-        }
-      }
-    );
-
     nav.appendChild(
       brand
     );
@@ -1025,6 +1205,8 @@ Settings
       nav,
       document.body.firstChild
     );
+    
+    renderNavigationLinks();
 
     document.addEventListener(
       "click",
@@ -1058,10 +1240,31 @@ Settings
   ==========================================
   */
 
-  function startNavigation() {
+   function startNavigation() {
     loadBrandFonts();
     addNavigationStyles();
     createNavigation();
+
+    window.addEventListener(
+      "patriot-auth-changed",
+      event => {
+        if (
+          event.detail
+            ?.signedIn
+        ) {
+          loadUserPermissions();
+        } else {
+          resetUserPermissions();
+        }
+      }
+    );
+
+    if (
+      window.PATRIOT_AUTH
+        ?.signedIn
+    ) {
+      loadUserPermissions();
+    }
   }
 
   if (
