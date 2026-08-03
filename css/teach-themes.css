@@ -37,6 +37,27 @@ DEFAULT
   --teach-strip-background:
   rgba(42, 67, 163, 0.15);
 
+  --teach-workspace-accent:
+  #cf1b13;
+
+--teach-timer-heading:
+  #cf1b13;
+
+--teach-timer-primary:
+  #cf1b13;
+
+--teach-timer-secondary:
+  #2a43a3;
+
+--teach-hover-background:
+  #cf1b13;
+
+--teach-hover-border:
+  #cf1b13;
+
+--teach-schedule-label:
+  #ffe269;
+
   --teach-strip-border:
     rgba(255, 255, 255, 0.72);
   
@@ -143,6 +164,27 @@ CALM
   --teach-ink: #3f4b48;
   --teach-muted: #77817d;
 
+  --teach-workspace-accent:
+  #c9b995;
+
+--teach-timer-heading:
+  #728b7a;
+
+--teach-timer-primary:
+  #829b8b;
+
+--teach-timer-secondary:
+  #7894a1;
+
+--teach-hover-background:
+  #78927b;
+
+--teach-hover-border:
+  #78927b;
+
+--teach-schedule-label:
+  #f3ead3;
+  
   --teach-strip-background:
     rgba(120, 148, 161, 0.13);
   
