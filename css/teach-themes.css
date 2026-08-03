@@ -279,9 +279,6 @@ CALM
 CALM COMPONENT FINISHES
 ========================================== */
 
-[data-teach-theme="calm"] .schedule-label {
-  color: #f3ead3;
-}
 
 [data-teach-theme="calm"] .command-panel,
 [data-teach-theme="calm"] .lesson-workspace {
@@ -289,33 +286,9 @@ CALM COMPONENT FINISHES
     rgba(255, 255, 255, 0.72);
 }
 
-[data-teach-theme="calm"] .lesson-workspace-header {
-  border-bottom-color:
-    #c9b995;
-}
-
-[data-teach-theme="calm"] .timer-card h2 {
-  color: #728b7a;
-}
-
-[data-teach-theme="calm"] .timer-controls button {
-  background: #829b8b;
-}
-
-[data-teach-theme="calm"]
-.timer-controls button.secondary {
-  background: #7894a1;
-}
 
 [data-teach-theme="calm"] .panel-collapse-button {
   background:
     rgba(120, 148, 161, 0.12);
 }
 
-[data-teach-theme="calm"]
-.panel-collapse-button:hover,
-[data-teach-theme="calm"]
-.header-action:hover {
-  background: #78927b;
-  border-color: #78927b;
-}
