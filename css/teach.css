@@ -517,9 +517,10 @@
         var(--teach-blue);
       font-size: 1rem;
       background:
-          var(--teach-control-background);
+        var(--teach-control-background);
       border: 0;
-      border-radius: 8px;
+      border-radius:
+        var(--teach-small-radius);
       transition:
         color
         var(--teach-transition),
