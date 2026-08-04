@@ -35,6 +35,7 @@
       */
 
       background:
+        var(--teach-watermark),
         var(--teach-page-overlay),
         var(--teach-page-background);
         
