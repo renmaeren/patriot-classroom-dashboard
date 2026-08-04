@@ -2,14 +2,22 @@
 ==========================================
 PATRIOT COMMAND
 Lesson Library Search and Class Filter
+Version: 3
 ==========================================
+
+Connects the search and class-filter controls
+already defined in library.html.
+
+This file does not create duplicate controls.
 */
 
 (function () {
-  function addFilterStyles() {
+  "use strict";
+
+  function addFilterBehaviorStyles() {
     if (
       document.getElementById(
-        "library-filter-styles"
+        "library-filter-behavior-styles"
       )
     ) {
       return;
@@ -18,138 +26,52 @@ Lesson Library Search and Class Filter
     const style =
       document.createElement("style");
 
-    style.id = "library-filter-styles";
+    style.id =
+      "library-filter-behavior-styles";
 
     style.textContent = `
-      .library-search-area {
-        display: grid;
-        grid-template-columns: 2fr 1fr;
-        gap: 14px;
-        margin-top: 18px;
-      }
-
-      .library-filter-group label {
-        display: block;
-        margin-bottom: 7px;
-        color: #11284a;
-        font-weight: bold;
-      }
-
-      .library-search-input,
-      .library-class-filter {
-        width: 100%;
-        padding: 13px 15px;
-        color: #11284a;
-        font: inherit;
-        background: #ffffff;
-        border: 2px solid #d7dce3;
-        border-radius: 9px;
-      }
-
-      .library-search-input:focus,
-      .library-class-filter:focus {
-        outline: 3px solid rgba(211, 168, 79, 0.35);
-        border-color: #d3a84f;
-      }
-
-      .library-search-results {
-        grid-column: 1 / -1;
-        margin: 0;
-        color: #657184;
-        font-size: 0.92rem;
-      }
-
       .lesson-card.library-hidden {
         display: none;
       }
 
       .library-no-results {
         display: none;
-        margin-top: 18px;
+        margin: 0;
         padding: 18px;
         text-align: center;
-        color: #11284a;
-        background: #fff0cf;
-        border: 2px solid #d3a84f;
+        color: var(--library-ink, #11284a);
+        background: rgba(255, 226, 105, 0.22);
+        border: 1px solid rgba(211, 168, 79, 0.55);
         border-radius: 10px;
       }
 
       .library-no-results.show {
         display: block;
       }
-
-      @media (max-width: 700px) {
-        .library-search-area {
-          grid-template-columns: 1fr;
-        }
-
-        .library-search-results {
-          grid-column: auto;
-        }
-      }
     `;
 
-    document.head.appendChild(style);
+    document.head.appendChild(
+      style
+    );
   }
 
-  function createFilterArea() {
-    const toolbar =
-      document.querySelector(
-        ".library-toolbar"
-      );
-
+  function createNoResultsMessage() {
     if (
-      !toolbar ||
       document.getElementById(
-        "library-search-input"
+        "library-no-results"
       )
     ) {
       return;
     }
 
-    const area =
-      document.createElement("div");
+    const lessonList =
+      document.getElementById(
+        "lesson-library-list"
+      );
 
-    area.className =
-      "library-search-area";
-
-    area.innerHTML = `
-      <div class="library-filter-group">
-        <label for="library-search-input">
-          Search Your Lessons
-        </label>
-
-        <input
-          id="library-search-input"
-          class="library-search-input"
-          type="search"
-          placeholder="Search by title, standard, agenda, or keyword"
-          autocomplete="off"
-        >
-      </div>
-
-      <div class="library-filter-group">
-        <label for="library-class-filter">
-          Class
-        </label>
-
-        <select
-          id="library-class-filter"
-          class="library-class-filter"
-        >
-          <option value="">
-            All Classes
-          </option>
-        </select>
-      </div>
-
-      <p
-        id="library-search-results"
-        class="library-search-results"
-      ></p>
-    `;
-
-    toolbar.appendChild(area);
+    if (!lessonList) {
+      return;
+    }
 
     const noResults =
       document.createElement("div");
@@ -160,20 +82,18 @@ Lesson Library Search and Class Filter
     noResults.className =
       "library-no-results";
 
+    noResults.setAttribute(
+      "role",
+      "status"
+    );
+
     noResults.textContent =
       "No lessons match those choices.";
 
-    const lessonList =
-      document.getElementById(
-        "lesson-library-list"
-      );
-
-    if (lessonList) {
-      lessonList.insertAdjacentElement(
-        "afterend",
-        noResults
-      );
-    }
+    lessonList.insertAdjacentElement(
+      "afterend",
+      noResults
+    );
   }
 
   function getCourseFromCard(card) {
@@ -195,7 +115,7 @@ Lesson Library Search and Class Filter
   function buildClassChoices() {
     const select =
       document.getElementById(
-        "library-class-filter"
+        "lesson-class-filter"
       );
 
     if (!select) {
@@ -215,7 +135,11 @@ Lesson Library Search and Class Filter
           .map(getCourseFromCard)
           .filter(Boolean)
       )
-    ].sort();
+    ].sort((firstCourse, secondCourse) => {
+      return firstCourse.localeCompare(
+        secondCourse
+      );
+    });
 
     select.innerHTML = `
       <option value="">
@@ -230,28 +154,44 @@ Lesson Library Search and Class Filter
       option.value =
         course.toLowerCase();
 
-      option.textContent = course;
+      option.textContent =
+        course;
 
-      select.appendChild(option);
+      select.appendChild(
+        option
+      );
     });
 
-    select.value = currentValue;
+    const stillExists =
+      Array.from(
+        select.options
+      ).some(option => {
+        return (
+          option.value ===
+          currentValue
+        );
+      });
+
+    select.value =
+      stillExists
+        ? currentValue
+        : "";
   }
 
   function filterLessons() {
     const searchInput =
       document.getElementById(
-        "library-search-input"
+        "lesson-search-input"
       );
 
     const classFilter =
       document.getElementById(
-        "library-class-filter"
+        "lesson-class-filter"
       );
 
     const resultText =
       document.getElementById(
-        "library-search-results"
+        "lesson-filter-count"
       );
 
     const noResults =
@@ -259,7 +199,10 @@ Lesson Library Search and Class Filter
         "library-no-results"
       );
 
-    if (!searchInput || !classFilter) {
+    if (
+      !searchInput ||
+      !classFilter
+    ) {
       return;
     }
 
@@ -281,8 +224,12 @@ Lesson Library Search and Class Filter
     let visibleCount = 0;
 
     cards.forEach(card => {
-      const cardText =
-        card.textContent.toLowerCase();
+      const searchableText =
+        (
+          card.dataset.searchText ||
+          card.textContent ||
+          ""
+        ).toLowerCase();
 
       const cardCourse =
         getCourseFromCard(card)
@@ -290,11 +237,14 @@ Lesson Library Search and Class Filter
 
       const matchesSearch =
         !searchText ||
-        cardText.includes(searchText);
+        searchableText.includes(
+          searchText
+        );
 
       const matchesCourse =
         !selectedCourse ||
-        cardCourse === selectedCourse;
+        cardCourse ===
+          selectedCourse;
 
       const shouldShow =
         matchesSearch &&
@@ -311,37 +261,49 @@ Lesson Library Search and Class Filter
     });
 
     if (resultText) {
-      resultText.textContent =
-        cards.length
-          ? `${visibleCount} of ${cards.length} saved lesson${
-              cards.length === 1
-                ? ""
-                : "s"
-            } shown`
-          : "";
+      if (cards.length === 0) {
+        resultText.textContent =
+          "";
+      } else {
+        const lessonWord =
+          cards.length === 1
+            ? "lesson"
+            : "lessons";
+
+        resultText.textContent =
+          `${visibleCount} of ${cards.length} saved ${lessonWord} shown`;
+      }
     }
 
     if (noResults) {
       noResults.classList.toggle(
         "show",
         cards.length > 0 &&
-        visibleCount === 0
+          visibleCount === 0
       );
     }
+  }
+
+  function refreshFilters() {
+    buildClassChoices();
+    filterLessons();
   }
 
   function connectFilters() {
     const searchInput =
       document.getElementById(
-        "library-search-input"
+        "lesson-search-input"
       );
 
     const classFilter =
       document.getElementById(
-        "library-class-filter"
+        "lesson-class-filter"
       );
 
-    if (!searchInput || !classFilter) {
+    if (
+      !searchInput ||
+      !classFilter
+    ) {
       return;
     }
 
@@ -355,17 +317,25 @@ Lesson Library Search and Class Filter
       filterLessons
     );
 
+    window.addEventListener(
+      "patriotLibraryRendered",
+      refreshFilters
+    );
+
     const lessonList =
       document.getElementById(
         "lesson-library-list"
       );
 
-    if (lessonList) {
+    if (
+      lessonList &&
+      typeof MutationObserver !==
+        "undefined"
+    ) {
       const observer =
-        new MutationObserver(() => {
-          buildClassChoices();
-          filterLessons();
-        });
+        new MutationObserver(
+          refreshFilters
+        );
 
       observer.observe(
         lessonList,
@@ -375,18 +345,18 @@ Lesson Library Search and Class Filter
       );
     }
 
-    buildClassChoices();
-    filterLessons();
+    refreshFilters();
   }
 
   function startLibraryFilters() {
-    addFilterStyles();
-    createFilterArea();
+    addFilterBehaviorStyles();
+    createNoResultsMessage();
     connectFilters();
   }
 
   if (
-    document.readyState === "loading"
+    document.readyState ===
+    "loading"
   ) {
     document.addEventListener(
       "DOMContentLoaded",
