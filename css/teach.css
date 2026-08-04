@@ -778,14 +778,8 @@
           var(--teach-placeholder-border);
       border-radius: 17px;
       box-shadow:
-        0 9px 22px
-        rgba(
-          207,
-          27,
-          19,
-          0.18
-        );
-    }
+          var(--teach-shadow-soft);
+            }
 
     .lesson-placeholder strong {
       color:
