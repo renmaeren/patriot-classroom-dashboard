@@ -922,7 +922,8 @@
       background:
         var(--teach-timer-primary);
       border: 0;
-      border-radius: 8px;
+      border-radius:
+        var(--teach-small-radius);
       transition:
         transform
         var(--teach-transition),
