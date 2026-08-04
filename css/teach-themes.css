@@ -95,6 +95,9 @@ DEFAULT
       rgba(207, 27, 19, 0.09) 100%
     );
 
+  --teach-watermark:
+  none;
+
   --teach-header-background:
     linear-gradient(
       110deg,
@@ -236,6 +239,13 @@ CALM
       #e6ecec 100%
     );
 
+  --teach-watermark:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(255,255,255,.08),
+      transparent 60%
+    );
+  
   --teach-header-background:
     linear-gradient(
       118deg,
