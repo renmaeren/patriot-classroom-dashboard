@@ -428,6 +428,20 @@
   letter-spacing: 0.09em;
 }
 
+.schedule-value {
+  display: block;
+  overflow: hidden;
+  font-size:
+    clamp(
+      0.75rem,
+      1vw,
+      0.91rem
+    );
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
     /*
     ==========================================
     SINGLE-SCREEN COMMAND CENTER
