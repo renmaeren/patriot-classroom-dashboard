@@ -291,17 +291,3 @@ CALM
   --teach-medium-radius: 18px;
   --teach-small-radius: 12px;
 }
-
-/* ==========================================
-CALM COMPONENT FINISHES
-========================================== */
-
-
-[data-teach-theme="calm"] .command-panel,
-[data-teach-theme="calm"] .lesson-workspace {
-  border-color:
-    rgba(255, 255, 255, 0.72);
-}
-
-
-
