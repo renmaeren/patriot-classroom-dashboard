@@ -23,8 +23,11 @@ Full-Page Lesson Planner Saving
 
   const DAILY_LESSON_KEY =
     "patriotDailyLesson";
-    let activeLessonId = "";
-    let saveInProgress = false;
+
+  const PLANNER_DRAFT_KEY =
+    "patriotPlannerUnsavedDraft";
+  let activeLessonId = "";
+  let saveInProgress = false;
 
   function readTeacherProfile() {
     const saved =
@@ -421,6 +424,337 @@ Full-Page Lesson Planner Saving
           "teacher-notes"
         )
     };
+  }
+    function saveUnsavedDraft(
+    lesson
+  ) {
+    if (!lesson) {
+      return;
+    }
+
+    try {
+      localStorage.setItem(
+        PLANNER_DRAFT_KEY,
+        JSON.stringify(
+          lesson
+        )
+      );
+    } catch (error) {
+      console.warn(
+        "The unsaved lesson draft could not be stored.",
+        error
+      );
+    }
+  }
+
+  function clearUnsavedDraft() {
+    localStorage.removeItem(
+      PLANNER_DRAFT_KEY
+    );
+  }
+
+  function setFieldValue(
+    id,
+    value
+  ) {
+    const field =
+      document.getElementById(id);
+
+    if (!field) {
+      return;
+    }
+
+    field.value =
+      value || "";
+  }
+
+  function restoreSelectedClasses(
+    assignedPeriods
+  ) {
+    const periods =
+      Array.isArray(
+        assignedPeriods
+      )
+        ? assignedPeriods
+        : [];
+
+    document
+      .querySelectorAll(
+        'input[name="planner-class"]'
+      )
+      .forEach(checkbox => {
+        checkbox.checked =
+          periods.includes(
+            checkbox.value
+          );
+      });
+  }
+
+  function restoreOptionalField(
+    checkboxId,
+    fieldId,
+    value
+  ) {
+    const checkbox =
+      document.getElementById(
+        checkboxId
+      );
+
+    const field =
+      document.getElementById(
+        fieldId
+      );
+
+    if (!checkbox || !field) {
+      return;
+    }
+
+    const hasValue =
+      Boolean(
+        String(value || "").trim()
+      );
+
+    checkbox.checked =
+      hasValue;
+
+    checkbox.dispatchEvent(
+      new Event(
+        "change",
+        {
+          bubbles: true
+        }
+      )
+    );
+
+    field.value =
+      value || "";
+  }
+
+  function restoreUnsavedDraft(
+    attempts = 0
+  ) {
+    if (
+      getPlannerMode() !== "new"
+    ) {
+      return;
+    }
+
+    const draft =
+      readStoredLesson(
+        PLANNER_DRAFT_KEY
+      );
+
+    if (!draft) {
+      return;
+    }
+
+    const classOptions =
+      document.querySelectorAll(
+        'input[name="planner-class"]'
+      );
+
+    if (
+      classOptions.length === 0 &&
+      attempts < 30
+    ) {
+      window.setTimeout(
+        () => {
+          restoreUnsavedDraft(
+            attempts + 1
+          );
+        },
+        100
+      );
+
+      return;
+    }
+
+    activeLessonId =
+      draft.lessonId || "";
+
+    setFieldValue(
+      "lesson-date",
+      draft.lessonDate
+    );
+
+    setFieldValue(
+      "lesson-title",
+      draft.lessonTitle
+    );
+
+    setFieldValue(
+      "bell-ringer",
+      draft.bellRinger
+    );
+
+    setFieldValue(
+      "essential-question",
+      draft.essentialQuestion
+    );
+
+    setFieldValue(
+      "learning-target",
+      draft.learningTarget
+    );
+
+    setFieldValue(
+      "agenda",
+      draft.agenda
+    );
+
+    setFieldValue(
+      "standards",
+      draft.standards
+    );
+
+    setFieldValue(
+      "success-criteria",
+      draft.successCriteria
+    );
+
+    setFieldValue(
+      "why-learning",
+      draft.whyLearning
+    );
+
+    setFieldValue(
+      "materials",
+      draft.materials
+    );
+
+    setFieldValue(
+      "teacher-notes",
+      draft.teacherNotes
+    );
+
+    restoreOptionalField(
+      "include-vocabulary",
+      "vocabulary",
+      draft.vocabulary
+    );
+
+    restoreOptionalField(
+      "include-exit-ticket",
+      "exit-ticket",
+      draft.exitTicket
+    );
+
+    restoreOptionalField(
+      "include-homework",
+      "homework",
+      draft.homework
+    );
+
+    restoreSelectedClasses(
+      draft.assignedPeriods
+    );
+
+    const profileComponent =
+      document.getElementById(
+        "profile-component"
+      );
+
+    if (
+      profileComponent &&
+      draft.profileId
+    ) {
+      profileComponent.value =
+        draft.profileId;
+
+      profileComponent.dispatchEvent(
+        new Event(
+          "change",
+          {
+            bubbles: true
+          }
+        )
+      );
+
+      window.setTimeout(
+        () => {
+          setFieldValue(
+            "profile-focus",
+            draft.profileFocus
+          );
+        },
+        100
+      );
+    }
+
+    showStatus(
+      "Your unsaved lesson draft was restored."
+    );
+  }
+
+  function getValidationField(
+    missingItem
+  ) {
+    const validationFields = {
+      "Lesson Date":
+        "#lesson-date",
+
+      "At least one class":
+        "#planner-class-options",
+
+      "Bell Ringer":
+        "#bell-ringer",
+
+      "Essential Question":
+        "#essential-question",
+
+      "I Can / Learning Target":
+        "#learning-target",
+
+      "Agenda":
+        "#agenda",
+
+      "Profile of a Patriot":
+        "#profile-component",
+
+      "Standards":
+        "#standards",
+
+      "Complete resource links beginning with https://":
+        ".resource-url"
+    };
+
+    return document.querySelector(
+      validationFields[
+        missingItem
+      ] || ""
+    );
+  }
+
+  function focusFirstMissingField(
+    missing
+  ) {
+    const firstMissing =
+      getValidationField(
+        missing[0]
+      );
+
+    if (!firstMissing) {
+      return;
+    }
+
+    firstMissing.scrollIntoView({
+      behavior: "smooth",
+      block: "center"
+    });
+
+    window.setTimeout(
+      () => {
+        if (
+          typeof firstMissing.focus ===
+          "function"
+        ) {
+          firstMissing.focus({
+            preventScroll: true
+          });
+        }
+      },
+      350
+    );
   }
 
   function validateLesson(lesson) {
@@ -852,17 +1186,32 @@ Full-Page Lesson Planner Saving
       return false;
     }
 
+        /*
+    Preserve the teacher's work before validation.
+    If the page unexpectedly refreshes or another
+    script interferes, the lesson can be restored.
+    */
+
+    saveUnsavedDraft(
+      lesson
+    );
+
     const missing =
       validateLesson(
         lesson
       );
 
-    if (
+      if (
       missing.length > 0
     ) {
       window.alert(
         "Please complete:\n\n" +
-        missing.join("\n")
+        missing.join("\n") +
+        "\n\nYour work has been preserved."
+      );
+
+      focusFirstMissingField(
+        missing
       );
 
       return false;
@@ -924,10 +1273,12 @@ Full-Page Lesson Planner Saving
         }
       );
 
-      localStorage.setItem(
+            localStorage.setItem(
         "patriotPlannerLastSaved",
         "true"
       );
+
+      clearUnsavedDraft();
 
       updatePageAfterSave(
         mode
@@ -1040,6 +1391,11 @@ Full-Page Lesson Planner Saving
         handleTeachLesson
       );
     }
+
+    window.setTimeout(
+      restoreUnsavedDraft,
+      300
+    );
   }
 
   if (
