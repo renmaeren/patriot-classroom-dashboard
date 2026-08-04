@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Teach Themes
-Version 8
+Version 10
 ==========================================
 
 Default preserves the original Teach design.
@@ -23,7 +23,8 @@ DEFAULT
 ========================================== */
 
 :root,
-[data-teach-theme="default"] {  
+[data-teach-theme="default"],
+[data-teach-theme="patriot"] {
   --teach-blue: #2a43a3;
   --teach-blue-dark: #173270;
   --teach-red: #cf1b13;
