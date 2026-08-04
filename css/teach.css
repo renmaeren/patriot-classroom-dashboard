@@ -696,12 +696,13 @@
       font-weight: 750;
       text-decoration: none;
       background:
-          var(--teach-action-background);
+        var(--teach-action-background);
         
       border:
-          1px solid
-          var(--teach-action-border);
-      border-radius: 8px;
+        1px solid
+        var(--teach-action-border);
+      border-radius:
+        var(--teach-small-radius);
       transition:
         color
         var(--teach-transition),
