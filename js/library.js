@@ -2,6 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Lesson Library with Calendar
+Version 2
 ==========================================
 */
 
@@ -166,7 +167,7 @@ Lesson Library with Calendar
     );
   }
 
-  function formatResultsDate(value) {
+   function formatResultsDate(value) {
     const date =
       textToLocalDate(value);
 
@@ -174,34 +175,6 @@ Lesson Library with Calendar
       return value;
     }
 
-  function formatTimestamp(value) {
-    if (!value) {
-      return "";
-    }
-  
-    const date =
-      new Date(value);
-  
-    if (
-      Number.isNaN(
-        date.getTime()
-      )
-    ) {
-      return "";
-    }
-
-  return date.toLocaleString(
-    [],
-    {
-      month: "long",
-      day: "numeric",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit"
-    }
-  );
-}
-    
     return date.toLocaleDateString(
       [],
       {
@@ -213,6 +186,34 @@ Lesson Library with Calendar
     );
   }
 
+  function formatTimestamp(value) {
+    if (!value) {
+      return "";
+    }
+
+    const date =
+      new Date(value);
+
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return "";
+    }
+
+    return date.toLocaleString(
+      [],
+      {
+        month: "long",
+        day: "numeric",
+        year: "numeric",
+        hour: "numeric",
+        minute: "2-digit"
+      }
+    );
+  }
+  
   function isSameMonth(
     firstDate,
     secondDate
@@ -523,7 +524,7 @@ Lesson Library with Calendar
             )}
           </p>
 
-          <p class="lesson-card-meta">
+                <p class="lesson-card-meta">
             ${escapeHtml(
               lesson.course ||
               "Course not listed"
@@ -536,38 +537,40 @@ Lesson Library with Calendar
                   )}`
                 : ""
             }
-            ${
-  lesson.createdAt
-    ? `
-      <p class="lesson-card-meta">
-        <strong>Created:</strong>
-        ${escapeHtml(
-          formatTimestamp(
-            lesson.createdAt
-          )
-        )}
-      </p>
-    `
-    : ""
-}
-
-${
-  lesson.updatedAt
-    ? `
-      <p class="lesson-card-meta">
-        <strong>Updated:</strong>
-        ${escapeHtml(
-          formatTimestamp(
-            lesson.updatedAt
-          )
-        )}
-      </p>
-    `
-    : ""
-}
           </p>
-        </div>
 
+          ${
+            lesson.createdAt
+              ? `
+                <p class="lesson-card-meta">
+                  <strong>Created On:</strong>
+                  ${escapeHtml(
+                    formatTimestamp(
+                      lesson.createdAt
+                    )
+                  )}
+                </p>
+              `
+              : ""
+          }
+
+          ${
+            lesson.updatedAt
+              ? `
+                <p class="lesson-card-meta">
+                  <strong>Last Updated:</strong>
+                  ${escapeHtml(
+                    formatTimestamp(
+                      lesson.updatedAt
+                    )
+                  )}
+                </p>
+              `
+              : ""
+          }
+       
+        </div>
+        
         <div class="lesson-card-actions">
           <button
             class="lesson-preview-button lesson-teach-button"
