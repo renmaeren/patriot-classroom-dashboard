@@ -290,6 +290,35 @@ Full-Page Lesson Planner Saving
   function collectLesson() {
     const selectedClasses =
       collectSelectedClasses();
+    const mode =
+  getPlannerMode();
+
+let createdAt =
+  new Date().toISOString();
+
+let updatedAt =
+  new Date().toISOString();
+
+if (mode === "edit") {
+  const originalLesson =
+    readStoredLesson(
+      EDIT_LESSON_KEY
+    );
+
+  if (originalLesson) {
+    createdAt =
+      originalLesson.createdAt ||
+      createdAt;
+  }
+}
+
+if (mode === "duplicate") {
+  createdAt =
+    new Date().toISOString();
+
+  updatedAt =
+    createdAt;
+}
 
     const profileComponentField =
       document.getElementById(
@@ -322,6 +351,11 @@ Full-Page Lesson Planner Saving
     return {
       lessonId:
         getLessonIdForSave(),
+      createdAt:
+        createdAt,
+
+      updatedAt:
+        updatedAt,
 
       lessonDate:
         getFieldValue(
@@ -972,6 +1006,12 @@ Full-Page Lesson Planner Saving
     return {
       lessonId:
         lesson.lessonId,
+
+      createdAt:
+        lesson.createdAt,
+
+      updatedAt:
+        lesson.updatedAt,
 
       lessonDate:
         lesson.lessonDate,
