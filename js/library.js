@@ -174,6 +174,34 @@ Lesson Library with Calendar
       return value;
     }
 
+  function formatTimestamp(value) {
+    if (!value) {
+      return "";
+    }
+  
+    const date =
+      new Date(value);
+  
+    if (
+      Number.isNaN(
+        date.getTime()
+      )
+    ) {
+      return "";
+    }
+
+  return date.toLocaleString(
+    [],
+    {
+      month: "long",
+      day: "numeric",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit"
+    }
+  );
+}
+    
     return date.toLocaleDateString(
       [],
       {
@@ -508,6 +536,35 @@ Lesson Library with Calendar
                   )}`
                 : ""
             }
+            ${
+  lesson.createdAt
+    ? `
+      <p class="lesson-card-meta">
+        <strong>Created:</strong>
+        ${escapeHtml(
+          formatTimestamp(
+            lesson.createdAt
+          )
+        )}
+      </p>
+    `
+    : ""
+}
+
+${
+  lesson.updatedAt
+    ? `
+      <p class="lesson-card-meta">
+        <strong>Updated:</strong>
+        ${escapeHtml(
+          formatTimestamp(
+            lesson.updatedAt
+          )
+        )}
+      </p>
+    `
+    : ""
+}
           </p>
         </div>
 
