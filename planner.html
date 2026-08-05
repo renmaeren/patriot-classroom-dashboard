@@ -755,6 +755,163 @@
 
     /*
     ==========================================
+    CTE STANDARDS PICKER
+    ==========================================
+    */
+
+    .cte-standards-picker {
+      margin-bottom: 10px;
+      padding:
+        11px
+        12px;
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.055
+        );
+      border:
+        1px solid
+        rgba(
+          42,
+          67,
+          163,
+          0.14
+        );
+      border-left:
+        4px solid
+        var(--planner-blue);
+      border-radius: 10px;
+    }
+
+    .cte-standards-picker-heading {
+      margin:
+        0
+        0
+        4px;
+      color:
+        var(--planner-blue);
+      font-family:
+        "Literata",
+        Georgia,
+        serif;
+      font-size: 0.82rem;
+      font-weight: 750;
+    }
+
+    .cte-standards-picker-note {
+      margin:
+        0
+        0
+        9px;
+      color:
+        var(--planner-muted);
+      font-size: 0.67rem;
+      line-height: 1.4;
+    }
+
+    .cte-standards-picker-grid {
+      display: grid;
+      grid-template-columns:
+        minmax(
+          160px,
+          0.75fr
+        )
+        minmax(
+          190px,
+          0.9fr
+        )
+        minmax(
+          260px,
+          1.6fr
+        )
+        auto;
+      align-items: end;
+      gap: 8px;
+    }
+
+    .cte-standard-control {
+      min-width: 0;
+    }
+
+    .cte-standard-control label {
+      margin-bottom: 4px;
+      font-size: 0.69rem;
+    }
+
+    .cte-standard-control select {
+      min-height: 38px;
+      font-size: 0.73rem;
+    }
+
+    .insert-cte-standard-button {
+      min-height: 38px;
+      padding:
+        7px
+        12px;
+      color: #ffffff;
+      font-size: 0.71rem;
+      font-weight: 750;
+      white-space: nowrap;
+      background:
+        var(--planner-blue);
+      border: 0;
+      border-radius: 8px;
+      transition:
+        background
+        180ms ease,
+        transform
+        180ms ease,
+        opacity
+        180ms ease;
+    }
+
+    .insert-cte-standard-button:hover:not(:disabled) {
+      background:
+        var(--planner-red);
+      transform:
+        translateY(-1px);
+    }
+
+    .insert-cte-standard-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    @media (
+      max-width: 1050px
+    ) {
+      .cte-standards-picker-grid {
+        grid-template-columns:
+          repeat(
+            2,
+            minmax(
+              0,
+              1fr
+            )
+          );
+      }
+
+      .insert-cte-standard-button {
+        width: 100%;
+      }
+    }
+
+    @media (
+      max-width: 650px
+    ) {
+      .cte-standards-picker-grid {
+        grid-template-columns:
+          minmax(
+            0,
+            1fr
+          );
+      }
+    }
+    
+    /*
+    ==========================================
     OPTIONAL COMPONENTS
     ==========================================
     */
@@ -1544,7 +1701,7 @@
               ></textarea>
             </div>
 
-            <div class="form-group full-width">
+                        <div class="form-group full-width">
               <label for="standards">
                 Standards
                 <span class="required">
@@ -1552,9 +1709,79 @@
                 </span>
               </label>
 
+              <div class="cte-standards-picker">
+                <h4 class="cte-standards-picker-heading">
+                  Kentucky CTE Standards Helper
+                </h4>
+
+                <p class="cte-standards-picker-note">
+                  Choose a shared CTE academic or employability
+                  standard, then insert it into your lesson.
+                  You may insert more than one or type your own.
+                </p>
+
+                <div class="cte-standards-picker-grid">
+                  <div class="cte-standard-control">
+                    <label for="cte-standard-category">
+                      Category
+                    </label>
+
+                    <select id="cte-standard-category">
+                      <option value="">
+                        Choose a CTE standards category
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="cte-standard-control">
+                    <label for="cte-standard-group">
+                      Standards Group
+                    </label>
+
+                    <select
+                      id="cte-standard-group"
+                      disabled
+                    >
+                      <option value="">
+                        Choose a standards group
+                      </option>
+                    </select>
+                  </div>
+
+                  <div class="cte-standard-control">
+                    <label for="cte-standard-choice">
+                      Standard
+                    </label>
+
+                    <select
+                      id="cte-standard-choice"
+                      disabled
+                    >
+                      <option value="">
+                        Choose a standard
+                      </option>
+                    </select>
+                  </div>
+
+                  <button
+                    id="insert-cte-standard"
+                    class="insert-cte-standard-button"
+                    type="button"
+                    disabled
+                  >
+                    + Insert Standard
+                  </button>
+                </div>
+              </div>
+
+              <span class="help-text">
+                Insert standards with the helper or type and paste
+                standards directly into the box below.
+              </span>
+
               <textarea
                 id="standards"
-                placeholder="Type or paste the applicable Kentucky standard(s)."
+                placeholder="Selected standards will appear here. You may also type or paste applicable Kentucky standards."
                 required
               ></textarea>
             </div>
@@ -2035,13 +2262,17 @@
 
   <script src="data/profile-options.js?v=4"></script>
 
+  <script src="data/cte-standards.js?v=1"></script>
+
   <script src="config/google-config.js?v=1"></script>
   
   <script src="js/google-drive-picker.js?v=3"></script>
   
   <script src="js/navigation.js?v=3"></script>
   
-  <script src="js/planner-page.js?v=5"></script>
+  <script src="js/cte-standards-picker.js?v=1"></script>
+
+  <script src="js/planner-page.js?v=5"></script>  
   
   <script src="js/planner-duplicate.js?v=7"></script>
   
