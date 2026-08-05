@@ -2,6 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Full-Page Lesson Planner Saving
+Version 12
 ==========================================
 */
 
@@ -884,12 +885,20 @@ if (mode === "duplicate") {
         : "Lesson";
 
     const archiveData =
-      new URLSearchParams({
-        lessonId:
-          lesson.lessonId,
+  new URLSearchParams({
+    lessonId:
+      lesson.lessonId,
 
-        lessonDate:
-          lesson.lessonDate,
+    createdAt:
+      lesson.createdAt ||
+      "",
+
+    updatedAt:
+      lesson.updatedAt ||
+      "",
+
+    lessonDate:
+      lesson.lessonDate,
 
         teacherEmail:
           teacher.teacherEmail ||
