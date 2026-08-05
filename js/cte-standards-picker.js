@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 1
+Version 2
 ==========================================
 
 PURPOSE
@@ -46,18 +46,21 @@ source of truth for lesson saving.
   */
 
   function getStandardsData() {
-    if (
-      typeof cteStandards ===
-      "undefined" ||
-      !Array.isArray(
-        cteStandards
-      )
-    ) {
-      return [];
-    }
+  const shared =
+    Array.isArray(window.cteStandards)
+      ? window.cteStandards
+      : [];
 
-    return cteStandards;
-  }
+  const pathways =
+    Array.isArray(window.ctePathwayStandards)
+      ? window.ctePathwayStandards
+      : [];
+
+  return [
+    ...shared,
+    ...pathways
+  ];
+}
 
   function findCategory(
     categoryId
