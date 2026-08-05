@@ -47,7 +47,7 @@ Empty optional components are not displayed.
     "patriotLastPlannedLesson";
 
   window.PATRIOT_TEACH_LOADER_VERSION =
-    "13";
+    "14";
 
   /*
   ==========================================
@@ -1355,6 +1355,19 @@ LESSON FLOW ALIGNMENT CORRECTION
         translateY(-1px);
     }
 
+   /*
+    ========================================
+    HEADER FONT COLOR FIX
+    ========================================
+    */
+    
+    .lesson-workspace-header,
+    .lesson-workspace-header *,
+    #lesson-flow-panel .command-panel-header,
+    #lesson-flow-panel .command-panel-header * {
+      color: #ffffff !important;
+    }
+    
     /*
     ========================================
     RESPONSIVE
