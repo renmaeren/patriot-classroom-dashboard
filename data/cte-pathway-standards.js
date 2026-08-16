@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Kentucky CTE Pathway Standards
-Version 6 — ACSHS/ACCTC 2026–27 verified pathway map
+Version 7 — ACSHS/ACCTC 2026–27 verified pathway map
 ==========================================
 
 PURPOSE
@@ -73,26 +73,66 @@ const ctePathwayStandards = [
         id: "ag-power",
         title: "Agricultural Power, Structural, Technical Systems",
         cip: "01.0201.00",
-        sourceStatus: "verified-source-pending-exact-entry",
+        sourceStatus: "verified-exact-kde",
         sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/AgPower-PathStnd.pdf",
-        standards: []
+        standards: [
+          { code: "OA1", text: "Discuss the advantages and disadvantages of types of renewable and non-renewable energy, e.g., solar, wind, hydro, fossil fuels" },
+          { code: "OA2", text: "Compare the efficiency of various energy sources, e.g., gas, diesel, natural gas, biofuels" },
+          { code: "OB1", text: "Demonstrate safe practices specific to agriculture power, structural and technical systems, e.g., PPE, materials handling, shop/laboratory operation" },
+          { code: "OB2", text: "Discuss the function of safety systems on tools and equipment, e.g., PTO guard, SawStop, nail gun with sequential trigger" },
+          { code: "OB3", text: "Demonstrate proper use of measurement and layout tools" },
+          { code: "OB4", text: "Select, maintain and use hand/power tools in service, construction and fabrication" },
+          { code: "OC1", text: "Identify hazards and safety practices in planning and installing an electrical circuit" },
+          { code: "OC2", text: "Identify materials and tools used in electrical installation, e.g., wiring, fixtures, breakers, fuses, conduit" },
+          { code: "OC3", text: "Interpret basic electrical components, e.g., wiring, switches, receptacles, duplexes and diagrams" },
+          { code: "OC4", text: "Differentiate between alternating and direct current" },
+          { code: "OC5", text: "Describe types of electrical measurements, e.g., amperage, voltage, wattage, resistance" },
+          { code: "OC6", text: "Calculate measurements of electricity, e.g., watts, amps, volts, Ohm's Law" },
+          { code: "OC7", text: "Differentiate between the design and function of parallel and series electrical circuits" },
+          { code: "OC8", text: "Test and service electrical systems using a multimeter" },
+          { code: "OC9", text: "Diagnose malfunctioning electrical system components such as battery and lighting" },
+          { code: "OC10", text: "Describe basic operation of electric motors, e.g., parts, electromagnetism" },
+          { code: "OC11", text: "Select the proper electric motors, e.g., repulsion start, capacitor, split-phase, for various applications in AFNR" },
+          { code: "OD1", text: "Differentiate between the operation of gasoline and diesel engines" },
+          { code: "OD2", text: "Identify components and systems, e.g., cooling, compression, exhaust, fuel, lubrication, ignition, of internal combustion engines" },
+          { code: "OD3", text: "Select lubricants based on viscosity, source and equipment compatibility" },
+          { code: "OD4", text: "Discuss proper use and disposal of lubricants" },
+          { code: "OD5", text: "Assess an internal combustion engine to determine service and repair of basic ignition, fuel and compression using technical manuals and diagnostics" },
+          { code: "OE1", text: "Identify principles of hydraulic and pneumatic system operation, e.g., Pascal's Law, pressure, flow, valves" },
+          { code: "OE2", text: "Interpret basic symbols and diagrams in hydraulic and pneumatic systems" },
+          { code: "OE3", text: "Identify basic hydraulic and pneumatic system fittings and ports" },
+          { code: "OF1", text: "Demonstrate safe practices in the operation of power units and equipment, e.g. tractors, lawnmowers, generators" },
+          { code: "OF2", text: "Outline power unit and equipment controls, startup and shutdown procedures and pre-operation inspections using owners/service manuals" },
+          { code: "OF3", text: "Establish a preventative maintenance schedule for power units and equipment, e.g., lubricants, fluids, filters" },
+          { code: "OF4", text: "Describe the importance of adjusting equipment including belts, drives, chains, sprockets and maintenance of fluid conveyance components, e.g., hoses, lines, nozzles" },
+          { code: "OG1", text: "Identify symbols and drawing techniques used to develop plans, sketches and basic blueprints" },
+          { code: "OG2", text: "Identify the different types of construction drawings, e.g., design, electrical, elevation, floor plans" },
+          { code: "OG3", text: "Create sketches and plans of agricultural structures using scales and legends" },
+          { code: "OG4", text: "Prepare bills of materials, e.g., structures, fencing, repair, to accompany plans and sketches" },
+          { code: "OH1", text: "Develop criteria for selecting materials based on cost, quantities and characteristics for a specific project plan" },
+          { code: "OH2", text: "Apply basic principles of design, fabrication and installation of agricultural structures" },
+          { code: "OH3", text: "Describe options available to make AFNR structures more energy efficient, e.g., solar panels, geothermal energy, natural lighting, rainwater harvesting" },
+          { code: "OH4", text: "Discuss the steps, e.g., measuring, cutting, fastening, finishing, in constructing a project out of wood" },
+          { code: "OH5", text: "Calculate materials for concrete, brick, stone or masonry units in agricultural construction" },
+          { code: "OH6", text: "Describe the proper process to follow when pouring and finishing concrete" },
+          { code: "OH7", text: "Distinguish plumbing materials and products, e.g., copper, iron, steel, PVC, PEX" },
+          { code: "OH8", text: "Demonstrate basic plumbing skills, e.g., tool selection, measuring, installing, sweating/soldering, repair" },
+          { code: "OH9", text: "Determine proper insulation material and use for a given task in AFNR structures" },
+          { code: "OH10", text: "Calculate areas and volumes for coatings, e.g., paints, stains, varnishes" },
+          { code: "OH11", text: "Determine proper paint/coating material and method for various tasks" },
+          { code: "OI1", text: "Identify metal materials, e.g., steel, aluminum, stainless steel and their characteristics" },
+          { code: "OI2", text: "Describe the steps in basic repair, e.g., welding, brazing, riveting, of a metal object" },
+          { code: "OI3", text: "Distinguish welding processes, positions, materials preparation and equipment workpiece setup, e.g., beveling/grinding" },
+          { code: "OI4", text: "Construct and/or repair metal structures and equipment using welding procedures, including those associated with SMAW, GMAW, GTAW, fuel-oxygen and plasma arc torch methods" },
+          { code: "OJ1", text: "Discuss the use of computer-based systems in agriculture, food and natural resources, e.g., web-based service information, software diagnostics" },
+          { code: "OJ2", text: "Describe how Geographic Information System (GIS), Remote Sensing (RS) and Global Positioning System (GPS) are utilized in the agriculture industry" },
+          { code: "OJ3", text: "Describe equipment and processes, e.g., auto-guidance, variable-rate technology, yield maps, sensor technology used in precision agriculture" },
+          { code: "OJ4", text: "Explain how triangulation is utilized in geospatial technology" },
+          { code: "OJ5", text: "Describe robotic and drone applications utilized in agriculture" }
+        ]
       },
-      {
-        id: "animal-science",
-        title: "Animal Science",
-        cip: "01.0901.00",
-        sourceStatus: "verified-source-pending-exact-entry",
-        sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/AnimalSci-PathStnd.pdf",
-        standards: []
-      },
-      {
-        id: "plant-science",
-        title: "Plant Science Systems",
-        cip: "01.1101.00",
-        sourceStatus: "verified-source-pending-exact-entry",
-        sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/PlantScience-PathStnd.pdf",
-        standards: []
-      }
+      { id: "animal-science", title: "Animal Science", cip: "01.0901.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/AnimalSci-PathStnd.pdf", standards: [] },
+      { id: "plant-science", title: "Plant Science Systems", cip: "01.1101.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/PlantScience-PathStnd.pdf", standards: [] }
     ]
   },
   {
@@ -190,59 +230,25 @@ const ctePathwayStandards = [
       }
     ]
   },
-  {
-    id: "engineering",
-    title: "Engineering",
-    groups: [
-      { id: "engineering-design", title: "Engineering Design", cip: "15.1302.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/EngiDesign-PathStnd.pdf", standards: [] }
-    ]
-  },
-  {
-    id: "family-consumer-science",
-    title: "Family & Consumer Science",
-    groups: [
-      { id: "consumer-family-services", title: "Consumer & Family Services", cip: "19.0403.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/ConFamSvcs-PathStnd.pdf", standards: [] },
-      { id: "culinary-food-services", title: "Culinary & Food Services", cip: "12.0500.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/Culinary-PathStnd.pdf", standards: [] },
-      { id: "hospitality-tourism", title: "Hospitality, Travel, Tourism & Recreation", cip: "12.0500.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/HosTravTourRec-PathStnd.pdf", standards: [] }
-    ]
-  },
-  {
-    id: "health-science",
-    title: "Health Science",
-    groups: [
-      { id: "allied-health", title: "Allied Health", cip: "51.0000.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
-      { id: "biomedical-sciences", title: "Biomedical Sciences", cip: "26.0102.00", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
-      { id: "pre-nursing", title: "Pre-Nursing", cip: "51.2699.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
-    ]
-  },
-  {
-    id: "industrial-maintenance-technology",
-    title: "Industrial Maintenance Technology",
-    groups: [
-      { id: "industrial-maintenance-mechanic", title: "Industrial Maintenance Mechanic", cip: "47.0303.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
-      { id: "welding-maintenance-technician", title: "Welding Maintenance Technician", cip: "47.0303.06", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
-    ]
-  },
-  {
-    id: "jrotc",
-    title: "JROTC",
-    groups: [
-      { id: "jrotc", title: "JROTC", cip: "28.0301.00", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
-    ]
-  },
-  {
-    id: "media-arts",
-    title: "Media Arts",
-    groups: [
-      { id: "cinematography-video", title: "Cinematography & Video Production", cip: "09.0701.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/Cin-VidProd-PathStnd.pdf", standards: [] }
-    ]
-  },
-  {
-    id: "transportation",
-    title: "Transportation",
-    groups: [
-      { id: "automotive-maintenance-light-repair", title: "Automotive Maintenance & Light Repair", cip: "47.0604.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
-      { id: "diesel-immr", title: "Diesel IMMR", cip: "47.0605.07", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
-    ]
-  }
+  { id: "engineering", title: "Engineering", groups: [{ id: "engineering-design", title: "Engineering Design", cip: "15.1302.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/EngiDesign-PathStnd.pdf", standards: [] }] },
+  { id: "family-consumer-science", title: "Family & Consumer Science", groups: [
+    { id: "consumer-family-services", title: "Consumer & Family Services", cip: "19.0403.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/ConFamSvcs-PathStnd.pdf", standards: [] },
+    { id: "culinary-food-services", title: "Culinary & Food Services", cip: "12.0500.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/Culinary-PathStnd.pdf", standards: [] },
+    { id: "hospitality-tourism", title: "Hospitality, Travel, Tourism & Recreation", cip: "12.0500.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/HosTravTourRec-PathStnd.pdf", standards: [] }
+  ] },
+  { id: "health-science", title: "Health Science", groups: [
+    { id: "allied-health", title: "Allied Health", cip: "51.0000.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
+    { id: "biomedical-sciences", title: "Biomedical Sciences", cip: "26.0102.00", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
+    { id: "pre-nursing", title: "Pre-Nursing", cip: "51.2699.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
+  ] },
+  { id: "industrial-maintenance-technology", title: "Industrial Maintenance Technology", groups: [
+    { id: "industrial-maintenance-mechanic", title: "Industrial Maintenance Mechanic", cip: "47.0303.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
+    { id: "welding-maintenance-technician", title: "Welding Maintenance Technician", cip: "47.0303.06", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
+  ] },
+  { id: "jrotc", title: "JROTC", groups: [{ id: "jrotc", title: "JROTC", cip: "28.0301.00", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }] },
+  { id: "media-arts", title: "Media Arts", groups: [{ id: "cinematography-video", title: "Cinematography & Video Production", cip: "09.0701.00", sourceStatus: "verified-source-pending-exact-entry", sourceUrl: "https://www.education.ky.gov/CTE/endofprog/Documents/Cin-VidProd-PathStnd.pdf", standards: [] }] },
+  { id: "transportation", title: "Transportation", groups: [
+    { id: "automotive-maintenance-light-repair", title: "Automotive Maintenance & Light Repair", cip: "47.0604.01", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] },
+    { id: "diesel-immr", title: "Diesel IMMR", cip: "47.0605.07", sourceStatus: "no-direct-kde-pathway-standards-document", standards: [] }
+  ] }
 ];
