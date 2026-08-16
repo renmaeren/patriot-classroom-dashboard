@@ -2,149 +2,39 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 12
+Version 13
 ==========================================
 */
 (function () {
   "use strict";
-
-  const CATEGORY_SELECT_ID = "cte-standard-category";
-  const GROUP_SELECT_ID = "cte-standard-group";
-  const COURSE_SELECT_ID = "cte-standard-course";
-  const COURSE_SOURCE_ID = "cte-course-source";
-  const STANDARD_SELECT_ID = "cte-standard-choice";
-  const INSERT_BUTTON_ID = "insert-cte-standard";
-  const STANDARDS_FIELD_ID = "standards";
-
-  function getStandardsData() {
-    const shared = typeof cteStandards !== "undefined" && Array.isArray(cteStandards) ? cteStandards : [];
-    const pathways = typeof ctePathwayStandards !== "undefined" && Array.isArray(ctePathwayStandards) ? ctePathwayStandards : [];
-    return [...shared, ...pathways];
+  const CATEGORY_SELECT_ID="cte-standard-category",GROUP_SELECT_ID="cte-standard-group",COURSE_SELECT_ID="cte-standard-course",COURSE_SOURCE_ID="cte-course-source",STANDARD_SELECT_ID="cte-standard-choice",INSERT_BUTTON_ID="insert-cte-standard",STANDARDS_FIELD_ID="standards";
+  function getStandardsData(){const shared=typeof cteStandards!=="undefined"&&Array.isArray(cteStandards)?cteStandards:[];const pathways=typeof ctePathwayStandards!=="undefined"&&Array.isArray(ctePathwayStandards)?ctePathwayStandards:[];return [...shared,...pathways];}
+  function findCategory(id){return getStandardsData().find(c=>c.id===id)||null;} function findGroup(cid,gid){const c=findCategory(cid);return c&&Array.isArray(c.groups)?c.groups.find(g=>g.id===gid)||null:null;} function findStandard(cid,gid,code){const g=findGroup(cid,gid);return g&&Array.isArray(g.standards)?g.standards.find(s=>s.code===code)||null:null;}
+  function resetSelect(s,p){if(!s)return;s.innerHTML="";const o=document.createElement("option");o.value="";o.textContent=p;s.appendChild(o);s.value="";} function addOption(s,v,l){if(!s)return;const o=document.createElement("option");o.value=v;o.textContent=l;s.appendChild(o);}
+  function ensureCourseControls(){if(document.getElementById(COURSE_SELECT_ID))return;const gs=document.getElementById(GROUP_SELECT_ID),ss=document.getElementById(STANDARD_SELECT_ID);if(!gs||!ss)return;const gc=gs.closest(".cte-standard-control"),sc=ss.closest(".cte-standard-control"),grid=sc?sc.parentElement:null;if(!gc||!sc||!grid)return;const cc=document.createElement("div");cc.className="cte-standard-control";cc.id="cte-course-control";cc.style.display="none";const l=document.createElement("label");l.htmlFor=COURSE_SELECT_ID;l.textContent="Course";const s=document.createElement("select");s.id=COURSE_SELECT_ID;s.disabled=true;resetSelect(s,"Choose a KDE course");const a=document.createElement("a");a.id=COURSE_SOURCE_ID;a.href="#";a.target="_blank";a.rel="noopener noreferrer";a.textContent="Open official KDE course standards ↗";a.style.cssText="display:none;margin-top:6px;font-size:.7rem;font-weight:750;color:var(--planner-blue,#2a43a3)";cc.append(l,s,a);grid.insertBefore(cc,sc);s.addEventListener("change",updateCourseSource);}
+  function getCourseSelect(){return document.getElementById(COURSE_SELECT_ID);} function resetCourseControls(){const cc=document.getElementById("cte-course-control"),cs=getCourseSelect(),a=document.getElementById(COURSE_SOURCE_ID);if(cs){resetSelect(cs,"Choose a KDE course");cs.disabled=true;}if(a){a.style.display="none";a.removeAttribute("href");}if(cc)cc.style.display="none";}
+  function setControlAvailability(){const c=document.getElementById(CATEGORY_SELECT_ID),g=document.getElementById(GROUP_SELECT_ID),cs=getCourseSelect(),s=document.getElementById(STANDARD_SELECT_ID),b=document.getElementById(INSERT_BUTTON_ID);if(!c||!g||!s||!b)return;g.disabled=!c.value;const group=findGroup(c.value,g.value),cm=!!(group&&group.courseStandardsMode);if(cs&&cm){cs.disabled=!g.value;s.disabled=true;b.disabled=true;return;}s.disabled=!g.value;b.disabled=!s.value;}
+  function populateCategories(){const c=document.getElementById(CATEGORY_SELECT_ID);if(!c)return;resetSelect(c,"Choose a CTE standards category");getStandardsData().forEach(x=>addOption(c,x.id,x.title));}
+  function populateGroups(){const c=document.getElementById(CATEGORY_SELECT_ID),g=document.getElementById(GROUP_SELECT_ID),s=document.getElementById(STANDARD_SELECT_ID);if(!c||!g||!s)return;resetSelect(g,"Choose a standards group");resetSelect(s,"Choose a standard");resetCourseControls();const cat=findCategory(c.value);if(cat&&Array.isArray(cat.groups))cat.groups.forEach(x=>{const suffix=x.cip?` — ${x.cip}`:"",hs=Array.isArray(x.standards)&&x.standards.length>0,hc=Array.isArray(x.courses)&&x.courses.length>0,status=hs?"":hc?" — course standards":" — common standards only";addOption(g,x.id,`${x.title}${suffix}${status}`);});setControlAvailability();}
+  function populateCourses(g){const cc=document.getElementById("cte-course-control"),cs=getCourseSelect(),s=document.getElementById(STANDARD_SELECT_ID);if(!cc||!cs||!s)return;cc.style.display="block";resetSelect(cs,"Choose a KDE course");cs.disabled=false;(g.courses||[]).forEach(c=>addOption(cs,c.id,`${c.id} — ${c.title}`));resetSelect(s,"Choose a course above to open its official KDE standards");}
+  function updateCourseSource(){const c=document.getElementById(CATEGORY_SELECT_ID),g=document.getElementById(GROUP_SELECT_ID),cs=getCourseSelect(),a=document.getElementById(COURSE_SOURCE_ID);if(!c||!g||!cs||!a)return;const group=findGroup(c.value,g.value),course=group&&Array.isArray(group.courses)?group.courses.find(x=>x.id===cs.value):null;if(!course||!course.sourceUrl){a.style.display="none";a.removeAttribute("href");return;}const p=Number(course.sourcePage||0);a.href=p>0?`${course.sourceUrl}#page=${p}`:course.sourceUrl;a.style.display="inline-block";}
+  function populateStandards(){const c=document.getElementById(CATEGORY_SELECT_ID),g=document.getElementById(GROUP_SELECT_ID),s=document.getElementById(STANDARD_SELECT_ID);if(!c||!g||!s)return;resetCourseControls();const group=findGroup(c.value,g.value);if(!group){resetSelect(s,"Choose a standard");setControlAvailability();return;}if(group.courseStandardsMode&&Array.isArray(group.courses)&&group.courses.length){populateCourses(group);setControlAvailability();return;}const standards=Array.isArray(group.standards)?group.standards:[];if(!standards.length){resetSelect(s,"No pathway-specific KDE standards loaded — use Academic/Employability standards");setControlAvailability();return;}resetSelect(s,"Choose a standard");standards.forEach(x=>addOption(s,x.code,`${x.code} — ${x.text}`));setControlAvailability();}
+  function insertSelectedStandard(){const c=document.getElementById(CATEGORY_SELECT_ID),g=document.getElementById(GROUP_SELECT_ID),s=document.getElementById(STANDARD_SELECT_ID),f=document.getElementById(STANDARDS_FIELD_ID);if(!c||!g||!s||!f)return;const st=findStandard(c.value,g.value,s.value);if(!st)return;const t=`${st.code}: ${st.text}`,cur=String(f.value||"").trim(),lines=cur?cur.split("\n").map(x=>x.trim()):[];if(lines.includes(t)){window.alert(`${st.code} is already included in this lesson.`);f.focus();return;}f.value=cur?`${cur}\n${t}`:t;f.dispatchEvent(new Event("input",{bubbles:true}));f.focus();f.setSelectionRange(f.value.length,f.value.length);}
+  function connectStandardsPicker(){const c=document.getElementById(CATEGORY_SELECT_ID),g=document.getElementById(GROUP_SELECT_ID),s=document.getElementById(STANDARD_SELECT_ID),b=document.getElementById(INSERT_BUTTON_ID);if(!c||!g||!s||!b)return;ensureCourseControls();c.addEventListener("change",populateGroups);g.addEventListener("change",populateStandards);s.addEventListener("change",setControlAvailability);b.addEventListener("click",insertSelectedStandard);populateCategories();resetSelect(g,"Choose a standards group");resetSelect(s,"Choose a standard");resetCourseControls();setControlAvailability();}
+  function startStandardsPicker(){if(!getStandardsData().length){console.warn("Kentucky CTE standards data was not available.");return;}connectStandardsPicker();}
+  function loadScript(src,warning,done){const s=document.createElement("script");s.src=src;s.onload=done;s.onerror=function(){console.warn(warning);done();};document.head.appendChild(s);}
+  function initialize(){
+    const scripts=[
+      ["data/cte-agriculture-standards-exact.js?v=1","Exact Agriculture standards supplement did not load."],
+      ["data/cte-business-marketing-standards-exact.js?v=1","Exact Business & Marketing standards supplement did not load."],
+      ["data/cte-computer-science-standards.js?v=1","Computer Science standards supplement did not load."],
+      ["data/cte-engineering-fcs-standards.js?v=1","Engineering/FCS standards supplement did not load."],
+      ["data/cte-media-arts-standards.js?v=1","Media Arts standards supplement did not load."],
+      ["data/cte-health-science-courses.js?v=1","Health Science course standards map did not load."],
+      ["data/cte-industrial-maintenance-welding-courses.js?v=1","Industrial Maintenance/Welding course standards map did not load."],
+      ["data/cte-transportation-courses.js?v=1","Transportation course standards map did not load."],
+      ["data/cte-construction-cyber-jrotc-courses.js?v=1","Construction/Cyber/Data/JROTC course standards map did not load."]
+    ];let i=0;const next=()=>{if(i>=scripts.length){startStandardsPicker();return;}const [src,w]=scripts[i++];loadScript(src,w,next);};next();
   }
-
-  function findCategory(categoryId) { return getStandardsData().find(category => category.id === categoryId) || null; }
-  function findGroup(categoryId, groupId) {
-    const category = findCategory(categoryId);
-    if (!category || !Array.isArray(category.groups)) return null;
-    return category.groups.find(group => group.id === groupId) || null;
-  }
-  function findStandard(categoryId, groupId, standardCode) {
-    const group = findGroup(categoryId, groupId);
-    if (!group || !Array.isArray(group.standards)) return null;
-    return group.standards.find(standard => standard.code === standardCode) || null;
-  }
-  function resetSelect(select, placeholder) {
-    if (!select) return;
-    select.innerHTML = "";
-    const option = document.createElement("option"); option.value = ""; option.textContent = placeholder;
-    select.appendChild(option); select.value = "";
-  }
-  function addOption(select, value, label) {
-    if (!select) return;
-    const option = document.createElement("option"); option.value = value; option.textContent = label; select.appendChild(option);
-  }
-  function ensureCourseControls() {
-    if (document.getElementById(COURSE_SELECT_ID)) return;
-    const groupSelect = document.getElementById(GROUP_SELECT_ID);
-    const standardSelect = document.getElementById(STANDARD_SELECT_ID);
-    if (!groupSelect || !standardSelect) return;
-    const groupControl = groupSelect.closest(".cte-standard-control");
-    const standardControl = standardSelect.closest(".cte-standard-control");
-    const grid = standardControl ? standardControl.parentElement : null;
-    if (!groupControl || !standardControl || !grid) return;
-    const courseControl = document.createElement("div"); courseControl.className = "cte-standard-control"; courseControl.id = "cte-course-control"; courseControl.style.display = "none";
-    const label = document.createElement("label"); label.htmlFor = COURSE_SELECT_ID; label.textContent = "Course";
-    const select = document.createElement("select"); select.id = COURSE_SELECT_ID; select.disabled = true; resetSelect(select, "Choose a KDE course");
-    const sourceLink = document.createElement("a"); sourceLink.id = COURSE_SOURCE_ID; sourceLink.href = "#"; sourceLink.target = "_blank"; sourceLink.rel = "noopener noreferrer"; sourceLink.textContent = "Open official KDE course standards ↗"; sourceLink.style.display = "none"; sourceLink.style.marginTop = "6px"; sourceLink.style.fontSize = "0.7rem"; sourceLink.style.fontWeight = "750"; sourceLink.style.color = "var(--planner-blue, #2a43a3)";
-    courseControl.appendChild(label); courseControl.appendChild(select); courseControl.appendChild(sourceLink); grid.insertBefore(courseControl, standardControl);
-    select.addEventListener("change", updateCourseSource);
-  }
-  function getCourseSelect() { return document.getElementById(COURSE_SELECT_ID); }
-  function resetCourseControls() {
-    const courseControl = document.getElementById("cte-course-control"); const courseSelect = getCourseSelect(); const sourceLink = document.getElementById(COURSE_SOURCE_ID);
-    if (courseSelect) { resetSelect(courseSelect, "Choose a KDE course"); courseSelect.disabled = true; }
-    if (sourceLink) { sourceLink.style.display = "none"; sourceLink.removeAttribute("href"); }
-    if (courseControl) courseControl.style.display = "none";
-  }
-  function setControlAvailability() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); const groupSelect = document.getElementById(GROUP_SELECT_ID); const courseSelect = getCourseSelect(); const standardSelect = document.getElementById(STANDARD_SELECT_ID); const insertButton = document.getElementById(INSERT_BUTTON_ID);
-    if (!categorySelect || !groupSelect || !standardSelect || !insertButton) return;
-    groupSelect.disabled = !categorySelect.value;
-    const group = findGroup(categorySelect.value, groupSelect.value); const courseMode = !!(group && group.courseStandardsMode);
-    if (courseSelect && courseMode) { courseSelect.disabled = !groupSelect.value; standardSelect.disabled = true; insertButton.disabled = true; return; }
-    standardSelect.disabled = !groupSelect.value; insertButton.disabled = !standardSelect.value;
-  }
-  function populateCategories() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); if (!categorySelect) return;
-    resetSelect(categorySelect, "Choose a CTE standards category"); getStandardsData().forEach(category => addOption(categorySelect, category.id, category.title));
-  }
-  function populateGroups() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); const groupSelect = document.getElementById(GROUP_SELECT_ID); const standardSelect = document.getElementById(STANDARD_SELECT_ID);
-    if (!categorySelect || !groupSelect || !standardSelect) return;
-    resetSelect(groupSelect, "Choose a standards group"); resetSelect(standardSelect, "Choose a standard"); resetCourseControls();
-    const category = findCategory(categorySelect.value);
-    if (category && Array.isArray(category.groups)) category.groups.forEach(group => {
-      const suffix = group.cip ? ` — ${group.cip}` : ""; const hasStandards = Array.isArray(group.standards) && group.standards.length > 0; const hasCourses = Array.isArray(group.courses) && group.courses.length > 0; const status = hasStandards ? "" : hasCourses ? " — course standards" : " — common standards only";
-      addOption(groupSelect, group.id, `${group.title}${suffix}${status}`);
-    });
-    setControlAvailability();
-  }
-  function populateCourses(group) {
-    const courseControl = document.getElementById("cte-course-control"); const courseSelect = getCourseSelect(); const standardSelect = document.getElementById(STANDARD_SELECT_ID);
-    if (!courseControl || !courseSelect || !standardSelect) return;
-    courseControl.style.display = "block"; resetSelect(courseSelect, "Choose a KDE course"); courseSelect.disabled = false;
-    (group.courses || []).forEach(course => addOption(courseSelect, course.id, `${course.id} — ${course.title}`));
-    resetSelect(standardSelect, "Choose a course above to open its official KDE standards");
-  }
-  function updateCourseSource() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); const groupSelect = document.getElementById(GROUP_SELECT_ID); const courseSelect = getCourseSelect(); const sourceLink = document.getElementById(COURSE_SOURCE_ID);
-    if (!categorySelect || !groupSelect || !courseSelect || !sourceLink) return;
-    const group = findGroup(categorySelect.value, groupSelect.value); const course = group && Array.isArray(group.courses) ? group.courses.find(item => item.id === courseSelect.value) : null;
-    if (!course || !course.sourceUrl) { sourceLink.style.display = "none"; sourceLink.removeAttribute("href"); return; }
-    const page = Number(course.sourcePage || 0); sourceLink.href = page > 0 ? `${course.sourceUrl}#page=${page}` : course.sourceUrl; sourceLink.style.display = "inline-block";
-  }
-  function populateStandards() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); const groupSelect = document.getElementById(GROUP_SELECT_ID); const standardSelect = document.getElementById(STANDARD_SELECT_ID);
-    if (!categorySelect || !groupSelect || !standardSelect) return;
-    resetCourseControls(); const group = findGroup(categorySelect.value, groupSelect.value);
-    if (!group) { resetSelect(standardSelect, "Choose a standard"); setControlAvailability(); return; }
-    if (group.courseStandardsMode && Array.isArray(group.courses) && group.courses.length > 0) { populateCourses(group); setControlAvailability(); return; }
-    const standards = Array.isArray(group.standards) ? group.standards : [];
-    if (standards.length === 0) { resetSelect(standardSelect, "No pathway-specific KDE standards loaded — use Academic/Employability standards"); setControlAvailability(); return; }
-    resetSelect(standardSelect, "Choose a standard"); standards.forEach(standard => addOption(standardSelect, standard.code, `${standard.code} — ${standard.text}`)); setControlAvailability();
-  }
-  function insertSelectedStandard() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); const groupSelect = document.getElementById(GROUP_SELECT_ID); const standardSelect = document.getElementById(STANDARD_SELECT_ID); const standardsField = document.getElementById(STANDARDS_FIELD_ID);
-    if (!categorySelect || !groupSelect || !standardSelect || !standardsField) return;
-    const standard = findStandard(categorySelect.value, groupSelect.value, standardSelect.value); if (!standard) return;
-    const standardText = `${standard.code}: ${standard.text}`; const currentText = String(standardsField.value || "").trim(); const existingLines = currentText ? currentText.split("\n").map(line => line.trim()) : [];
-    if (existingLines.includes(standardText)) { window.alert(`${standard.code} is already included in this lesson.`); standardsField.focus(); return; }
-    standardsField.value = currentText ? `${currentText}\n${standardText}` : standardText; standardsField.dispatchEvent(new Event("input", { bubbles: true })); standardsField.focus(); standardsField.setSelectionRange(standardsField.value.length, standardsField.value.length);
-  }
-  function connectStandardsPicker() {
-    const categorySelect = document.getElementById(CATEGORY_SELECT_ID); const groupSelect = document.getElementById(GROUP_SELECT_ID); const standardSelect = document.getElementById(STANDARD_SELECT_ID); const insertButton = document.getElementById(INSERT_BUTTON_ID);
-    if (!categorySelect || !groupSelect || !standardSelect || !insertButton) return;
-    ensureCourseControls(); categorySelect.addEventListener("change", populateGroups); groupSelect.addEventListener("change", populateStandards); standardSelect.addEventListener("change", setControlAvailability); insertButton.addEventListener("click", insertSelectedStandard);
-    populateCategories(); resetSelect(groupSelect, "Choose a standards group"); resetSelect(standardSelect, "Choose a standard"); resetCourseControls(); setControlAvailability();
-  }
-  function startStandardsPicker() { if (getStandardsData().length === 0) { console.warn("Kentucky CTE standards data was not available."); return; } connectStandardsPicker(); }
-  function loadScript(src, warning, done) { const script = document.createElement("script"); script.src = src; script.onload = done; script.onerror = function () { console.warn(warning); done(); }; document.head.appendChild(script); }
-  function initialize() {
-    loadScript("data/cte-agriculture-standards-exact.js?v=1", "Exact Agriculture standards supplement did not load.", function () {
-      loadScript("data/cte-business-marketing-standards-exact.js?v=1", "Exact Business & Marketing standards supplement did not load.", function () {
-        loadScript("data/cte-computer-science-standards.js?v=1", "Computer Science standards supplement did not load.", function () {
-          loadScript("data/cte-engineering-fcs-standards.js?v=1", "Engineering/FCS standards supplement did not load.", function () {
-            loadScript("data/cte-media-arts-standards.js?v=1", "Media Arts standards supplement did not load.", function () {
-              loadScript("data/cte-health-science-courses.js?v=1", "Health Science course standards map did not load.", function () {
-                loadScript("data/cte-industrial-maintenance-welding-courses.js?v=1", "Industrial Maintenance/Welding course standards map did not load.", function () {
-                  loadScript("data/cte-transportation-courses.js?v=1", "Transportation course standards map did not load.", startStandardsPicker);
-                });
-              });
-            });
-          });
-        });
-      });
-    });
-  }
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", initialize); else initialize();
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",initialize);else initialize();
 })();
