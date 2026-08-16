@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 6
+Version 7
 ==========================================
 */
 (function () {
@@ -18,11 +18,9 @@ Version 6
     const shared = typeof cteStandards !== "undefined" && Array.isArray(cteStandards)
       ? cteStandards
       : [];
-
     const pathways = typeof ctePathwayStandards !== "undefined" && Array.isArray(ctePathwayStandards)
       ? ctePathwayStandards
       : [];
-
     return [...shared, ...pathways];
   }
 
@@ -65,9 +63,7 @@ Version 6
     const groupSelect = document.getElementById(GROUP_SELECT_ID);
     const standardSelect = document.getElementById(STANDARD_SELECT_ID);
     const insertButton = document.getElementById(INSERT_BUTTON_ID);
-
     if (!categorySelect || !groupSelect || !standardSelect || !insertButton) return;
-
     groupSelect.disabled = !categorySelect.value;
     standardSelect.disabled = !groupSelect.value;
     insertButton.disabled = !standardSelect.value;
@@ -76,18 +72,14 @@ Version 6
   function populateCategories() {
     const categorySelect = document.getElementById(CATEGORY_SELECT_ID);
     if (!categorySelect) return;
-
     resetSelect(categorySelect, "Choose a CTE standards category");
-    getStandardsData().forEach(category => {
-      addOption(categorySelect, category.id, category.title);
-    });
+    getStandardsData().forEach(category => addOption(categorySelect, category.id, category.title));
   }
 
   function populateGroups() {
     const categorySelect = document.getElementById(CATEGORY_SELECT_ID);
     const groupSelect = document.getElementById(GROUP_SELECT_ID);
     const standardSelect = document.getElementById(STANDARD_SELECT_ID);
-
     if (!categorySelect || !groupSelect || !standardSelect) return;
 
     resetSelect(groupSelect, "Choose a standards group");
@@ -100,7 +92,6 @@ Version 6
         addOption(groupSelect, group.id, `${group.title}${suffix}`);
       });
     }
-
     setControlAvailability();
   }
 
@@ -108,18 +99,15 @@ Version 6
     const categorySelect = document.getElementById(CATEGORY_SELECT_ID);
     const groupSelect = document.getElementById(GROUP_SELECT_ID);
     const standardSelect = document.getElementById(STANDARD_SELECT_ID);
-
     if (!categorySelect || !groupSelect || !standardSelect) return;
 
     resetSelect(standardSelect, "Choose a standard");
     const group = findGroup(categorySelect.value, groupSelect.value);
-
     if (group && Array.isArray(group.standards)) {
       group.standards.forEach(standard => {
         addOption(standardSelect, standard.code, `${standard.code} — ${standard.text}`);
       });
     }
-
     setControlAvailability();
   }
 
@@ -128,22 +116,14 @@ Version 6
     const groupSelect = document.getElementById(GROUP_SELECT_ID);
     const standardSelect = document.getElementById(STANDARD_SELECT_ID);
     const standardsField = document.getElementById(STANDARDS_FIELD_ID);
-
     if (!categorySelect || !groupSelect || !standardSelect || !standardsField) return;
 
-    const standard = findStandard(
-      categorySelect.value,
-      groupSelect.value,
-      standardSelect.value
-    );
-
+    const standard = findStandard(categorySelect.value, groupSelect.value, standardSelect.value);
     if (!standard) return;
 
     const standardText = `${standard.code}: ${standard.text}`;
     const currentText = String(standardsField.value || "").trim();
-    const existingLines = currentText
-      ? currentText.split("\n").map(line => line.trim())
-      : [];
+    const existingLines = currentText ? currentText.split("\n").map(line => line.trim()) : [];
 
     if (existingLines.includes(standardText)) {
       window.alert(`${standard.code} is already included in this lesson.`);
@@ -151,16 +131,10 @@ Version 6
       return;
     }
 
-    standardsField.value = currentText
-      ? `${currentText}\n${standardText}`
-      : standardText;
-
+    standardsField.value = currentText ? `${currentText}\n${standardText}` : standardText;
     standardsField.dispatchEvent(new Event("input", { bubbles: true }));
     standardsField.focus();
-    standardsField.setSelectionRange(
-      standardsField.value.length,
-      standardsField.value.length
-    );
+    standardsField.setSelectionRange(standardsField.value.length, standardsField.value.length);
   }
 
   function connectStandardsPicker() {
@@ -168,7 +142,6 @@ Version 6
     const groupSelect = document.getElementById(GROUP_SELECT_ID);
     const standardSelect = document.getElementById(STANDARD_SELECT_ID);
     const insertButton = document.getElementById(INSERT_BUTTON_ID);
-
     if (!categorySelect || !groupSelect || !standardSelect || !insertButton) return;
 
     categorySelect.addEventListener("change", populateGroups);
@@ -213,7 +186,13 @@ Version 6
             loadScript(
               "data/cte-computer-science-standards.js?v=1",
               "Computer Science standards supplement did not load.",
-              startStandardsPicker
+              function () {
+                loadScript(
+                  "data/cte-engineering-fcs-standards.js?v=1",
+                  "Engineering/FCS standards supplement did not load.",
+                  startStandardsPicker
+                );
+              }
             );
           }
         );
