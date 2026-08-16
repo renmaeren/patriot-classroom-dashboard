@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 8
+Version 9
 ==========================================
 */
 (function () {
@@ -234,7 +234,13 @@ Version 8
                 loadScript(
                   "data/cte-engineering-fcs-standards.js?v=1",
                   "Engineering/FCS standards supplement did not load.",
-                  startStandardsPicker
+                  function () {
+                    loadScript(
+                      "data/cte-media-arts-standards.js?v=1",
+                      "Media Arts standards supplement did not load.",
+                      startStandardsPicker
+                    );
+                  }
                 );
               }
             );
