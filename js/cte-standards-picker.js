@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 5
+Version 6
 ==========================================
 */
 (function () {
@@ -209,7 +209,13 @@ Version 5
         loadScript(
           "data/cte-business-marketing-standards-exact.js?v=1",
           "Exact Business & Marketing standards supplement did not load.",
-          startStandardsPicker
+          function () {
+            loadScript(
+              "data/cte-computer-science-standards.js?v=1",
+              "Computer Science standards supplement did not load.",
+              startStandardsPicker
+            );
+          }
         );
       }
     );
