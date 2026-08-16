@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 11
+Version 12
 ==========================================
 */
 (function () {
@@ -136,7 +136,9 @@ Version 11
           loadScript("data/cte-engineering-fcs-standards.js?v=1", "Engineering/FCS standards supplement did not load.", function () {
             loadScript("data/cte-media-arts-standards.js?v=1", "Media Arts standards supplement did not load.", function () {
               loadScript("data/cte-health-science-courses.js?v=1", "Health Science course standards map did not load.", function () {
-                loadScript("data/cte-industrial-maintenance-welding-courses.js?v=1", "Industrial Maintenance/Welding course standards map did not load.", startStandardsPicker);
+                loadScript("data/cte-industrial-maintenance-welding-courses.js?v=1", "Industrial Maintenance/Welding course standards map did not load.", function () {
+                  loadScript("data/cte-transportation-courses.js?v=1", "Transportation course standards map did not load.", startStandardsPicker);
+                });
               });
             });
           });
