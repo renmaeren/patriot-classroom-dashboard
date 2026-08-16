@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Lesson Library Search, Filters, and Local Fallback
-Version: 4
+Version: 5
 ==========================================
 */
 (function () {
@@ -39,6 +39,7 @@ Version: 4
   function normalizeLesson(lesson){if(!lesson||!lesson.lessonId)return null;const courses=Array.isArray(lesson.assignedCourses)?lesson.assignedCourses.filter(Boolean):[],periods=Array.isArray(lesson.assignedPeriods)?lesson.assignedPeriods.filter(Boolean):[];return {...lesson,course:lesson.course||courses.join(" / "),periods:lesson.periods||periods.join(", "),lessonResources:lesson.lessonResources||lesson.resources||[],cachedLocally:true};}
   function seedCacheFromLatest(){try{const latest=normalizeLesson(JSON.parse(localStorage.getItem(LAST_PLANNED_KEY)||"null"));if(!latest)return;const cache=readCache(),index=cache.findIndex(item=>item&&item.lessonId===latest.lessonId);if(index>=0)cache[index]=latest;else cache.unshift(latest);saveCache(cache);}catch(error){/* no local lesson to seed */}}
 
+  function remoteLessonIds(){const lessons=Array.isArray(window.patriotLibraryLessons)?window.patriotLibraryLessons:[];return new Set(lessons.map(lesson=>String(lesson&&lesson.lessonId||"").trim()).filter(Boolean));}
   function existingSignatures(){return new Set(Array.from(document.querySelectorAll(".lesson-card:not(.local-library-fallback)")).map(card=>{const metas=card.querySelectorAll(".lesson-card-meta");const title=(card.querySelector("h3")?.textContent||"").trim();const course=(metas[1]?.textContent||"").split("·")[0].trim();return `${title}|${course}`.toLowerCase();}));}
   function signatureMatchesRemote(lesson,signatures){const title=(lesson.lessonTitle||lesson.course||"Untitled Lesson").toLowerCase(),course=(lesson.course||"").toLowerCase();return signatures.has(`${title}|${course}`);}
 
@@ -49,7 +50,7 @@ Version: 4
     <div class="lesson-details">${detail("Bell Ringer",lesson.bellRinger||lesson.bellringer)}${detail("Essential Question",lesson.essentialQuestion)}${detail("I Can / Learning Target",lesson.learningTarget||lesson.ican)}${detail("Agenda",lesson.agenda)}${detail("Vocabulary",lesson.vocabulary)}${detail("Exit Ticket",lesson.exitTicket)}${detail("Homework",lesson.homework)}${detail("Success Criteria",lesson.successCriteria||lesson.success)}${detail("Why Are We Learning This?",lesson.whyLearning)}${detail("Standards",lesson.standards)}${detail("Materials Needed",lesson.materials)}${detail("Teacher Notes",lesson.teacherNotes)}</div>`;
     const details=card.querySelector(".lesson-details"),detailsButton=card.querySelector(".lesson-details-button");detailsButton.addEventListener("click",()=>{const open=details.classList.toggle("show");detailsButton.textContent=open?"Hide Lesson":"View Lesson";});card.querySelector(".lesson-teach-button").addEventListener("click",()=>{localStorage.setItem(TEACH_LESSON_KEY,JSON.stringify(classroomLesson(lesson)));window.location.href="classroom.html?mode=teach";});card.querySelector(".lesson-edit-button").addEventListener("click",()=>{localStorage.setItem(EDIT_LESSON_KEY,JSON.stringify(lesson));window.location.href="planner.html?mode=edit";});card.querySelector(".lesson-duplicate-button").addEventListener("click",()=>{localStorage.setItem(DUPLICATE_LESSON_KEY,JSON.stringify(lesson));window.location.href="planner.html?mode=duplicate";});return card;}
 
-  function renderLocalFallback(){seedCacheFromLatest();const container=document.getElementById("lesson-library-list");if(!container)return;container.querySelectorAll(".local-library-fallback").forEach(card=>card.remove());const signatures=existingSignatures();const cache=readCache().map(normalizeLesson).filter(Boolean).sort((a,b)=>String(b.updatedAt||b.createdAt||"").localeCompare(String(a.updatedAt||a.createdAt||"")));cache.forEach(lesson=>{if(!signatureMatchesRemote(lesson,signatures))container.appendChild(createLocalCard(lesson));});refreshFilters();}
+  function renderLocalFallback(){seedCacheFromLatest();const container=document.getElementById("lesson-library-list");if(!container)return;container.querySelectorAll(".local-library-fallback").forEach(card=>card.remove());const remoteIds=remoteLessonIds(),signatures=existingSignatures();const cache=readCache().map(normalizeLesson).filter(Boolean).sort((a,b)=>String(b.updatedAt||b.createdAt||"").localeCompare(String(a.updatedAt||a.createdAt||"")));cache.forEach(lesson=>{const id=String(lesson.lessonId||"").trim();if(id&&remoteIds.has(id))return;if(signatureMatchesRemote(lesson,signatures))return;container.appendChild(createLocalCard(lesson));});refreshFilters();}
 
   function connectFilters(){const searchInput=document.getElementById("lesson-search-input"),classFilter=document.getElementById("lesson-class-filter");if(!searchInput||!classFilter)return;searchInput.addEventListener("input",filterLessons);classFilter.addEventListener("change",filterLessons);window.addEventListener("patriotLibraryRendered",()=>window.setTimeout(renderLocalFallback,50));refreshFilters();window.setTimeout(renderLocalFallback,900);window.setTimeout(renderLocalFallback,2200);}
 
