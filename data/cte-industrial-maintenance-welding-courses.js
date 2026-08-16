@@ -4,24 +4,20 @@ PATRIOT COMMAND
 Industrial Maintenance & Welding Course Standards Sources
 ACSHS/ACCTC 2026–27
 ==========================================
-
-KDE publishes Manufacturing Technology expectations at the course level in the
-2026–27 Manufacturing Technology Courses document. This file maps Allen County's
-Industrial Maintenance pathways to the current KDE course entries without
-reproducing the full standards/task text.
-
-The Planner uses these records to let teachers choose a course and open
-the exact official KDE source before inserting or pasting standards.
 */
 (function () {
   "use strict";
-
   if (typeof ctePathwayStandards === "undefined" || !Array.isArray(ctePathwayStandards)) return;
-
   const category = ctePathwayStandards.find(item => item.id === "industrial-maintenance-technology");
   if (!category || !Array.isArray(category.groups)) return;
-
   const sourceUrl = "https://www.education.ky.gov/CTE/ctepa/Documents/26-27_AdvancedManufacturing_Courses.pdf";
+
+  const smawBackingStandards = [
+    "Practice and perform safe shop procedures at all times.",
+    "Apply the technical math required for employment opportunities in welding.",
+    "Perform all duties with emphasis on integrity, responsibility, quality, discipline and teamwork.",
+    "Weld SMAW groove welds in all positions."
+  ].map((text, i) => ({ code: `SMAWGB.${i + 1}`, text }));
 
   const catalog = {
     printing3d: { id: "332001", title: "Introduction to 3D Printing Technology", page: 43 },
@@ -58,7 +54,7 @@ the exact official KDE source before inserting or pasting standards.
     oxyFuel: { id: "480523", title: "Oxy-Fuel Systems and Lab", page: 98 },
     basicWelding: { id: "480524", title: "Basic Welding and Lab", page: 99 },
     gtaw: { id: "480525", title: "Gas Tungsten Arc Welding and Lab", page: 100 },
-    smawBacking: { id: "480528", title: "SMAW Groove Welds with Backing Lab", page: 101 },
+    smawBacking: { id: "480528", title: "SMAW Groove Welds with Backing Lab", page: 101, standards: smawBackingStandards },
     gtawGroove: { id: "480530", title: "GTAW Groove Lab", page: 102 },
     gmawGroove: { id: "480533", title: "GMAW Groove Lab", page: 103 },
     gmawAluminum: { id: "480534", title: "GMAW Aluminum Lab", page: 104 },
@@ -67,71 +63,9 @@ the exact official KDE source before inserting or pasting standards.
     smawPipeB: { id: "480537", title: "Shielded Metal Arc Welding Pipe Lab B", page: 107 }
   };
 
-  function course(record) {
-    return {
-      id: record.id,
-      title: record.title,
-      sourceUrl,
-      sourcePage: record.page,
-      sourceStatus: "official-kde-course-standards"
-    };
-  }
+  function course(record) { return { id: record.id, title: record.title, sourceUrl, sourcePage: record.page, sourceStatus: "official-kde-course-standards", standards: Array.isArray(record.standards) ? record.standards.map(item => ({ ...item })) : [] }; }
+  function apply(groupId, records) { const group = category.groups.find(item => item.id === groupId); if (!group) return; group.courseStandardsMode = true; group.courseSourceUrl = sourceUrl; group.courses = records.map(course); }
 
-  function apply(groupId, records) {
-    const group = category.groups.find(item => item.id === groupId);
-    if (!group) return;
-    group.courseStandardsMode = true;
-    group.courseSourceUrl = sourceUrl;
-    group.courses = records.map(course);
-  }
-
-  apply("industrial-maintenance-mechanic", [
-    catalog.printing3d,
-    catalog.shopManagement,
-    catalog.coop,
-    catalog.internship,
-    catalog.machineToolsA,
-    catalog.machineToolsB,
-    catalog.advancedHydraulics,
-    catalog.maintainingEquipment,
-    catalog.fluidPower,
-    catalog.electricalPrinciples,
-    catalog.advancedPneumatics,
-    catalog.weldingMaintenance,
-    catalog.plc,
-    catalog.specialTopics,
-    catalog.motorControls,
-    catalog.refrigeration,
-    catalog.robotics,
-    catalog.electricalComponents,
-    catalog.appliedMachining,
-    catalog.cooling,
-    catalog.heating,
-    catalog.hvacElectricity,
-    catalog.basicBlueprint,
-    catalog.troubleshooting
-  ]);
-
-  apply("welding-maintenance-technician", [
-    catalog.weldingMaintenance,
-    catalog.smawMaintenance,
-    catalog.gmawMaintenance,
-    catalog.basicBlueprint,
-    catalog.troubleshooting,
-    catalog.cutting,
-    catalog.weldingBlueprint,
-    catalog.weldingCertification,
-    catalog.smaw,
-    catalog.gmaw,
-    catalog.oxyFuel,
-    catalog.basicWelding,
-    catalog.gtaw,
-    catalog.smawBacking,
-    catalog.gtawGroove,
-    catalog.gmawGroove,
-    catalog.gmawAluminum,
-    catalog.smawOpenGroove,
-    catalog.smawPipeA,
-    catalog.smawPipeB
-  ]);
+  apply("industrial-maintenance-mechanic", [catalog.printing3d,catalog.shopManagement,catalog.coop,catalog.internship,catalog.machineToolsA,catalog.machineToolsB,catalog.advancedHydraulics,catalog.maintainingEquipment,catalog.fluidPower,catalog.electricalPrinciples,catalog.advancedPneumatics,catalog.weldingMaintenance,catalog.plc,catalog.specialTopics,catalog.motorControls,catalog.refrigeration,catalog.robotics,catalog.electricalComponents,catalog.appliedMachining,catalog.cooling,catalog.heating,catalog.hvacElectricity,catalog.basicBlueprint,catalog.troubleshooting]);
+  apply("welding-maintenance-technician", [catalog.weldingMaintenance,catalog.smawMaintenance,catalog.gmawMaintenance,catalog.basicBlueprint,catalog.troubleshooting,catalog.cutting,catalog.weldingBlueprint,catalog.weldingCertification,catalog.smaw,catalog.gmaw,catalog.oxyFuel,catalog.basicWelding,catalog.gtaw,catalog.smawBacking,catalog.gtawGroove,catalog.gmawGroove,catalog.gmawAluminum,catalog.smawOpenGroove,catalog.smawPipeA,catalog.smawPipeB]);
 })();
