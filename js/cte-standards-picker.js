@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 CTE Standards Picker
-Version 4
+Version 5
 ==========================================
 */
 (function () {
@@ -190,19 +190,29 @@ Version 4
     connectStandardsPicker();
   }
 
-  function loadExactAgricultureStandards(done) {
+  function loadScript(src, warning, done) {
     const script = document.createElement("script");
-    script.src = "data/cte-agriculture-standards-exact.js?v=1";
+    script.src = src;
     script.onload = done;
     script.onerror = function () {
-      console.warn("Exact Agriculture standards supplement did not load.");
+      console.warn(warning);
       done();
     };
     document.head.appendChild(script);
   }
 
   function initialize() {
-    loadExactAgricultureStandards(startStandardsPicker);
+    loadScript(
+      "data/cte-agriculture-standards-exact.js?v=1",
+      "Exact Agriculture standards supplement did not load.",
+      function () {
+        loadScript(
+          "data/cte-business-marketing-standards-exact.js?v=1",
+          "Exact Business & Marketing standards supplement did not load.",
+          startStandardsPicker
+        );
+      }
+    );
   }
 
   if (document.readyState === "loading") {
