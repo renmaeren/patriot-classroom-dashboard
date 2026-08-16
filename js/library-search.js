@@ -1,368 +1,58 @@
 /*
 ==========================================
 PATRIOT COMMAND
-Lesson Library Search and Class Filter
-Version: 3
+Lesson Library Search, Filters, and Local Fallback
+Version: 4
 ==========================================
-
-Connects the search and class-filter controls
-already defined in library.html.
-
-This file does not create duplicate controls.
 */
-
 (function () {
   "use strict";
 
-  function addFilterBehaviorStyles() {
-    if (
-      document.getElementById(
-        "library-filter-behavior-styles"
-      )
-    ) {
-      return;
-    }
+  const LOCAL_LIBRARY_CACHE_KEY="patriotLessonLibraryCacheV1";
+  const LAST_PLANNED_KEY="patriotLastPlannedLesson";
+  const EDIT_LESSON_KEY="patriotEditLesson";
+  const DUPLICATE_LESSON_KEY="patriotDuplicateLesson";
+  const TEACH_LESSON_KEY="patriotTeachLesson";
 
-    const style =
-      document.createElement("style");
+  function escapeHtml(value){return String(value||"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");}
+  function normalizeDate(value){if(!value)return"";const text=String(value).trim();if(/^\d{4}-\d{2}-\d{2}$/.test(text))return text;const date=new Date(text);if(Number.isNaN(date.getTime()))return"";return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,"0")}-${String(date.getDate()).padStart(2,"0")}`;}
+  function formatDate(value){const normalized=normalizeDate(value);if(!normalized)return value||"Date not available";const [y,m,d]=normalized.split("-").map(Number);return new Date(y,m-1,d,12).toLocaleDateString([], {weekday:"long",month:"long",day:"numeric",year:"numeric"});}
+  function formatTimestamp(value){if(!value)return"";const date=new Date(value);if(Number.isNaN(date.getTime()))return"";return date.toLocaleString([], {month:"long",day:"numeric",year:"numeric",hour:"numeric",minute:"2-digit"});}
 
-    style.id =
-      "library-filter-behavior-styles";
+  function addFilterBehaviorStyles(){if(document.getElementById("library-filter-behavior-styles"))return;const style=document.createElement("style");style.id="library-filter-behavior-styles";style.textContent=`
+    .lesson-card.library-hidden{display:none}
+    .library-no-results{display:none;margin:0;padding:18px;text-align:center;color:var(--library-ink,#11284a);background:rgba(255,226,105,.22);border:1px solid rgba(211,168,79,.55);border-radius:10px}
+    .library-no-results.show{display:block}
+    .lesson-card.local-library-fallback{border-left-color:#39764d}
+    .local-cache-note{margin:6px 0 0;color:#39764d;font-size:.63rem;font-weight:750}
+  `;document.head.appendChild(style);}
 
-    style.textContent = `
-      .lesson-card.library-hidden {
-        display: none;
-      }
+  function createNoResultsMessage(){if(document.getElementById("library-no-results"))return;const lessonList=document.getElementById("lesson-library-list");if(!lessonList)return;const noResults=document.createElement("div");noResults.id="library-no-results";noResults.className="library-no-results";noResults.setAttribute("role","status");noResults.textContent="No lessons match those choices.";lessonList.insertAdjacentElement("afterend",noResults);}
 
-      .library-no-results {
-        display: none;
-        margin: 0;
-        padding: 18px;
-        text-align: center;
-        color: var(--library-ink, #11284a);
-        background: rgba(255, 226, 105, 0.22);
-        border: 1px solid rgba(211, 168, 79, 0.55);
-        border-radius: 10px;
-      }
+  function getCourseFromCard(card){const metaLines=card.querySelectorAll(".lesson-card-meta");if(metaLines.length<2)return"";return metaLines[1].textContent.split("·")[0].trim();}
+  function buildClassChoices(){const select=document.getElementById("lesson-class-filter");if(!select)return;const currentValue=select.value;const courses=[...new Set(Array.from(document.querySelectorAll(".lesson-card")).map(getCourseFromCard).filter(Boolean))].sort((a,b)=>a.localeCompare(b));select.innerHTML='<option value="">All Classes</option>';courses.forEach(course=>{const option=document.createElement("option");option.value=course.toLowerCase();option.textContent=course;select.appendChild(option);});select.value=Array.from(select.options).some(option=>option.value===currentValue)?currentValue:"";}
+  function filterLessons(){const searchInput=document.getElementById("lesson-search-input"),classFilter=document.getElementById("lesson-class-filter"),resultText=document.getElementById("lesson-filter-count"),noResults=document.getElementById("library-no-results");if(!searchInput||!classFilter)return;const searchText=searchInput.value.trim().toLowerCase(),selectedCourse=classFilter.value,cards=Array.from(document.querySelectorAll(".lesson-card"));let visibleCount=0;cards.forEach(card=>{const searchableText=(card.dataset.searchText||card.textContent||"").toLowerCase(),cardCourse=getCourseFromCard(card).toLowerCase(),show=(!searchText||searchableText.includes(searchText))&&(!selectedCourse||cardCourse===selectedCourse);card.classList.toggle("library-hidden",!show);if(show)visibleCount+=1;});if(resultText)resultText.textContent=cards.length?`${visibleCount} of ${cards.length} saved ${cards.length===1?"lesson":"lessons"} shown`:"";if(noResults)noResults.classList.toggle("show",cards.length>0&&visibleCount===0);const count=document.getElementById("lesson-results-count");if(count&&!document.querySelector(".calendar-day.selected"))count.textContent=`${cards.length} ${cards.length===1?"lesson":"lessons"}`;}
+  function refreshFilters(){buildClassChoices();filterLessons();}
 
-      .library-no-results.show {
-        display: block;
-      }
-    `;
+  function readCache(){try{const parsed=JSON.parse(localStorage.getItem(LOCAL_LIBRARY_CACHE_KEY)||"[]");return Array.isArray(parsed)?parsed:[];}catch(error){console.warn("Local lesson cache could not be read.",error);return[];}}
+  function saveCache(cache){try{localStorage.setItem(LOCAL_LIBRARY_CACHE_KEY,JSON.stringify(cache.slice(0,250)));}catch(error){console.warn("Local lesson cache could not be saved.",error);}}
+  function normalizeLesson(lesson){if(!lesson||!lesson.lessonId)return null;const courses=Array.isArray(lesson.assignedCourses)?lesson.assignedCourses.filter(Boolean):[],periods=Array.isArray(lesson.assignedPeriods)?lesson.assignedPeriods.filter(Boolean):[];return {...lesson,course:lesson.course||courses.join(" / "),periods:lesson.periods||periods.join(", "),lessonResources:lesson.lessonResources||lesson.resources||[],cachedLocally:true};}
+  function seedCacheFromLatest(){try{const latest=normalizeLesson(JSON.parse(localStorage.getItem(LAST_PLANNED_KEY)||"null"));if(!latest)return;const cache=readCache(),index=cache.findIndex(item=>item&&item.lessonId===latest.lessonId);if(index>=0)cache[index]=latest;else cache.unshift(latest);saveCache(cache);}catch(error){/* no local lesson to seed */}}
 
-    document.head.appendChild(
-      style
-    );
-  }
+  function existingSignatures(){return new Set(Array.from(document.querySelectorAll(".lesson-card:not(.local-library-fallback)")).map(card=>{const metas=card.querySelectorAll(".lesson-card-meta");const title=(card.querySelector("h3")?.textContent||"").trim();const course=(metas[1]?.textContent||"").split("·")[0].trim();return `${title}|${course}`.toLowerCase();}));}
+  function signatureMatchesRemote(lesson,signatures){const title=(lesson.lessonTitle||lesson.course||"Untitled Lesson").toLowerCase(),course=(lesson.course||"").toLowerCase();return signatures.has(`${title}|${course}`);}
 
-  function createNoResultsMessage() {
-    if (
-      document.getElementById(
-        "library-no-results"
-      )
-    ) {
-      return;
-    }
+  function classroomLesson(lesson){return {lessonId:lesson.lessonId,createdAt:lesson.createdAt,updatedAt:lesson.updatedAt,lessonDate:lesson.lessonDate,lessonTitle:lesson.lessonTitle,assignedPeriods:lesson.assignedPeriods||[],assignedCourses:lesson.assignedCourses||[],bellringer:lesson.bellRinger||lesson.bellringer||"",essentialQuestion:lesson.essentialQuestion||"",agenda:lesson.agenda||"",ican:lesson.learningTarget||lesson.ican||"",success:lesson.successCriteria||lesson.success||"",profileId:lesson.profileId||"",profileComponent:lesson.profileComponent||"",profileStatement:lesson.profileFocus||lesson.profileStatement||"",standards:lesson.standards||"",vocabulary:lesson.vocabulary||"",resources:lesson.lessonResources||lesson.resources||[],exitTicket:lesson.exitTicket||"",homework:lesson.homework||"",whyLearning:lesson.whyLearning||"",materials:lesson.materials||""};}
+  function detail(title,value){if(!String(value||"").trim())return"";return `<div class="lesson-detail-section"><h4>${escapeHtml(title)}</h4><p>${escapeHtml(value)}</p></div>`;}
+  function createLocalCard(lesson){const card=document.createElement("article");card.className="lesson-card local-library-fallback";card.dataset.lessonId=lesson.lessonId;card.dataset.lessonDate=normalizeDate(lesson.lessonDate);card.dataset.searchText=[lesson.lessonTitle,lesson.course,lesson.periods,lesson.bellRinger,lesson.essentialQuestion,lesson.learningTarget,lesson.profileComponent,lesson.profileFocus,lesson.agenda,lesson.vocabulary,lesson.exitTicket,lesson.homework,lesson.successCriteria,lesson.whyLearning,lesson.standards,lesson.materials,lesson.teacherNotes].filter(Boolean).join(" ").toLowerCase();const title=lesson.lessonTitle||lesson.course||"Untitled Lesson";card.innerHTML=`
+    <div class="lesson-card-heading"><div class="lesson-card-copy"><h3>${escapeHtml(title)}</h3><p class="lesson-card-meta">${escapeHtml(formatDate(lesson.lessonDate))}</p><p class="lesson-card-meta">${escapeHtml(lesson.course||"Course not listed")}${lesson.periods?` · ${escapeHtml(lesson.periods)}`:""}</p>${lesson.updatedAt?`<p class="lesson-card-meta"><strong>Last Updated:</strong> ${escapeHtml(formatTimestamp(lesson.updatedAt))}</p>`:""}<p class="local-cache-note">Saved locally in Patriot Command</p></div><div class="lesson-card-actions"><button class="lesson-preview-button lesson-teach-button" type="button">Teach</button><button class="lesson-details-button" type="button">View Lesson</button><button class="lesson-edit-button" type="button">Edit</button><button class="lesson-duplicate-button" type="button">Duplicate</button></div></div>
+    <div class="lesson-details">${detail("Bell Ringer",lesson.bellRinger||lesson.bellringer)}${detail("Essential Question",lesson.essentialQuestion)}${detail("I Can / Learning Target",lesson.learningTarget||lesson.ican)}${detail("Agenda",lesson.agenda)}${detail("Vocabulary",lesson.vocabulary)}${detail("Exit Ticket",lesson.exitTicket)}${detail("Homework",lesson.homework)}${detail("Success Criteria",lesson.successCriteria||lesson.success)}${detail("Why Are We Learning This?",lesson.whyLearning)}${detail("Standards",lesson.standards)}${detail("Materials Needed",lesson.materials)}${detail("Teacher Notes",lesson.teacherNotes)}</div>`;
+    const details=card.querySelector(".lesson-details"),detailsButton=card.querySelector(".lesson-details-button");detailsButton.addEventListener("click",()=>{const open=details.classList.toggle("show");detailsButton.textContent=open?"Hide Lesson":"View Lesson";});card.querySelector(".lesson-teach-button").addEventListener("click",()=>{localStorage.setItem(TEACH_LESSON_KEY,JSON.stringify(classroomLesson(lesson)));window.location.href="classroom.html?mode=teach";});card.querySelector(".lesson-edit-button").addEventListener("click",()=>{localStorage.setItem(EDIT_LESSON_KEY,JSON.stringify(lesson));window.location.href="planner.html?mode=edit";});card.querySelector(".lesson-duplicate-button").addEventListener("click",()=>{localStorage.setItem(DUPLICATE_LESSON_KEY,JSON.stringify(lesson));window.location.href="planner.html?mode=duplicate";});return card;}
 
-    const lessonList =
-      document.getElementById(
-        "lesson-library-list"
-      );
+  function renderLocalFallback(){seedCacheFromLatest();const container=document.getElementById("lesson-library-list");if(!container)return;container.querySelectorAll(".local-library-fallback").forEach(card=>card.remove());const signatures=existingSignatures();const cache=readCache().map(normalizeLesson).filter(Boolean).sort((a,b)=>String(b.updatedAt||b.createdAt||"").localeCompare(String(a.updatedAt||a.createdAt||"")));cache.forEach(lesson=>{if(!signatureMatchesRemote(lesson,signatures))container.appendChild(createLocalCard(lesson));});refreshFilters();}
 
-    if (!lessonList) {
-      return;
-    }
+  function connectFilters(){const searchInput=document.getElementById("lesson-search-input"),classFilter=document.getElementById("lesson-class-filter");if(!searchInput||!classFilter)return;searchInput.addEventListener("input",filterLessons);classFilter.addEventListener("change",filterLessons);window.addEventListener("patriotLibraryRendered",()=>window.setTimeout(renderLocalFallback,50));refreshFilters();window.setTimeout(renderLocalFallback,900);window.setTimeout(renderLocalFallback,2200);}
 
-    const noResults =
-      document.createElement("div");
-
-    noResults.id =
-      "library-no-results";
-
-    noResults.className =
-      "library-no-results";
-
-    noResults.setAttribute(
-      "role",
-      "status"
-    );
-
-    noResults.textContent =
-      "No lessons match those choices.";
-
-    lessonList.insertAdjacentElement(
-      "afterend",
-      noResults
-    );
-  }
-
-  function getCourseFromCard(card) {
-    const metaLines =
-      card.querySelectorAll(
-        ".lesson-card-meta"
-      );
-
-    if (metaLines.length < 2) {
-      return "";
-    }
-
-    return metaLines[1]
-      .textContent
-      .split("·")[0]
-      .trim();
-  }
-
-  function buildClassChoices() {
-    const select =
-      document.getElementById(
-        "lesson-class-filter"
-      );
-
-    if (!select) {
-      return;
-    }
-
-    const currentValue =
-      select.value;
-
-    const courses = [
-      ...new Set(
-        Array.from(
-          document.querySelectorAll(
-            ".lesson-card"
-          )
-        )
-          .map(getCourseFromCard)
-          .filter(Boolean)
-      )
-    ].sort((firstCourse, secondCourse) => {
-      return firstCourse.localeCompare(
-        secondCourse
-      );
-    });
-
-    select.innerHTML = `
-      <option value="">
-        All Classes
-      </option>
-    `;
-
-    courses.forEach(course => {
-      const option =
-        document.createElement("option");
-
-      option.value =
-        course.toLowerCase();
-
-      option.textContent =
-        course;
-
-      select.appendChild(
-        option
-      );
-    });
-
-    const stillExists =
-      Array.from(
-        select.options
-      ).some(option => {
-        return (
-          option.value ===
-          currentValue
-        );
-      });
-
-    select.value =
-      stillExists
-        ? currentValue
-        : "";
-  }
-
-  function filterLessons() {
-    const searchInput =
-      document.getElementById(
-        "lesson-search-input"
-      );
-
-    const classFilter =
-      document.getElementById(
-        "lesson-class-filter"
-      );
-
-    const resultText =
-      document.getElementById(
-        "lesson-filter-count"
-      );
-
-    const noResults =
-      document.getElementById(
-        "library-no-results"
-      );
-
-    if (
-      !searchInput ||
-      !classFilter
-    ) {
-      return;
-    }
-
-    const searchText =
-      searchInput.value
-        .trim()
-        .toLowerCase();
-
-    const selectedCourse =
-      classFilter.value;
-
-    const cards =
-      Array.from(
-        document.querySelectorAll(
-          ".lesson-card"
-        )
-      );
-
-    let visibleCount = 0;
-
-    cards.forEach(card => {
-      const searchableText =
-        (
-          card.dataset.searchText ||
-          card.textContent ||
-          ""
-        ).toLowerCase();
-
-      const cardCourse =
-        getCourseFromCard(card)
-          .toLowerCase();
-
-      const matchesSearch =
-        !searchText ||
-        searchableText.includes(
-          searchText
-        );
-
-      const matchesCourse =
-        !selectedCourse ||
-        cardCourse ===
-          selectedCourse;
-
-      const shouldShow =
-        matchesSearch &&
-        matchesCourse;
-
-      card.classList.toggle(
-        "library-hidden",
-        !shouldShow
-      );
-
-      if (shouldShow) {
-        visibleCount += 1;
-      }
-    });
-
-    if (resultText) {
-      if (cards.length === 0) {
-        resultText.textContent =
-          "";
-      } else {
-        const lessonWord =
-          cards.length === 1
-            ? "lesson"
-            : "lessons";
-
-        resultText.textContent =
-          `${visibleCount} of ${cards.length} saved ${lessonWord} shown`;
-      }
-    }
-
-    if (noResults) {
-      noResults.classList.toggle(
-        "show",
-        cards.length > 0 &&
-          visibleCount === 0
-      );
-    }
-  }
-
-  function refreshFilters() {
-    buildClassChoices();
-    filterLessons();
-  }
-
-  function connectFilters() {
-    const searchInput =
-      document.getElementById(
-        "lesson-search-input"
-      );
-
-    const classFilter =
-      document.getElementById(
-        "lesson-class-filter"
-      );
-
-    if (
-      !searchInput ||
-      !classFilter
-    ) {
-      return;
-    }
-
-    searchInput.addEventListener(
-      "input",
-      filterLessons
-    );
-
-    classFilter.addEventListener(
-      "change",
-      filterLessons
-    );
-
-    window.addEventListener(
-      "patriotLibraryRendered",
-      refreshFilters
-    );
-
-    const lessonList =
-      document.getElementById(
-        "lesson-library-list"
-      );
-
-    if (
-      lessonList &&
-      typeof MutationObserver !==
-        "undefined"
-    ) {
-      const observer =
-        new MutationObserver(
-          refreshFilters
-        );
-
-      observer.observe(
-        lessonList,
-        {
-          childList: true
-        }
-      );
-    }
-
-    refreshFilters();
-  }
-
-  function startLibraryFilters() {
-    addFilterBehaviorStyles();
-    createNoResultsMessage();
-    connectFilters();
-  }
-
-  if (
-    document.readyState ===
-    "loading"
-  ) {
-    document.addEventListener(
-      "DOMContentLoaded",
-      startLibraryFilters
-    );
-  } else {
-    startLibraryFilters();
-  }
+  function startLibraryFilters(){addFilterBehaviorStyles();createNoResultsMessage();connectFilters();}
+  if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",startLibraryFilters);else startLibraryFilters();
 })();
