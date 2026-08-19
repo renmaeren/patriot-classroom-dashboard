@@ -1,0 +1,188 @@
+name: Simplify Planner Actions
+
+on:
+  push:
+    branches:
+      - simplify-planner-actions
+    paths:
+      - .github/workflows/simplify-planner-actions.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch-planner:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: simplify-planner-actions
+
+      - name: Simplify planner actions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('planner.html')
+          text = path.read_text()
+
+          old_css = '''    .planner-actions {
+      display: grid;
+      grid-template-columns:
+        minmax(
+          180px,
+          1.4fr
+        )
+        minmax(
+          150px,
+          0.8fr
+        )
+        minmax(
+          150px,
+          0.8fr
+        );
+      gap: 9px;
+      margin-top: 15px;
+    }
+'''
+
+          new_css = '''    .planner-actions {
+      display: grid;
+      grid-template-columns:
+        repeat(
+          2,
+          minmax(
+            180px,
+            1fr
+          )
+        );
+      gap: 9px;
+      margin-top: 15px;
+    }
+
+    .planner-library-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      grid-column: 1 / -1;
+      justify-self: center;
+      min-height: 30px;
+      margin-top: 2px;
+      padding: 3px 8px;
+      color: var(--planner-blue);
+      font-size: 0.72rem;
+      font-weight: 750;
+      text-decoration: none;
+      border-radius: 7px;
+      transition:
+        color 180ms ease,
+        background 180ms ease;
+    }
+
+    .planner-library-link:hover {
+      color: var(--planner-red);
+      background:
+        rgba(
+          42,
+          67,
+          163,
+          0.06
+        );
+    }
+'''
+
+          old_library_css = '''    .library-button,
+    .library-button:visited {
+      color: #ffffff;
+      background:
+        var(--planner-blue);
+      border:
+        1px solid
+        var(--planner-blue);
+    }
+
+    .library-button:hover {
+      color: #ffffff;
+      background:
+        var(--planner-red);
+      border-color:
+        var(--planner-red);
+    }
+
+'''
+
+          old_actions = '''      <div class="planner-actions">
+        <button
+          class="action-button save-button"
+          type="submit"
+        >
+          Save Lesson
+        </button>
+
+        <button
+        id="teach-this-lesson-button"
+        class="action-button teach-button"
+        type="button"
+      >
+        ▶ Teach This Lesson
+      </button>
+
+        <a
+          class="action-button library-button"
+          href="library.html"
+        >
+          Open Lesson Library
+        </a>
+      </div>
+'''
+
+          new_actions = '''      <div class="planner-actions">
+        <button
+          class="action-button save-button"
+          type="submit"
+        >
+          Save Lesson
+        </button>
+
+        <button
+          id="teach-this-lesson-button"
+          class="action-button teach-button"
+          type="button"
+        >
+          ▶ Save &amp; Teach
+        </button>
+
+        <a
+          class="planner-library-link"
+          href="library.html"
+        >
+          View My Lesson Library →
+        </a>
+      </div>
+'''
+
+          for old, new, label in [
+              (old_css, new_css, 'planner action grid'),
+              (old_library_css, '', 'old library button styles'),
+              (old_actions, new_actions, 'planner action markup'),
+          ]:
+              if old not in text:
+                  raise SystemExit(f'Could not find expected {label} block; refusing unsafe edit.')
+              text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+
+      - name: Commit planner cleanup
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add planner.html
+          git commit -m "Simplify planner save and teach actions"
+          git push origin HEAD:simplify-planner-actions
+
+      - name: Remove temporary workflow
+        run: |
+          git rm .github/workflows/simplify-planner-actions.yml
+          git commit -m "Remove temporary planner patch workflow"
+          git push origin HEAD:simplify-planner-actions
