@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Google Authentication
-Version 4
+Version 5
 ==========================================
 */
 (function () {
@@ -10,8 +10,12 @@ Version 4
 
   const AUTH_TOKEN_KEY = "patriotGoogleIdToken";
   const AUTH_USER_KEY = "patriotGoogleUser";
+  const TEACHER_PROFILE_KEY = "patriotTeacherProfile";
+  const LEGACY_TEACHER_SETTINGS_KEY = "patriotTeacherSettings";
+  const CLOUD_SYNC_MARKER = "__cloudSyncedAt";
   const ALLOWED_DOMAIN = "allen.kyschools.us";
   let initialized = false;
+  let settingsSyncPending = false;
 
   function cleanText(value) {
     return String(value || "").trim();
@@ -71,6 +75,124 @@ Version 4
     return Boolean(user?.email && user.email.toLowerCase().endsWith(`@${ALLOWED_DOMAIN}`));
   }
 
+  function readLocalTeacherSettings() {
+    try {
+      const value = JSON.parse(localStorage.getItem(TEACHER_PROFILE_KEY) || "null");
+      return value && typeof value === "object" ? value : null;
+    } catch (error) {
+      console.warn("Patriot Command could not read local teacher settings.", error);
+      return null;
+    }
+  }
+
+  function writeLocalTeacherSettings(settings, syncedAt) {
+    if (!settings || typeof settings !== "object") return;
+
+    const normalized = {
+      teacherName: cleanText(settings.teacherName),
+      teacherEmail: cleanText(settings.teacherEmail).toLowerCase(),
+      room: cleanText(settings.room),
+      classes:
+        settings.classes && typeof settings.classes === "object"
+          ? { ...settings.classes }
+          : {},
+      [CLOUD_SYNC_MARKER]: cleanText(syncedAt || settings.updatedAt || new Date().toISOString())
+    };
+
+    localStorage.setItem(TEACHER_PROFILE_KEY, JSON.stringify(normalized));
+    localStorage.setItem(
+      LEGACY_TEACHER_SETTINGS_KEY,
+      JSON.stringify({
+        teacher: normalized.teacherName,
+        course: normalized.classes["1st Period"] || "Your Class",
+        room: normalized.room
+      })
+    );
+
+    window.dispatchEvent(new CustomEvent("patriot-teacher-settings-synced", {
+      detail: { settings: normalized }
+    }));
+  }
+
+  function getBackendUrl() {
+    return cleanText(window.GOOGLE_SCRIPT_URL);
+  }
+
+  async function postTeacherSettingsAction(action, user, token, settings) {
+    const scriptUrl = getBackendUrl();
+    if (!scriptUrl || !user?.email || !token) return null;
+
+    const requestBody = new URLSearchParams();
+    requestBody.set("action", action);
+    requestBody.set("teacherEmail", cleanText(user.email).toLowerCase());
+    requestBody.set("idToken", token);
+
+    if (settings) {
+      requestBody.set("teacherName", cleanText(settings.teacherName || user.name));
+      requestBody.set("room", cleanText(settings.room));
+      requestBody.set("classes", JSON.stringify(settings.classes || {}));
+    }
+
+    const response = await fetch(scriptUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
+      },
+      body: requestBody.toString()
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result || result.success !== true) {
+      throw new Error(result?.message || "Teacher settings could not be synchronized.");
+    }
+    return result;
+  }
+
+  async function syncTeacherSettingsAcrossDevices(user, token) {
+    if (settingsSyncPending || !user?.email || !token || !getBackendUrl()) return;
+    settingsSyncPending = true;
+
+    try {
+      const cloudResult = await postTeacherSettingsAction(
+        "getTeacherSettings",
+        user,
+        token
+      );
+
+      const cloudSettings = cloudResult?.settings || null;
+      const localSettings = readLocalTeacherSettings();
+      const localEmail = cleanText(localSettings?.teacherEmail).toLowerCase();
+      const sameTeacher = !localEmail || localEmail === cleanText(user.email).toLowerCase();
+      const localLooksEdited = Boolean(localSettings && sameTeacher && !localSettings[CLOUD_SYNC_MARKER]);
+
+      if (localLooksEdited || (!cloudSettings && localSettings && sameTeacher)) {
+        const saveResult = await postTeacherSettingsAction(
+          "saveTeacherSettings",
+          user,
+          token,
+          {
+            ...localSettings,
+            teacherName: cleanText(localSettings.teacherName || user.name),
+            teacherEmail: cleanText(user.email).toLowerCase()
+          }
+        );
+
+        if (saveResult?.settings) {
+          writeLocalTeacherSettings(saveResult.settings, saveResult.settings.updatedAt);
+        }
+        return;
+      }
+
+      if (cloudSettings) {
+        writeLocalTeacherSettings(cloudSettings, cloudSettings.updatedAt);
+      }
+    } catch (error) {
+      console.warn("Patriot Command teacher settings cloud sync is unavailable.", error);
+    } finally {
+      settingsSyncPending = false;
+    }
+  }
+
   function saveSignedInUser(token, payload) {
     const user = {
       id: cleanText(payload.sub),
@@ -94,6 +216,7 @@ Version 4
       detail: { signedIn: true, user }
     }));
 
+    syncTeacherSettingsAcrossDevices(user, token);
     renderAuthStatus();
   }
 
@@ -211,7 +334,7 @@ Version 4
       ? `
         <div aria-hidden="true" style="display:grid;place-items:center;width:56px;height:56px;margin:0 auto 14px;color:#fff;font-size:1.35rem;font-weight:900;background:#2a43a3;border:4px solid #ffe269;border-radius:50%;">P</div>
         <div style="margin-bottom:7px;color:#20283a;font-family:Literata,Georgia,serif;font-size:1.3rem;font-weight:750;line-height:1.2;">Connect your school Google account</div>
-        <p style="margin:0 auto 18px;max-width:360px;color:#657087;font-size:.78rem;line-height:1.5;">Sign in before you begin so Patriot Command can connect saved lessons to your Allen County Schools account and keep your Lesson Library available across devices.</p>
+        <p style="margin:0 auto 18px;max-width:360px;color:#657087;font-size:.78rem;line-height:1.5;">Sign in before you begin so Patriot Command can connect saved lessons and teacher settings to your Allen County Schools account across devices.</p>
         <div id="patriot-google-button" style="display:flex;justify-content:center;"></div>
         <p style="margin:14px 0 0;color:#657087;font-size:.65rem;line-height:1.4;">Use your <strong>@allen.kyschools.us</strong> account.</p>
       `
@@ -270,6 +393,10 @@ Version 4
       hd: ALLOWED_DOMAIN
     });
     renderAuthStatus();
+
+    if (window.PATRIOT_AUTH.signedIn && window.PATRIOT_AUTH.user && !isTokenExpired(getIdToken())) {
+      syncTeacherSettingsAcrossDevices(window.PATRIOT_AUTH.user, getIdToken());
+    }
   }
 
   function signOut() {
@@ -304,6 +431,7 @@ Version 4
     getIdToken,
     requireSignIn,
     signOut,
+    syncTeacherSettings: () => syncTeacherSettingsAcrossDevices(window.PATRIOT_AUTH.user, getIdToken()),
     initialize: initializeGoogleAuth
   };
 
@@ -315,5 +443,5 @@ Version 4
     initializeGoogleAuth();
   }
 
-  console.log("Patriot Google Auth v4 loaded.");
+  console.log("Patriot Google Auth v5 loaded.");
 })();
