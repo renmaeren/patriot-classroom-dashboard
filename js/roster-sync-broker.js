@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Roster Sync Broker
-Version 1
+Version 3
 ==========================================
 
 Runs on authenticated Patriot Command pages that load
@@ -67,19 +67,47 @@ cloud roster record.
     }));
   }
 
+  function getAuthUser() {
+    const auth = window.PATRIOT_AUTH || null;
+    if (!auth) return null;
+
+    if (typeof auth.getUser === "function") {
+      const user = auth.getUser();
+      if (user) return user;
+    }
+
+    return auth.user || window.PATRIOT_USER || null;
+  }
+
+  function getAuthToken() {
+    const auth = window.PATRIOT_AUTH || null;
+    if (!auth) return "";
+
+    if (typeof auth.getIdToken === "function") {
+      const token = auth.getIdToken();
+      if (token) return token;
+    }
+
+    return auth.idToken || sessionStorage.getItem("patriotGoogleIdToken") || "";
+  }
+
   function authReady() {
+    const auth = window.PATRIOT_AUTH || null;
+    const user = getAuthUser();
+    const token = getAuthToken();
+
     return Boolean(
-      window.PATRIOT_AUTH?.signedIn &&
-      window.PATRIOT_AUTH?.getUser?.()?.email &&
-      window.PATRIOT_AUTH?.getIdToken?.() &&
+      auth?.signedIn &&
+      user?.email &&
+      token &&
       window.GOOGLE_SCRIPT_URL
     );
   }
 
   async function post(action, rosters) {
-    const auth = window.PATRIOT_AUTH;
-    const user = auth?.getUser?.() || auth?.user;
-    const token = auth?.getIdToken?.() || auth?.idToken || "";
+    const auth = window.PATRIOT_AUTH || null;
+    const user = getAuthUser();
+    const token = getAuthToken();
 
     if (!auth?.signedIn || !user?.email || !token) {
       throw new Error("Google sign-in is required for roster sync.");
@@ -123,30 +151,29 @@ cloud roster record.
       const cloudHasData = hasRosterData(cloud);
       const localHasData = hasRosterData(local);
 
-      /* A local roster changed after the last successful sync: local wins. */
       if (localWasEdited) {
         const saved = await post("saveStudentRosters", local);
         writeLocal(saved?.rosters || local, saved?.updatedAt);
         return;
       }
 
-      /* First migration from a teacher's existing browser. */
       if (!lastSyncedSnapshot && localHasData && !cloudHasData) {
         const saved = await post("saveStudentRosters", local);
         writeLocal(saved?.rosters || local, saved?.updatedAt);
         return;
       }
 
-      /* A signed-in new device gets the cloud copy. */
       if (cloudHasData) {
         writeLocal(cloud, cloudResult?.updatedAt);
         return;
       }
 
-      /* Neither side has roster data yet; record the clean baseline. */
       writeLocal(local, cloudResult?.updatedAt || "");
     } catch (error) {
       console.warn("Patriot Command roster sync is unavailable.", error);
+      window.dispatchEvent(new CustomEvent("patriot-roster-sync-error", {
+        detail: { message: error?.message || "Roster sync failed." }
+      }));
     } finally {
       syncPending = false;
     }
@@ -158,7 +185,7 @@ cloud roster record.
       syncRosters();
       return;
     }
-    if (tries < 40) {
+    if (tries < 120) {
       window.setTimeout(() => waitForAuth(tries + 1), 250);
     }
   }
