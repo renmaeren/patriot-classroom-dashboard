@@ -34,7 +34,7 @@ Patriot Command page enhancements
   loadScript("js/auth-watchdog.js?v=1", "patriot-auth-watchdog");
 
   /* Keep student rosters backed up to the signed-in teacher account. */
-  loadScript("js/roster-sync-broker.js?v=2", "patriot-roster-sync-broker");
+  loadScript("js/roster-sync-broker.js?v=3", "patriot-roster-sync-broker");
 
   if (page === "settings.html") {
     loadScript("js/google-auth.js?v=5", "patriot-settings-google-auth");
