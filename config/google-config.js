@@ -33,8 +33,8 @@ Patriot Command page enhancements
   /* Keep long-running tabs from silently using an expired Google session. */
   loadScript("js/auth-watchdog.js?v=1", "patriot-auth-watchdog");
 
-  /* Keep student rosters synchronized whenever an authenticated page is open. */
-  loadScript("js/roster-sync-broker.js?v=1", "patriot-roster-sync-broker");
+  /* Keep student rosters backed up to the signed-in teacher account. */
+  loadScript("js/roster-sync-broker.js?v=2", "patriot-roster-sync-broker");
 
   if (page === "settings.html") {
     loadScript("js/google-auth.js?v=5", "patriot-settings-google-auth");
