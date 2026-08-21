@@ -30,12 +30,17 @@ Patriot Command page enhancements
 
   const page = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
 
+  /* Keep long-running tabs from silently using an expired Google session. */
+  loadScript("js/auth-watchdog.js?v=1", "patriot-auth-watchdog");
+
   if (page === "settings.html") {
     loadScript("js/google-auth.js?v=5", "patriot-settings-google-auth");
     loadScript("js/settings-enhancements.js?v=1", "patriot-settings-enhancements");
+    loadScript("js/settings-countdown-toggle.js?v=1", "patriot-settings-countdown-toggle");
   }
 
   if (page === "index.html" || page === "") {
     loadScript("js/lunch-dashboard.js?v=1", "patriot-lunch-dashboard");
+    loadScript("js/dashboard-countdown-preference.js?v=1", "patriot-dashboard-countdown-preference");
   }
 })();
