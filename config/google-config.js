@@ -36,8 +36,8 @@ Patriot Command page enhancements
   /* Keep student rosters backed up to the signed-in teacher account. */
   loadScript("js/roster-sync-broker.js?v=3", "patriot-roster-sync-broker");
 
-  /* Make Library Reservations available from the shared Plan menu. */
-  loadScript("js/library-reservation-nav.js?v=1", "patriot-library-reservation-nav");
+  /* Make Library Reservations available beside Dashboard in shared navigation. */
+  loadScript("js/library-reservation-nav.js?v=2", "patriot-library-reservation-nav");
 
   if (page === "settings.html") {
     loadScript("js/google-auth.js?v=5", "patriot-settings-google-auth");
