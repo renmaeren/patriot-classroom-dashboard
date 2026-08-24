@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Reserve the ACSHS Library Media Center">
+  <title>Library Reservations | Patriot Command</title>
+  <link rel="icon" type="image/png" href="Assets/Icons/Patriot%20Command%20micro.png">
+  <link rel="stylesheet" href="css/patriot-design-system.css?v=2">
+  <style>
+    *{box-sizing:border-box} body{margin:0;min-height:100vh;color:#20283a;background:linear-gradient(180deg,#fffdf7 0%,#f7f8fc 56%,#eef2fa 100%);font-family:Inter,"Segoe UI",Arial,sans-serif}.page{display:grid;gap:14px;width:min(1100px,calc(100% - 24px));margin:0 auto;padding:14px 0 32px}.hero,.card{background:rgba(255,255,255,.86);border:1px solid rgba(42,67,163,.12);border-radius:16px;box-shadow:0 8px 24px rgba(42,67,163,.09)}.hero{padding:22px 24px;background:linear-gradient(112deg,rgba(207,27,19,.42),rgba(255,255,255,.94) 50%,rgba(42,67,163,.42))}.eyebrow{margin:0 0 4px;color:#2a43a3;font-size:.68rem;font-weight:850;text-transform:uppercase;letter-spacing:.1em}h1,h2{font-family:Literata,Georgia,serif}h1{margin:0;font-size:clamp(1.7rem,3vw,2.5rem)}.subtitle{margin:6px 0 0;color:#4d5870}.grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}.card{padding:20px}.card h2{margin:0 0 14px;color:#2a43a3;font-size:1.08rem}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.field.full{grid-column:1/-1}.field label{display:block;margin-bottom:5px;font-size:.72rem;font-weight:800;color:#344057}.field input,.field select,.field textarea{width:100%;min-height:40px;padding:9px 10px;border:1px solid rgba(42,67,163,.2);border-radius:9px;background:#fff;font:inherit;font-size:.78rem}.field textarea{min-height:86px;resize:vertical}.button{width:100%;min-height:42px;margin-top:14px;border:0;border-radius:9px;color:#fff;background:#2a43a3;font-weight:800;cursor:pointer}.button:disabled{opacity:.55;cursor:not-allowed}.notice{padding:11px 12px;border-radius:9px;background:#fff8dc;border-left:4px solid #d3a84f;color:#5f573d;font-size:.75rem;line-height:1.45}.reservation-list{display:grid;gap:9px}.reservation{padding:11px 12px;border:1px solid rgba(42,67,163,.12);border-radius:10px;background:#fff}.reservation strong{display:block;color:#20283a}.reservation span{display:block;margin-top:3px;color:#657087;font-size:.72rem}.empty{padding:20px;text-align:center;color:#657087;border:1px dashed rgba(42,67,163,.2);border-radius:10px}.status{display:none;margin-top:12px;padding:10px 12px;border-radius:9px;font-size:.75rem;font-weight:750}.status.show{display:block}.status.ok{background:#e5f4e9;color:#285e3b}.status.error{background:#fde8e7;color:#8c231e}@media(max-width:760px){.grid,.fields{grid-template-columns:1fr}.field.full{grid-column:auto}}
+  </style>
+</head>
+<body class="patriot-page-library">
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">ACSHS Library Media Center</p>
+      <h1>Library Reservations</h1>
+      <p class="subtitle">Check upcoming reservations before requesting the library for your class or activity.</p>
+    </header>
+    <div class="grid">
+      <section class="card">
+        <h2>Request the Library</h2>
+        <div class="notice">Reservations will be tied to your signed-in Patriot Command account. Existing reservations for the selected date will be shown before a request is submitted to help prevent double-booking.</div>
+        <form id="reservation-form">
+          <div class="fields" style="margin-top:14px">
+            <div class="field"><label for="reservation-date">Date</label><input id="reservation-date" type="date" required></div>
+            <div class="field"><label for="reservation-period">Class Period / Time</label><select id="reservation-period" required><option value="">Select</option><option>1st Period</option><option>2nd Period</option><option>3rd Period</option><option>4th Period</option><option>Advisory</option><option>5th Period</option><option>6th Period</option><option>7th Period</option><option>8th Period</option><option>Other / Custom Time</option></select></div>
+            <div class="field full" id="custom-time-field" hidden><label for="custom-time">Custom Time</label><input id="custom-time" type="text" placeholder="Example: 9:30–10:15 AM"></div>
+            <div class="field"><label for="teacher-name">Teacher</label><input id="teacher-name" type="text" required></div>
+            <div class="field"><label for="student-count">Approx. Student Count</label><input id="student-count" type="number" min="0" max="200" placeholder="Optional"></div>
+            <div class="field full"><label for="purpose">Purpose</label><textarea id="purpose" required placeholder="What will your class or group be using the library for?"></textarea></div>
+          </div>
+          <button class="button" id="submit-button" type="submit" disabled>Submit Reservation Request</button>
+          <div id="status" class="status" aria-live="polite"></div>
+        </form>
+      </section>
+      <section class="card">
+        <h2>Reservations for Selected Date</h2>
+        <div id="reservation-list" class="reservation-list"><div class="empty">Choose a date to check library availability.</div></div>
+      </section>
+    </div>
+  </main>
+  <script>
+    const profileKey="patriotTeacherProfile";
+    const dateInput=document.getElementById("reservation-date");
+    const periodInput=document.getElementById("reservation-period");
+    const customField=document.getElementById("custom-time-field");
+    const teacherInput=document.getElementById("teacher-name");
+    const submitButton=document.getElementById("submit-button");
+    const statusBox=document.getElementById("status");
+    function loadProfile(){try{return JSON.parse(localStorage.getItem(profileKey)||"{}")}catch(e){return {}}}
+    const profile=loadProfile(); teacherInput.value=profile.name||profile.teacherName||"";
+    dateInput.min=new Date().toISOString().slice(0,10);
+    periodInput.addEventListener("change",()=>{customField.hidden=periodInput.value!=="Other / Custom Time"});
+    dateInput.addEventListener("change",()=>{document.getElementById("reservation-list").innerHTML='<div class="empty">Cloud reservation checking will activate after the reservation backend is deployed.</div>'});
+    document.getElementById("reservation-form").addEventListener("submit",e=>{e.preventDefault();statusBox.className="status show error";statusBox.textContent="Reservation saving is not active yet. The interface is ready; the secure cloud backend is the next deployment step."});
+  </script>
+  <script src="config/google-config.js?v=4"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="js/google-auth.js?v=5"></script>
+  <script src="js/navigation.js?v=3"></script>
+</body>
+</html>
