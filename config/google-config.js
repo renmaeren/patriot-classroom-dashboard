@@ -42,6 +42,10 @@ Patriot Command page enhancements
     loadScript("js/settings-countdown-toggle.js?v=1", "patriot-settings-countdown-toggle");
   }
 
+  if (page === "planner.html" || page === "plan.html") {
+    loadScript("js/planner-undo-redo.js?v=1", "patriot-planner-undo-redo");
+  }
+
   if (page === "index.html" || page === "") {
     loadScript("js/lunch-dashboard.js?v=1", "patriot-lunch-dashboard");
     loadScript("js/dashboard-countdown-preference.js?v=1", "patriot-dashboard-countdown-preference");
