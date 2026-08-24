@@ -21,7 +21,7 @@
     <div class="grid">
       <section class="card">
         <h2>Request the Library</h2>
-        <div class="notice">Reservations will be tied to your signed-in Patriot Command account. Existing reservations for the selected date will be shown before a request is submitted to help prevent double-booking.</div>
+        <div class="notice">Reservations are tied to the teacher's signed-in Patriot Command account. Existing reservations for the selected date appear before a request is submitted to help prevent double-booking.</div>
         <form id="reservation-form">
           <div class="fields" style="margin-top:14px">
             <div class="field"><label for="reservation-date">Date</label><input id="reservation-date" type="date" required></div>
@@ -41,24 +41,10 @@
       </section>
     </div>
   </main>
-  <script>
-    const profileKey="patriotTeacherProfile";
-    const dateInput=document.getElementById("reservation-date");
-    const periodInput=document.getElementById("reservation-period");
-    const customField=document.getElementById("custom-time-field");
-    const teacherInput=document.getElementById("teacher-name");
-    const submitButton=document.getElementById("submit-button");
-    const statusBox=document.getElementById("status");
-    function loadProfile(){try{return JSON.parse(localStorage.getItem(profileKey)||"{}")}catch(e){return {}}}
-    const profile=loadProfile(); teacherInput.value=profile.name||profile.teacherName||"";
-    dateInput.min=new Date().toISOString().slice(0,10);
-    periodInput.addEventListener("change",()=>{customField.hidden=periodInput.value!=="Other / Custom Time"});
-    dateInput.addEventListener("change",()=>{document.getElementById("reservation-list").innerHTML='<div class="empty">Cloud reservation checking will activate after the reservation backend is deployed.</div>'});
-    document.getElementById("reservation-form").addEventListener("submit",e=>{e.preventDefault();statusBox.className="status show error";statusBox.textContent="Reservation saving is not active yet. The interface is ready; the secure cloud backend is the next deployment step."});
-  </script>
-  <script src="config/google-config.js?v=4"></script>
+  <script src="config/google-config.js?v=5"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script src="js/google-auth.js?v=5"></script>
+  <script src="js/library-reservations.js?v=1"></script>
   <script src="js/navigation.js?v=3"></script>
 </body>
 </html>
