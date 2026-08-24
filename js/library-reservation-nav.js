@@ -1,28 +1,27 @@
-/* Adds Library Reservations to the shared Plan menu without duplicating navigation markup. */
+/* Adds Library Reservations beside Dashboard in the shared navigation. */
 (function () {
   "use strict";
 
   function addLink() {
-    const buttons = Array.from(document.querySelectorAll(".patriot-nav-dropdown-button"));
-    const planButton = buttons.find(button => button.textContent.trim().startsWith("Plan"));
-    const wrapper = planButton?.closest(".patriot-nav-item");
-    const menu = wrapper?.querySelector(".patriot-nav-dropdown");
-    if (!menu || menu.querySelector('a[href="reservations.html"]')) return Boolean(menu);
+    const links = document.querySelector(".patriot-nav-links");
+    if (!links) return false;
+    if (links.querySelector('a[href="reservations.html"]')) return true;
+
+    const dashboardLink = links.querySelector('a[href="index.html"]');
+    if (!dashboardLink) return false;
 
     const link = document.createElement("a");
-    link.className = "patriot-nav-dropdown-link";
+    link.className = "patriot-nav-link";
     link.href = "reservations.html";
     link.textContent = "Library Reservations";
-    link.setAttribute("role", "menuitem");
 
     const page = (window.location.pathname.split("/").pop() || "").toLowerCase();
     if (page === "reservations.html") {
       link.classList.add("active");
       link.setAttribute("aria-current", "page");
-      planButton.classList.add("active");
     }
 
-    menu.appendChild(link);
+    dashboardLink.insertAdjacentElement("afterend", link);
     return true;
   }
 
