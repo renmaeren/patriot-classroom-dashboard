@@ -18,6 +18,25 @@
 
   const profileKey = "patriotTeacherProfile";
 
+  let anotherButton = document.getElementById("make-another-reservation");
+  if (!anotherButton) {
+    anotherButton = document.createElement("button");
+    anotherButton.id = "make-another-reservation";
+    anotherButton.type = "button";
+    anotherButton.textContent = "Make Another Reservation";
+    anotherButton.hidden = true;
+    anotherButton.style.width = "100%";
+    anotherButton.style.minHeight = "42px";
+    anotherButton.style.marginTop = "9px";
+    anotherButton.style.border = "1px solid #2a43a3";
+    anotherButton.style.borderRadius = "9px";
+    anotherButton.style.color = "#2a43a3";
+    anotherButton.style.background = "#ffffff";
+    anotherButton.style.fontWeight = "800";
+    anotherButton.style.cursor = "pointer";
+    statusBox.insertAdjacentElement("afterend", anotherButton);
+  }
+
   function readProfile() {
     try {
       return JSON.parse(localStorage.getItem(profileKey) || "{}");
@@ -123,6 +142,19 @@
     }
   }
 
+  function resetForAnotherReservation() {
+    clearStatus();
+    periodInput.value = "";
+    customInput.value = "";
+    customInput.required = false;
+    customField.hidden = true;
+    countInput.value = "";
+    purposeInput.value = "";
+    anotherButton.hidden = true;
+    syncAuthState();
+    periodInput.focus();
+  }
+
   const profile = readProfile();
   teacherInput.value = profile.name || profile.teacherName || "";
   dateInput.min = new Date().toISOString().slice(0, 10);
@@ -135,12 +167,16 @@
 
   dateInput.addEventListener("change", () => {
     clearStatus();
+    anotherButton.hidden = true;
     loadReservations();
   });
+
+  anotherButton.addEventListener("click", resetForAnotherReservation);
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
     clearStatus();
+    anotherButton.hidden = true;
 
     const period = periodInput.value;
     const customTime = customInput.value.trim();
@@ -162,8 +198,7 @@
         purpose: purposeInput.value.trim()
       });
       showStatus(result.message || "Library reservation saved!", "ok");
-      purposeInput.value = "";
-      countInput.value = "";
+      anotherButton.hidden = false;
       await loadReservations();
     } catch (error) {
       showStatus(error.message, "error");
