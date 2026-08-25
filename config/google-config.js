@@ -50,5 +50,10 @@ Patriot Command page enhancements
     loadScript("js/lunch-dashboard.js?v=1", "patriot-lunch-dashboard");
     loadScript("js/dashboard-countdown-preference.js?v=1", "patriot-dashboard-countdown-preference");
     loadScript("js/dashboard-library-reservations.js?v=1", "patriot-dashboard-library-reservations");
+    loadScript("js/dashboard-notes-reminders.js?v=1", "patriot-dashboard-notes-reminders");
+  }
+
+  if (page === "classroom.html") {
+    loadScript("js/teach-reminders.js?v=1", "patriot-teach-reminders");
   }
 })();
