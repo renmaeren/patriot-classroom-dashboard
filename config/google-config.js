@@ -49,5 +49,6 @@ Patriot Command page enhancements
   if (page === "index.html" || page === "") {
     loadScript("js/lunch-dashboard.js?v=1", "patriot-lunch-dashboard");
     loadScript("js/dashboard-countdown-preference.js?v=1", "patriot-dashboard-countdown-preference");
+    loadScript("js/dashboard-library-reservations.js?v=1", "patriot-dashboard-library-reservations");
   }
 })();
