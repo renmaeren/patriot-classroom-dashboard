@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Admin Console API
-Version 1
+Version 2
 ==========================================
 */
 
@@ -32,9 +32,12 @@ Version 1
   }
 
   function getSignedInUser() {
+    const auth =
+      window.PATRIOT_AUTH || {};
+
     const user =
-      window.PATRIOT_AUTH
-        ?.getUser?.() ||
+      auth.getUser?.() ||
+      auth.user ||
       window.PATRIOT_USER ||
       null;
 
@@ -51,10 +54,14 @@ Version 1
   }
 
   function getIdToken() {
+    const auth =
+      window.PATRIOT_AUTH || {};
+
     const idToken =
       cleanText(
-        window.PATRIOT_AUTH
-          ?.getIdToken?.()
+        auth.getIdToken?.() ||
+        auth.idToken ||
+        ""
       );
 
     if (!idToken) {
@@ -384,6 +391,6 @@ Version 1
   };
 
   console.log(
-    "Patriot Admin API v1 loaded."
+    "Patriot Admin API v2 loaded."
   );
 })();
