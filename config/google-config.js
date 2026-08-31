@@ -30,6 +30,9 @@ Patriot Command page enhancements
 
   const page = (window.location.pathname.split("/").pop() || "index.html").toLowerCase();
 
+  /* Normalize older/newer Google auth shapes so Admin access stays available. */
+  loadScript("js/admin-access-compat.js?v=1", "patriot-admin-access-compat");
+
   /* Keep long-running tabs from silently using an expired Google session. */
   loadScript("js/auth-watchdog.js?v=1", "patriot-auth-watchdog");
 
