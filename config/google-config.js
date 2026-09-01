@@ -59,4 +59,8 @@ Patriot Command page enhancements
   if (page === "classroom.html") {
     loadScript("js/teach-reminders.js?v=1", "patriot-teach-reminders");
   }
+
+  if (page === "admin.html") {
+    loadScript("js/admin-lesson-review-link.js?v=1", "patriot-admin-lesson-review-link");
+  }
 })();
