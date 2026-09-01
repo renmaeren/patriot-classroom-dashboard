@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Lesson Plan Review | Patriot Command</title>
+<link rel="icon" type="image/png" href="Assets/Icons/Patriot%20Command%20micro.png">
+<link rel="stylesheet" href="css/patriot-design-system.css?v=3">
+<style>
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:#fffce9;color:#20283a;font-family:Inter,"Segoe UI",Arial,sans-serif}.page{width:min(1400px,calc(100% - 24px));margin:14px auto 36px;display:grid;gap:14px}.hero,.panel{background:#fff;border:1px solid rgba(42,67,163,.13);border-radius:18px;box-shadow:0 8px 24px rgba(42,67,163,.09)}.hero{padding:22px;background:linear-gradient(112deg,rgba(207,27,19,.16),#fff 48%,rgba(42,67,163,.16))}.eyebrow{margin:0;color:#2a43a3;font-size:.7rem;font-weight:850;text-transform:uppercase;letter-spacing:.1em}h1,h2{font-family:Literata,Georgia,serif}h1{margin:4px 0 5px;font-size:clamp(1.7rem,3vw,2.5rem)}.hero p:last-child{margin:0;color:#657087}.panel{padding:16px}.filters{display:grid;grid-template-columns:1.4fr 1fr 1fr 1fr auto;gap:10px;align-items:end}.field label{display:block;margin-bottom:5px;color:#47526a;font-size:.68rem;font-weight:800}.field input,.field select{width:100%;min-height:39px;padding:8px 10px;border:1px solid rgba(42,67,163,.18);border-radius:9px;background:#fff;font:inherit;font-size:.78rem}.button{min-height:39px;padding:8px 14px;border:0;border-radius:9px;background:#2a43a3;color:#fff;font-weight:800;cursor:pointer}.summary{margin:12px 0 0;color:#657087;font-size:.72rem}.workspace{display:grid;grid-template-columns:minmax(300px,.75fr) minmax(0,1.25fr);gap:14px}.list{display:grid;gap:8px;max-height:70vh;overflow:auto}.lesson-card{padding:12px;border:1px solid rgba(42,67,163,.12);border-radius:11px;background:#fff;cursor:pointer}.lesson-card:hover,.lesson-card.active{border-color:#2a43a3;background:rgba(42,67,163,.05)}.lesson-card strong{display:block}.lesson-card span{display:block;margin-top:3px;color:#657087;font-size:.68rem}.detail{min-height:320px}.detail-header{padding-bottom:12px;border-bottom:1px solid rgba(42,67,163,.12)}.detail-header h2{margin:0;color:#2a43a3}.meta{margin-top:5px;color:#657087;font-size:.72rem}.lesson-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}.lesson-field{padding:11px;background:rgba(42,67,163,.035);border:1px solid rgba(42,67,163,.09);border-radius:10px}.lesson-field.full{grid-column:1/-1}.lesson-field b{display:block;margin-bottom:4px;color:#2a43a3;font-size:.63rem;text-transform:uppercase;letter-spacing:.05em}.lesson-field div{white-space:pre-wrap;font-size:.78rem;line-height:1.45}.empty{padding:28px;text-align:center;color:#657087;border:1px dashed rgba(42,67,163,.2);border-radius:11px}.status{padding:10px 12px;border-radius:9px;background:#fff8dc;color:#675b32;font-size:.72rem}.status.error{background:#fde8e7;color:#8f1712}@media(max-width:850px){.filters,.workspace{grid-template-columns:1fr}.lesson-fields{grid-template-columns:1fr}.lesson-field.full{grid-column:auto}}
+</style>
+</head>
+<body class="patriot-page-settings">
+<main class="page">
+<header class="hero"><p class="eyebrow">Patriot Command Administration</p><h1>Lesson Plan Review</h1><p>Read-only administrative review of teacher lesson plans. Nothing on this page can alter a teacher's saved lesson.</p></header>
+<section class="panel"><div class="filters">
+<div class="field"><label for="teacher-filter">Teacher</label><select id="teacher-filter"><option value="">All teachers</option></select></div>
+<div class="field"><label for="course-filter">Course</label><select id="course-filter"><option value="">All courses</option></select></div>
+<div class="field"><label for="start-date">From</label><input id="start-date" type="date"></div>
+<div class="field"><label for="end-date">Through</label><input id="end-date" type="date"></div>
+<button id="refresh-button" class="button" type="button">Refresh</button></div><p id="summary" class="summary">Waiting for secure Admin verification.</p></section>
+<div class="workspace"><section class="panel"><div id="lesson-list" class="list"><div class="empty">Lesson plans will appear here after Admin verification.</div></div></section><section class="panel detail" id="lesson-detail"><div class="empty">Select a lesson to review it.</div></section></div>
+</main>
+<script src="config/google-config.js?v=7"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<script src="js/google-auth.js?v=5"></script>
+<script src="js/navigation.js?v=3"></script>
+<script src="js/admin-access.js?v=2"></script>
+<script src="js/admin-lesson-review.js?v=1"></script>
+</body></html>
