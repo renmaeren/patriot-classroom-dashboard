@@ -2,7 +2,7 @@
 ==========================================
 PATRIOT COMMAND
 Admin Access Control
-Version 2
+Version 3
 ==========================================
 */
 
@@ -10,7 +10,9 @@ Version 2
   "use strict";
 
   const SESSION_KEY = "patriotVerifiedAdmin";
+  const COMPAT_CACHE_KEY = "patriotAdminPermissionCacheV2";
   const AUTH_WAIT_MS = 10000;
+  const REQUEST_TIMEOUT_MS = 8000;
 
   function cleanText(value) {
     return String(value || "").trim().toLowerCase();
@@ -20,160 +22,89 @@ Version 2
     const auth = window.PATRIOT_AUTH || {};
     const user = auth.getUser?.() || auth.user || window.PATRIOT_USER || null;
     const idToken = String(auth.getIdToken?.() || auth.idToken || "").trim();
-
-    return {
-      signedIn: auth.signedIn === true || Boolean(user && idToken),
-      email: cleanText(user?.email),
-      idToken
-    };
+    return { signedIn: auth.signedIn === true || Boolean(user && idToken), email: cleanText(user?.email), idToken };
   }
 
-  function getCurrentUserEmail() {
-    return getAuthSnapshot().email;
-  }
+  function getCurrentUserEmail() { return getAuthSnapshot().email; }
 
   function getCachedAdminEmail() {
+    try { return cleanText(sessionStorage.getItem(SESSION_KEY)); }
+    catch (_) { return ""; }
+  }
+
+  function getCompatAdminEmail() {
     try {
-      return cleanText(sessionStorage.getItem(SESSION_KEY));
-    } catch (error) {
-      return "";
-    }
+      const cached = JSON.parse(sessionStorage.getItem(COMPAT_CACHE_KEY) || "null");
+      if (!cached || cached.isAdmin !== true) return "";
+      return cleanText(cached.email);
+    } catch (_) { return ""; }
+  }
+
+  function hasVerifiedAdminSession(email) {
+    const normalized = cleanText(email);
+    return Boolean(normalized && (getCachedAdminEmail() === normalized || getCompatAdminEmail() === normalized));
   }
 
   function cacheAdmin(email) {
-    try {
-      sessionStorage.setItem(SESSION_KEY, cleanText(email));
-    } catch (error) {
-      // Session caching is an optimization only.
-    }
+    try { sessionStorage.setItem(SESSION_KEY, cleanText(email)); }
+    catch (_) {}
   }
 
   function clearCachedAdmin() {
     try {
       sessionStorage.removeItem(SESSION_KEY);
-    } catch (error) {
-      // Ignore storage failures.
-    }
+      sessionStorage.removeItem(COMPAT_CACHE_KEY);
+    } catch (_) {}
   }
 
   function createGate(title, message, email, allowRetry) {
     let gate = document.getElementById("patriot-admin-access-gate");
-
-    if (!gate) {
-      gate = document.createElement("div");
-      gate.id = "patriot-admin-access-gate";
-      document.body.appendChild(gate);
-    }
-
-    gate.style.cssText = [
-      "position:fixed",
-      "inset:0",
-      "z-index:100000",
-      "display:grid",
-      "place-items:center",
-      "padding:24px",
-      "background:#fffce9",
-      "font-family:Inter,Segoe UI,Arial,sans-serif"
-    ].join(";");
-
-    gate.innerHTML = `
-      <section style="width:min(560px,100%);padding:32px;text-align:center;background:#fff;border:1px solid rgba(42,67,163,.16);border-radius:18px;box-shadow:0 14px 36px rgba(42,67,163,.14);">
-        <div style="font-size:2rem;margin-bottom:10px;">🔒</div>
-        <h1 style="margin:0;color:#2a43a3;font-family:Georgia,serif;">${title}</h1>
-        <p style="margin:14px 0 0;color:#5b6476;line-height:1.5;">${message}</p>
-        ${email ? `<p style="margin:10px 0 0;color:#20283a;font-size:.9rem;">Signed in as: <strong>${email}</strong></p>` : ""}
-        <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px;">
-          ${allowRetry ? `<button id="patriot-admin-retry" type="button" style="padding:10px 16px;color:#fff;background:#2a43a3;border:0;border-radius:9px;cursor:pointer;">Try Again</button>` : ""}
-          <a href="index.html" style="display:inline-block;padding:10px 16px;color:#fff;text-decoration:none;background:#2a43a3;border-radius:9px;">Return to Dashboard</a>
-        </div>
-      </section>
-    `;
-
-    gate.querySelector("#patriot-admin-retry")?.addEventListener("click", () => {
-      verifyAdminAccess(true);
-    });
-
+    if (!gate) { gate = document.createElement("div"); gate.id = "patriot-admin-access-gate"; document.body.appendChild(gate); }
+    gate.style.cssText = ["position:fixed","inset:0","z-index:100000","display:grid","place-items:center","padding:24px","background:#fffce9","font-family:Inter,Segoe UI,Arial,sans-serif"].join(";");
+    gate.innerHTML = `<section style="width:min(560px,100%);padding:32px;text-align:center;background:#fff;border:1px solid rgba(42,67,163,.16);border-radius:18px;box-shadow:0 14px 36px rgba(42,67,163,.14);"><div style="font-size:2rem;margin-bottom:10px;">🔒</div><h1 style="margin:0;color:#2a43a3;font-family:Georgia,serif;">${title}</h1><p style="margin:14px 0 0;color:#5b6476;line-height:1.5;">${message}</p>${email ? `<p style="margin:10px 0 0;color:#20283a;font-size:.9rem;">Signed in as: <strong>${email}</strong></p>` : ""}<div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:20px;">${allowRetry ? `<button id="patriot-admin-retry" type="button" style="padding:10px 16px;color:#fff;background:#2a43a3;border:0;border-radius:9px;cursor:pointer;">Try Again</button>` : ""}<a href="index.html" style="display:inline-block;padding:10px 16px;color:#fff;text-decoration:none;background:#2a43a3;border-radius:9px;">Return to Dashboard</a></div></section>`;
+    gate.querySelector("#patriot-admin-retry")?.addEventListener("click", () => verifyAdminAccess(true));
     return gate;
   }
 
-  function showChecking(email) {
-    createGate(
-      "Checking Admin Access",
-      "Patriot Command is verifying your school account and administrator permission.",
-      email,
-      false
-    );
-  }
-
-  function showAccessDenied(email) {
-    clearCachedAdmin();
-    createGate(
-      "Admin Access Required",
-      "This area is limited to approved Patriot Command administrators.",
-      email,
-      false
-    );
-  }
-
-  function showConnectionError(email, message) {
-    createGate(
-      "Admin Verification Problem",
-      message || "Patriot Command could not verify administrator access. Your permission has not been removed. Please try again.",
-      email,
-      true
-    );
-  }
+  function showChecking(email) { createGate("Checking Admin Access", "Patriot Command is verifying your school account and administrator permission.", email, false); }
+  function showAccessDenied(email) { clearCachedAdmin(); createGate("Admin Access Required", "This area is limited to approved Patriot Command administrators.", email, false); }
+  function showConnectionError(email, message) { createGate("Admin Verification Problem", message || "Patriot Command could not verify administrator access. Your permission has not been removed. Please try again.", email, true); }
 
   function authorize(email) {
-    const gate = document.getElementById("patriot-admin-access-gate");
-    gate?.remove();
-
+    document.getElementById("patriot-admin-access-gate")?.remove();
     document.documentElement.classList.add("patriot-admin-authorized");
     window.PATRIOT_ADMIN_EMAIL = cleanText(email);
     cacheAdmin(email);
-
-    window.dispatchEvent(new CustomEvent("patriot-admin-verified", {
-      detail: { email: cleanText(email), isAdmin: true }
-    }));
-
+    window.dispatchEvent(new CustomEvent("patriot-admin-verified", { detail: { email: cleanText(email), isAdmin: true } }));
     return true;
   }
 
   async function waitForAuth() {
     const started = Date.now();
-
     while (Date.now() - started < AUTH_WAIT_MS) {
       const snapshot = getAuthSnapshot();
       if (snapshot.email && snapshot.idToken) return snapshot;
       await new Promise(resolve => window.setTimeout(resolve, 200));
     }
-
     return getAuthSnapshot();
   }
 
   async function requestPermissions(snapshot) {
     const scriptUrl = String(window.GOOGLE_SCRIPT_URL || "").trim();
     if (!scriptUrl) throw new Error("The Patriot Command permission service is unavailable.");
-
     const body = new URLSearchParams();
-    body.set("action", "getUserPermissions");
-    body.set("userEmail", snapshot.email);
-    body.set("idToken", snapshot.idToken);
-
-    const response = await fetch(scriptUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
-      },
-      body: body.toString()
-    });
-
-    const result = await response.json();
-    if (!response.ok || !result || result.success !== true) {
-      throw new Error(result?.message || "Administrator permission could not be verified.");
-    }
-
-    return result;
+    body.set("action", "getUserPermissions"); body.set("userEmail", snapshot.email); body.set("idToken", snapshot.idToken);
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+    try {
+      const response = await fetch(scriptUrl, { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" }, body: body.toString(), signal: controller.signal });
+      const result = await response.json();
+      if (!response.ok || !result || result.success !== true) throw new Error(result?.message || "Administrator permission could not be verified.");
+      return result;
+    } catch (error) {
+      if (error?.name === "AbortError") throw new Error("Administrator verification timed out. Please try again.");
+      throw error;
+    } finally { window.clearTimeout(timeout); }
   }
 
   let verificationPending = false;
@@ -181,76 +112,43 @@ Version 2
   async function verifyAdminAccess(force) {
     if (verificationPending && !force) return false;
     verificationPending = true;
-
     let snapshot = getAuthSnapshot();
     showChecking(snapshot.email);
-
     try {
+      if (!snapshot.email || !snapshot.idToken) snapshot = await waitForAuth();
       if (!snapshot.email || !snapshot.idToken) {
-        snapshot = await waitForAuth();
-      }
-
-      if (!snapshot.email || !snapshot.idToken) {
-        showConnectionError(
-          snapshot.email,
-          "Your Google school sign-in has not finished loading. Return to the Dashboard, sign in with your school account, and then open Admin again."
-        );
+        showConnectionError(snapshot.email, "Your Google school sign-in has not finished loading. Return to the Dashboard, sign in with your school account, and then open Admin again.");
         return false;
       }
 
-      const cachedEmail = getCachedAdminEmail();
-      if (!force && cachedEmail && cachedEmail === snapshot.email) {
+      /* The navigation permission checker already verified this exact signed-in account. Trust that session result immediately, then refresh it in the background. */
+      if (!force && hasVerifiedAdminSession(snapshot.email)) {
         authorize(snapshot.email);
-        // Refresh permission in the background without making the page disappear.
-        requestPermissions(snapshot)
-          .then(result => {
-            if (result.isAdmin !== true) showAccessDenied(snapshot.email);
-          })
-          .catch(error => {
-            console.warn("Cached Admin permission could not be refreshed.", error);
-          });
+        requestPermissions(snapshot).then(result => {
+          if (result.isAdmin !== true) showAccessDenied(snapshot.email);
+        }).catch(error => console.warn("Verified Admin session refresh failed; keeping current verified session.", error));
         return true;
       }
 
       const result = await requestPermissions(snapshot);
-
-      if (result.isAdmin === true) {
-        return authorize(snapshot.email);
-      }
-
+      if (result.isAdmin === true) return authorize(snapshot.email);
       showAccessDenied(snapshot.email);
       return false;
     } catch (error) {
       console.error("Patriot Command Admin verification failed.", error);
+      if (hasVerifiedAdminSession(snapshot.email)) return authorize(snapshot.email);
       showConnectionError(snapshot.email, error.message);
       return false;
-    } finally {
-      verificationPending = false;
-    }
+    } finally { verificationPending = false; }
   }
 
-  function isApprovedAdmin(email) {
-    const normalized = cleanText(email);
-    return Boolean(normalized && normalized === getCachedAdminEmail());
-  }
-
-  function enforceAdminAccess() {
-    verifyAdminAccess(false);
-    return true;
-  }
+  function isApprovedAdmin(email) { return hasVerifiedAdminSession(email); }
+  function enforceAdminAccess() { verifyAdminAccess(false); return true; }
 
   window.addEventListener("patriot-auth-changed", event => {
-    if (event.detail?.signedIn) {
-      verifyAdminAccess(false);
-    } else {
-      clearCachedAdmin();
-    }
+    if (event.detail?.signedIn) verifyAdminAccess(false);
+    else clearCachedAdmin();
   });
 
-  window.PatriotAdminAccess = {
-    getCurrentUserEmail,
-    isApprovedAdmin,
-    enforceAdminAccess,
-    verifyAdminAccess
-  };
+  window.PatriotAdminAccess = { getCurrentUserEmail, isApprovedAdmin, enforceAdminAccess, verifyAdminAccess };
 })();
